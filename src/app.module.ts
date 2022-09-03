@@ -1,11 +1,23 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { BloggersModule } from "./bloggers/bloggers.module";
-import { PostsModule } from "./posts/posts.module";
+import { BloggersModule } from "./features/bloggers/bloggers.module";
+import { PostsModule } from "./features/posts/posts.module";
+import { UsersModule } from "./features/users/users.module";
+import { AuthModule } from "./features/auth/auth.module";
+import { GamequizModule } from "./features/gamequiz/gamequiz.module";
+import { ConfigModule } from "@nestjs/config";
+import { config } from "./config/config";
 
 @Module({
-    imports: [BloggersModule, PostsModule],
+    imports: [
+        ConfigModule.forRoot({ isGlobal: true, load: [config] }),
+        BloggersModule,
+        PostsModule,
+        UsersModule,
+        AuthModule,
+        GamequizModule,
+    ],
     controllers: [AppController],
     providers: [AppService],
 })

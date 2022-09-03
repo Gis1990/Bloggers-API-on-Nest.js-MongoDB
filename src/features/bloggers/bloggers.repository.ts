@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BloggersModelClass } from "../entity/db";
+import { BloggersModelClass } from "../../db";
 import { BloggerDBClass, BloggerDBClassPagination } from "./bloggers.model";
 import {
     inputModelForUpdatingBlogger,
@@ -43,9 +43,9 @@ export class BloggersRepository {
         return blogger;
     }
     async updateBlogger(dto: inputModelForUpdatingBlogger): Promise<boolean> {
-        const name = dto.body.name;
-        const youtubeUrl = dto.body.youtubeUrl;
-        const result = await BloggersModelClass.updateOne({ id: dto.params.id }, { $set: { name, youtubeUrl } });
+        const name = dto.name;
+        const youtubeUrl = dto.youtubeUrl;
+        const result = await BloggersModelClass.updateOne({ id: dto.id }, { $set: { name, youtubeUrl } });
         return result.matchedCount === 1;
     }
     async deleteBloggerById(id: string): Promise<boolean> {

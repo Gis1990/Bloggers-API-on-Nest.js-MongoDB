@@ -1,6 +1,6 @@
-import { NewestLikesClass, PostDBClass, PostDBClassPagination } from "../entity/types";
-import { PostsModelClass } from "../entity/db";
+import { PostsModelClass } from "../../db";
 import { Injectable } from "@nestjs/common";
+import { NewestLikesClass, PostDBClass, PostDBClassPagination } from "./posts.model";
 
 @Injectable()
 export class PostsRepository {

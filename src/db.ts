@@ -1,18 +1,16 @@
 import mongoose from "mongoose";
+
+import * as dotenv from "dotenv";
+import { BloggerDBClass } from "./features/bloggers/bloggers.model";
+import { NewestLikesClass, PostDBClass } from "./features/posts/posts.model";
+import { CommentDBClass } from "./features/comments/comments.module";
 import {
-    CommentDBClass,
-    PostDBClass,
-    UserAccountDBClass,
+    LoginAttemptsClass,
     RefreshTokenClass,
     SentEmailsClass,
-    LoginAttemptsClass,
-    NewestLikesClass,
-    QuizGameDBClass,
-    PlayerClass,
-    GameQuestionClass,
-} from "./types";
-import * as dotenv from "dotenv";
-import { BloggerDBClass } from "../bloggers/bloggers.model";
+    UserAccountDBClass,
+} from "./features/users/users.model";
+import { GameQuestionClass, PlayerClass, QuizGameDBClass } from "./features/gamequiz/gamequiz.model";
 
 dotenv.config();
 

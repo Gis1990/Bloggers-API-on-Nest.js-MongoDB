@@ -1,21 +1,18 @@
 import { PostsRepository } from "./posts.repository";
+import { ObjectId } from "mongodb";
+import { BloggersRepository } from "../bloggers/bloggers.repository";
+import { Injectable } from "@nestjs/common";
 import {
     ExtendedLikesInfoClass,
     NewPostClassResponseModel,
     PostDBClass,
     PostDBClassPagination,
     UsersLikesInfoClass,
-} from "../entity/types";
-import { ObjectId } from "mongodb";
-import { BloggersRepository } from "../bloggers/bloggers.repository";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+} from "./posts.model";
 
 @Injectable()
 export class PostsService {
-    constructor(
-        @Inject(forwardRef(() => BloggersRepository)) protected bloggersRepository: BloggersRepository,
-        protected postsRepository: PostsRepository,
-    ) {}
+    constructor(protected bloggersRepository: BloggersRepository, protected postsRepository: PostsRepository) {}
     async getAllPosts(PageNumber = 1, PageSize = 10, userId: string | undefined): Promise<PostDBClassPagination> {
         const allPosts = await this.postsRepository.getAllPosts(Number(PageNumber), Number(PageSize));
         if (userId) {

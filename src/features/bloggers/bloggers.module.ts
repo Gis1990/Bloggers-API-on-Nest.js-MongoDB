@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { BloggersService } from "./bloggers.service";
 import { BloggersRepository } from "./bloggers.repository";
 import { BloggersController } from "./bloggers.controller";
@@ -6,7 +6,7 @@ import { IsBloggersIdExistConstraint } from "./bloggers.custom.decorators";
 import { PostsModule } from "../posts/posts.module";
 
 @Module({
-    imports: [PostsModule],
+    imports: [forwardRef(() => PostsModule)],
     controllers: [BloggersController],
     providers: [BloggersService, BloggersRepository, IsBloggersIdExistConstraint],
     exports: [BloggersRepository],

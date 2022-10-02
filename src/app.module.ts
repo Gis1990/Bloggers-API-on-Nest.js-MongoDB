@@ -8,6 +8,7 @@ import { AuthModule } from "./features/auth/auth.module";
 import { GamequizModule } from "./features/gamequiz/gamequiz.module";
 import { ConfigModule } from "@nestjs/config";
 import { config } from "./config/config";
+import { CommentsModule } from "./features/comments/comments.module";
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { config } from "./config/config";
         UsersModule,
         AuthModule,
         GamequizModule,
+        CommentsModule,
     ],
     controllers: [AppController],
     providers: [AppService],

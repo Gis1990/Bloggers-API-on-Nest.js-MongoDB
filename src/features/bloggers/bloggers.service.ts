@@ -1,27 +1,25 @@
 import { Injectable } from "@nestjs/common";
 import { BloggersRepository } from "./bloggers.repository";
-import { BloggerClassResponseModel, BloggerDBClass, BloggerDBClassPagination } from "./bloggers.model";
+import { BloggerClassResponseModel, BloggerDBClass, BloggerDBClassPagination } from "./entities/bloggers.entity";
 import {
-    inputModelForUpdatingBlogger,
-    inputModelForCreatingBlogger,
-    modelForGettingAllBloggers,
+    InputModelForCreatingBlogger,
+    InputModelForUpdatingBlogger,
+    ModelForGettingAllBloggers,
 } from "./dto/bloggers.dto";
 
 @Injectable()
 export class BloggersService {
     constructor(protected bloggersRepository: BloggersRepository) {}
-    async getAllBloggers(dto: modelForGettingAllBloggers): Promise<BloggerDBClassPagination> {
+    async getAllBloggers(dto: ModelForGettingAllBloggers): Promise<BloggerDBClassPagination> {
         return this.bloggersRepository.getAllBloggers(dto);
     }
     async getBloggerById(bloggerId: string): Promise<BloggerDBClass | null> {
         return this.bloggersRepository.getBloggerById(bloggerId);
     }
-    async createBlogger(dto: inputModelForCreatingBlogger): Promise<BloggerClassResponseModel> {
-        const newBlogger = await this.bloggersRepository.createBlogger(dto);
-        const { _id, ...newBloggerRest } = newBlogger;
-        return newBloggerRest;
+    async createBlogger(dto: InputModelForCreatingBlogger): Promise<BloggerClassResponseModel> {
+        return await this.bloggersRepository.createBlogger(dto);
     }
-    async updateBlogger(dto: inputModelForUpdatingBlogger): Promise<boolean> {
+    async updateBlogger(dto: InputModelForUpdatingBlogger): Promise<boolean> {
         return this.bloggersRepository.updateBlogger(dto);
     }
     async deleteBlogger(bloggerId: string): Promise<boolean> {

@@ -1,20 +1,22 @@
 import { PostsModelClass } from "../../db";
 import { Injectable } from "@nestjs/common";
-import { NewestLikesClass, PostDBClass, PostDBClassPagination } from "./posts.model";
+import { NewestLikesClass, PostDBClass, PostDBClassPagination } from "./entities/posts.entity";
+import { ModelForGettingAllPosts } from "./dto/posts.dto";
 
 @Injectable()
 export class PostsRepository {
-    async getAllPosts(PageNumber: number, PageSize: number): Promise<PostDBClassPagination> {
+    async getAllPosts(dto: ModelForGettingAllPosts): Promise<PostDBClassPagination> {
+        const { PageNumber = 1, PageSize = 10 } = dto;
         const skips = PageSize * (PageNumber - 1);
         const cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).skip(skips).limit(PageSize).lean();
         const totalCount = await PostsModelClass.count({});
         return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
     }
     async getAllPostsForSpecificBlogger(
-        PageNumber: number,
-        PageSize: number,
+        dto: ModelForGettingAllPosts,
         bloggerId: string,
     ): Promise<PostDBClassPagination> {
+        const { PageNumber = 1, PageSize = 10 } = dto;
         const skips = PageSize * (PageNumber - 1);
         const cursor = await PostsModelClass.find({ bloggerId: bloggerId }, { _id: 0, usersLikesInfo: 0 })
             .skip(skips)

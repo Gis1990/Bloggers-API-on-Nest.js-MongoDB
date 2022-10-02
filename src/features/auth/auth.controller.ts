@@ -1,18 +1,12 @@
 import { Body, Controller, HttpCode, Post, UseGuards, Res, Get } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { InputModelForCreatingNewUser } from "../users/dto/users.dto";
-import { currentUserModel, InputModelForCode, InputModelForResendingEmail } from "./dto/auth.dto";
+import { CurrentUserModel, InputModelForCode, InputModelForResendingEmail } from "./dto/auth.dto";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { Response } from "express";
-import { AccessTokenClass } from "./auth.model";
+import { AccessTokenClass } from "./entities/auth.entity";
 import { JwtRefreshTokenAuthGuard } from "./guards/jwtRefreshToken-auth.guard";
 import { CurrentUserId, CurrentUser } from "./auth.cutsom.decorators";
-
-export class iusr {
-    email: string;
-    login: string;
-    userId: string;
-}
 
 @Controller("auth")
 export class AuthController {
@@ -81,7 +75,7 @@ export class AuthController {
     @UseGuards(JwtRefreshTokenAuthGuard)
     @Get("me")
     @HttpCode(200)
-    async me(@CurrentUser() user: currentUserModel): Promise<currentUserModel> {
+    async me(@CurrentUser() user: CurrentUserModel): Promise<CurrentUserModel> {
         return user;
     }
 }

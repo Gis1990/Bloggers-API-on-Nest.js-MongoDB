@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CreateGamequizDto } from "./dto/create-gamequiz.dto";
+import { CreateGameQuizDto } from "./dto/create-gamequiz.dto";
 import { UpdateGameQuizDto } from "./dto/update-gamequiz.dto";
 
 @Injectable()
 export class GamequizService {
-    create(createGameQuizDto: CreateGamequizDto) {
+    create(createGameQuizDto: CreateGameQuizDto) {
         return "This action adds a new gamequiz";
     }
 

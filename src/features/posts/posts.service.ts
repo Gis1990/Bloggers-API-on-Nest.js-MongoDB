@@ -8,13 +8,14 @@ import {
     PostDBClass,
     PostDBClassPagination,
     UsersLikesInfoClass,
-} from "./posts.model";
+} from "./entities/posts.entity";
+import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts } from "./dto/posts.dto";
 
 @Injectable()
 export class PostsService {
     constructor(protected bloggersRepository: BloggersRepository, protected postsRepository: PostsRepository) {}
-    async getAllPosts(PageNumber = 1, PageSize = 10, userId: string | undefined): Promise<PostDBClassPagination> {
-        const allPosts = await this.postsRepository.getAllPosts(Number(PageNumber), Number(PageSize));
+    async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostDBClassPagination> {
+        const allPosts = await this.postsRepository.getAllPosts(dto);
         if (userId) {
             for (let i = 0; i < allPosts.items.length; i++) {
                 allPosts.items[i].extendedLikesInfo.newestLikes = allPosts.items[i].extendedLikesInfo.newestLikes
@@ -37,16 +38,11 @@ export class PostsService {
         return allPosts;
     }
     async getAllPostsForSpecificBlogger(
-        PageNumber = 1,
-        PageSize = 10,
+        model: ModelForGettingAllPosts,
         bloggerId: string,
         userId: string | undefined,
     ): Promise<PostDBClassPagination> {
-        const posts = await this.postsRepository.getAllPostsForSpecificBlogger(
-            Number(PageNumber),
-            Number(PageSize),
-            bloggerId,
-        );
+        const posts = await this.postsRepository.getAllPostsForSpecificBlogger(model, bloggerId);
         if (userId) {
             for (let i = 0; i < posts.items.length; i++) {
                 posts.items[i].extendedLikesInfo.newestLikes = posts.items[i].extendedLikesInfo.newestLikes
@@ -83,13 +79,8 @@ export class PostsService {
         }
         return post;
     }
-    async createPost(
-        title: string,
-        shortDescription: string,
-        content: string,
-        bloggerId: string,
-    ): Promise<NewPostClassResponseModel> {
-        const blogger = await this.bloggersRepository.getBloggerById(bloggerId);
+    async createPost(dto: InputModelForCreatingAndUpdatingPost): Promise<NewPostClassResponseModel> {
+        const blogger = await this.bloggersRepository.getBloggerById(dto.bloggerId);
         let bloggerName;
         blogger ? (bloggerName = blogger.name) : (bloggerName = "");
         const likesInfo: ExtendedLikesInfoClass = new ExtendedLikesInfoClass(0, 0, "None", []);
@@ -97,10 +88,10 @@ export class PostsService {
         const post: PostDBClass = new PostDBClass(
             new ObjectId(),
             Number(new Date()).toString(),
-            title,
-            shortDescription,
-            content,
-            bloggerId,
+            dto.title,
+            dto.shortDescription,
+            dto.content,
+            dto.bloggerId,
             bloggerName,
             new Date(),
             likesInfo,

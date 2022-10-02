@@ -1,12 +1,91 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { PostsService } from "./posts.service";
+import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts, PostsIdValidationModel } from "./dto/posts.dto";
+import { OnlyCheckRefreshTokenGuard } from "../auth/guards/only-check-refresh-token-guard.service";
+import { CurrentUser, CurrentUserId } from "../auth/auth.cutsom.decorators";
+import { NewPostClassResponseModel, PostDBClass, PostDBClassPagination } from "./entities/posts.entity";
+import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
+import { CommentsService } from "../comments/comments.service";
+import {
+    ModelForCreatingNewComment,
+    ModelForGettingAllComments,
+    ModelForLikeStatus,
+} from "../comments/dto/comments.dto";
+import { CommentDBClassPagination, NewCommentClassResponseModel } from "../comments/entities/comments.entity";
+import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
+import { CurrentUserModel } from "../auth/dto/auth.dto";
 
 @Controller("posts")
 export class PostsController {
-    constructor(protected postsService: PostsService) {}
+    constructor(protected postsService: PostsService, protected commentsService: CommentsService) {}
+    @UseGuards(OnlyCheckRefreshTokenGuard)
     @Get()
-    async getAllPosts(@Query() query: { PageNumber: number; PageSize: number }) {
-        // await this.postsService.getAllPosts(query.PageNumber, query.PageSize)
-        return await this.postsService.deletePost("5");
+    async getAllPosts(
+        @Query() dto: ModelForGettingAllPosts,
+        @CurrentUserId() userId: string,
+    ): Promise<PostDBClassPagination> {
+        return await this.postsService.getAllPosts(dto, userId);
+    }
+    @UseGuards(BasicAuthGuard)
+    @Post()
+    async createPost(@Body() dto: InputModelForCreatingAndUpdatingPost): Promise<NewPostClassResponseModel> {
+        return await this.postsService.createPost(dto);
+    }
+    @UseGuards(OnlyCheckRefreshTokenGuard)
+    @Get("/:id/comments")
+    async getAllCommentsForSpecificPost(
+        @Param() params: PostsIdValidationModel,
+        @Query() model: ModelForGettingAllComments,
+        @CurrentUserId() userId: string,
+    ): Promise<CommentDBClassPagination> {
+        return await this.commentsService.getAllCommentsForSpecificPost(model, params.id, userId);
+    }
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @Post("/:id/comments")
+    async createComment(
+        @Param() params: PostsIdValidationModel,
+        @Body() model: ModelForCreatingNewComment,
+        @CurrentUser() user: CurrentUserModel,
+    ): Promise<NewCommentClassResponseModel> {
+        return await this.commentsService.createComment(model, params.id, user);
+    }
+    @UseGuards(OnlyCheckRefreshTokenGuard)
+    @Get(":id")
+    async getPost(
+        @Param() params: PostsIdValidationModel,
+        @CurrentUserId() userId: string,
+    ): Promise<PostDBClass | null> {
+        return await this.postsService.getPostById(params.id, userId);
+    }
+    @UseGuards(BasicAuthGuard)
+    @Put(":id")
+    @HttpCode(204)
+    async updatePost(
+        @Param() params: PostsIdValidationModel,
+        @Body() body: InputModelForCreatingAndUpdatingPost,
+    ): Promise<boolean> {
+        return await this.postsService.updatePost(
+            params.id,
+            body.title,
+            body.shortDescription,
+            body.content,
+            body.bloggerId,
+        );
+    }
+    @UseGuards(BasicAuthGuard)
+    @Delete(":id")
+    @HttpCode(204)
+    async deletePost(@Param() params: PostsIdValidationModel): Promise<boolean> {
+        return await this.postsService.deletePost(params.id);
+    }
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @Put(":id/like-status")
+    @HttpCode(204)
+    async likeOperation(
+        @Param() params: PostsIdValidationModel,
+        @Body() body: ModelForLikeStatus,
+        @CurrentUser() user: CurrentUserModel,
+    ): Promise<boolean> {
+        return await this.postsService.likeOperation(params.id, user.userId, user.login, body.likeStatus);
     }
 }

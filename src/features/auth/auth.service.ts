@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
-import { UserAccountDBClass, UserAccountEmailClass } from "../users/users.model";
+import { UserAccountDBClass, UserAccountEmailClass } from "../users/entities/users.entity";
 import * as fns from "date-fns";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";

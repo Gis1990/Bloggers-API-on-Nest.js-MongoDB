@@ -18,7 +18,7 @@ export class InputModelForCode {
     code: string;
 }
 
-export class currentUserModel {
+export class CurrentUserModel {
     email: string;
     login: string;
     userId: string;

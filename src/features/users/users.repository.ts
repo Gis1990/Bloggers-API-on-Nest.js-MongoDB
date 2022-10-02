@@ -5,7 +5,7 @@ import {
     SentEmailsClass,
     UserAccountDBClass,
     UserDBClassPagination,
-} from "./users.model";
+} from "./entities/users.entity";
 import { v4 as uuidv4 } from "uuid";
 import { UsersAccountModelClass } from "../../db";
 import { ModelForGettingAllUsers } from "./dto/users.dto";

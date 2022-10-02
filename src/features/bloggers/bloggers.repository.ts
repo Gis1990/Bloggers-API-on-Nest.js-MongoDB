@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { BloggersModelClass } from "../../db";
-import { BloggerDBClass, BloggerDBClassPagination } from "./bloggers.model";
+import { BloggerClassResponseModel, BloggerDBClass, BloggerDBClassPagination } from "./entities/bloggers.entity";
 import {
-    inputModelForUpdatingBlogger,
-    inputModelForCreatingBlogger,
-    modelForGettingAllBloggers,
+    InputModelForUpdatingBlogger,
+    InputModelForCreatingBlogger,
+    ModelForGettingAllBloggers,
 } from "./dto/bloggers.dto";
 import { ObjectId } from "mongodb";
 
 @Injectable()
 export class BloggersRepository {
-    async getAllBloggers(dto: modelForGettingAllBloggers) {
+    async getAllBloggers(dto: ModelForGettingAllBloggers) {
         const { SearchNameTerm = null, PageNumber = 1, PageSize = 10 } = dto;
         const skips = PageSize * (PageNumber - 1);
         let cursor;
@@ -32,7 +32,7 @@ export class BloggersRepository {
     async getBloggerById(id: string): Promise<BloggerDBClass | null> {
         return BloggersModelClass.findOne({ id: id }, { _id: 0 });
     }
-    async createBlogger(dto: inputModelForCreatingBlogger): Promise<BloggerDBClass> {
+    async createBlogger(dto: InputModelForCreatingBlogger): Promise<BloggerClassResponseModel> {
         const blogger: BloggerDBClass = new BloggerDBClass(
             new ObjectId(),
             Number(new Date()).toString(),
@@ -40,9 +40,10 @@ export class BloggersRepository {
             dto.youtubeUrl,
         );
         await BloggersModelClass.insertMany([blogger]);
-        return blogger;
+        const { _id, ...newBloggerRest } = blogger;
+        return newBloggerRest;
     }
-    async updateBlogger(dto: inputModelForUpdatingBlogger): Promise<boolean> {
+    async updateBlogger(dto: InputModelForUpdatingBlogger): Promise<boolean> {
         const name = dto.name;
         const youtubeUrl = dto.youtubeUrl;
         const result = await BloggersModelClass.updateOne({ id: dto.id }, { $set: { name, youtubeUrl } });

@@ -6,7 +6,7 @@ import {
     UserAccountDBClass,
     UserAccountEmailClass,
     UserDBClassPagination,
-} from "./users.model";
+} from "./entities/users.entity";
 import { InputModelForCreatingNewUser, ModelForGettingAllUsers } from "./dto/users.dto";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import * as fns from "date-fns";

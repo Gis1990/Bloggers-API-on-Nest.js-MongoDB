@@ -1,18 +1,14 @@
 import mongoose from "mongoose";
-
-import * as dotenv from "dotenv";
-import { BloggerDBClass } from "./features/bloggers/bloggers.model";
-import { NewestLikesClass, PostDBClass } from "./features/posts/posts.model";
-import { CommentDBClass } from "./features/comments/comments.module";
+import { BloggerDBClass } from "./features/bloggers/entities/bloggers.entity";
+import { NewestLikesClass, PostDBClass } from "./features/posts/entities/posts.entity";
 import {
     LoginAttemptsClass,
     RefreshTokenClass,
     SentEmailsClass,
     UserAccountDBClass,
-} from "./features/users/users.model";
-import { GameQuestionClass, PlayerClass, QuizGameDBClass } from "./features/gamequiz/gamequiz.model";
-
-dotenv.config();
+} from "./features/users/entities/users.entity";
+import { GameQuestionClass, PlayerClass, QuizGameDBClass } from "./features/gamequiz/entities/gamequiz.entity";
+import { CommentDBClass } from "./features/comments/entities/comments.entity";
 
 const bloggersSchema = new mongoose.Schema<BloggerDBClass>(
     {

@@ -69,7 +69,7 @@ export class PostsController {
             body.title,
             body.shortDescription,
             body.content,
-            body.bloggerId,
+            body.blogId,
         );
     }
     @UseGuards(BasicAuthGuard)

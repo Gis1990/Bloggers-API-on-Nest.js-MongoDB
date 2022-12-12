@@ -1,4 +1,4 @@
-import { IsBloggersIdExist } from "../../bloggers/bloggers.custom.decorators";
+import { IsBlogsIdExist } from "../../blogs/blogs.custom.decorators";
 import { IsString, Length, IsNotEmpty } from "class-validator";
 import { IsPostIdExist } from "../posts.custom.decorators";
 
@@ -22,11 +22,11 @@ export class InputModelForCreatingAndUpdatingPost {
     content: string;
     @IsString()
     @IsNotEmpty()
-    @IsBloggersIdExist()
-    bloggerId: string;
+    @IsBlogsIdExist()
+    blogId: string;
 }
 
-export class InputModelForCreatingNewPostForSpecificBlogger {
+export class InputModelForCreatingNewPostForSpecificblog {
     @IsString()
     @Length(1, 30)
     @IsNotEmpty()

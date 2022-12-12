@@ -11,21 +11,25 @@ import { CurrentUserId, CurrentUser } from "./auth.cutsom.decorators";
 @Controller("auth")
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
+
     @Post("registration-confirmation")
     @HttpCode(204)
     async confirmRegistration(@Body() body: InputModelForCode): Promise<boolean> {
         return await this.authService.confirmEmail(body.code);
     }
+
     @Post("registration")
     @HttpCode(204)
-    async createBlogger(@Body() dto: InputModelForCreatingNewUser): Promise<boolean> {
+    async createBlog(@Body() dto: InputModelForCreatingNewUser): Promise<boolean> {
         return await this.authService.createUserWithConfirmationEmail(dto);
     }
+
     @Post("registration-email-resending")
     @HttpCode(204)
     async registrationEmailResending(@Body() dto: InputModelForResendingEmail): Promise<boolean> {
         return await this.authService.registrationEmailResending(dto);
     }
+
     @UseGuards(LocalAuthGuard)
     @Post("login")
     @HttpCode(200)
@@ -43,6 +47,7 @@ export class AuthController {
         });
         return new AccessTokenClass(accessToken);
     }
+
     @UseGuards(JwtRefreshTokenAuthGuard)
     @Post("refresh-token")
     @HttpCode(200)
@@ -60,6 +65,7 @@ export class AuthController {
         });
         return new AccessTokenClass(accessToken);
     }
+
     @UseGuards(JwtRefreshTokenAuthGuard)
     @Post("logout")
     @HttpCode(204)
@@ -72,6 +78,7 @@ export class AuthController {
         });
         return;
     }
+
     @UseGuards(JwtRefreshTokenAuthGuard)
     @Get("me")
     @HttpCode(200)

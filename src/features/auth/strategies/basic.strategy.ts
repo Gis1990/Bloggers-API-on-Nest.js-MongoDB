@@ -10,6 +10,7 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
             passReqToCallback: true,
         });
     }
+
     public validate = async (req, login, password): Promise<boolean> => {
         const loginFromConfig = this.configService.get<string>("login");
         const passwordFromConfig = this.configService.get<string>("password");

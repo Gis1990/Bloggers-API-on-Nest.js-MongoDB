@@ -12,17 +12,17 @@ export class PostsRepository {
         const totalCount = await PostsModelClass.count({});
         return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
     }
-    async getAllPostsForSpecificBlogger(
+    async getAllPostsForSpecificblog(
         dto: ModelForGettingAllPosts,
-        bloggerId: string,
+        blogId: string,
     ): Promise<PostDBClassPagination> {
         const { PageNumber = 1, PageSize = 10 } = dto;
         const skips = PageSize * (PageNumber - 1);
-        const cursor = await PostsModelClass.find({ bloggerId: bloggerId }, { _id: 0, usersLikesInfo: 0 })
+        const cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
             .skip(skips)
             .limit(PageSize)
             .lean();
-        const totalCount = await PostsModelClass.count({ bloggerId: bloggerId });
+        const totalCount = await PostsModelClass.count({ blogId: blogId });
         return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
     }
     async getPostById(id: string): Promise<PostDBClass | null> {
@@ -37,16 +37,16 @@ export class PostsRepository {
         title: string,
         shortDescription: string,
         content: string,
-        bloggerId: string,
+        blogId: string,
     ): Promise<boolean> {
         const post = await PostsModelClass.findOne({ id: id });
-        let bloggerName;
+        let blogName;
         if (post) {
-            bloggerName = post.bloggerName;
+            blogName = post.blogName;
         }
         const result = await PostsModelClass.updateOne(
             { id: id },
-            { $set: { title, shortDescription, content, bloggerId, bloggerName } },
+            { $set: { title, shortDescription, content, blogId, blogName } },
         );
         return result.matchedCount === 1;
     }

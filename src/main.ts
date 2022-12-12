@@ -1,11 +1,11 @@
 import "reflect-metadata";
 import { useContainer } from "class-validator";
+import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import mongoose from "mongoose";
 import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { HttpExceptionFilter } from "./exception.filter";
-import { ConfigService } from "@nestjs/config";
 import * as cookieParser from "cookie-parser";
 
 export async function runDb(mongoUri: string) {

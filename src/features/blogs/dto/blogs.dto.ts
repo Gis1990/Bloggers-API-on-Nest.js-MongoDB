@@ -1,9 +1,9 @@
 import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsMongoId } from "class-validator";
-import { IsBloggersIdExist } from "../bloggers.custom.decorators";
+import { IsBlogsIdExist } from "../blogs.custom.decorators";
 
 const pattern = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/;
 
-export class ModelForGettingAllBloggers {
+export class ModelForGettingAllBlogs {
     @IsString()
     SearchNameTerm: string;
     @IsNumber()
@@ -12,7 +12,7 @@ export class ModelForGettingAllBloggers {
     PageSize: number;
 }
 
-export class InputModelForCreatingBlogger {
+export class InputModelForCreatingBlog {
     @IsString()
     @Length(1, 15)
     @IsNotEmpty()
@@ -24,17 +24,17 @@ export class InputModelForCreatingBlogger {
     youtubeUrl: string;
 }
 
-export class BloggersIdValidationModel {
+export class BlogsIdValidationModel {
     @IsString()
     @IsNotEmpty()
-    @IsBloggersIdExist()
+    @IsBlogsIdExist()
     id: string;
 }
 
-export class InputModelForUpdatingBlogger {
+export class InputModelForUpdatingBlog {
     @IsString()
     @IsNotEmpty()
-    @IsBloggersIdExist()
+    @IsBlogsIdExist()
     @IsMongoId()
     id: string;
     @IsString()

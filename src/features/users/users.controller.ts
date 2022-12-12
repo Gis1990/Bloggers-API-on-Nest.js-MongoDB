@@ -16,7 +16,7 @@ export class UsersController {
     }
     @UseGuards(BasicAuthGuard)
     @Post()
-    async createBlogger(@Body() dto: InputModelForCreatingNewUser): Promise<NewUserClassResponseModel> {
+    async createblog(@Body() dto: InputModelForCreatingNewUser): Promise<NewUserClassResponseModel> {
         return await this.usersService.createUserWithoutConfirmationEmail(dto);
     }
     @UseGuards(BasicAuthGuard)

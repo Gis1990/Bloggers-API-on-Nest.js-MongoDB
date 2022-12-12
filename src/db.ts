@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { BloggerDBClass } from "./features/bloggers/entities/bloggers.entity";
+import { BlogDBClass } from "./features/blogs/entities/blogs.entity";
 import { NewestLikesClass, PostDBClass } from "./features/posts/entities/posts.entity";
 import {
     LoginAttemptsClass,
@@ -10,7 +10,7 @@ import {
 import { GameQuestionClass, PlayerClass, QuizGameDBClass } from "./features/gamequiz/entities/gamequiz.entity";
 import { CommentDBClass } from "./features/comments/entities/comments.entity";
 
-const bloggersSchema = new mongoose.Schema<BloggerDBClass>(
+const blogsSchema = new mongoose.Schema<BlogDBClass>(
     {
         id: String,
         name: String,
@@ -36,8 +36,8 @@ const postsSchema = new mongoose.Schema<PostDBClass>(
         title: String,
         shortDescription: String,
         content: String,
-        bloggerId: String,
-        bloggerName: String,
+        blogId: String,
+        blogName: String,
         addedAt: Date,
         extendedLikesInfo: {
             likesCount: Number,
@@ -153,10 +153,11 @@ const quizSchema = new mongoose.Schema<QuizGameDBClass>({
     status: String,
     pairCreatedDate: Date,
     startGameDate: Date,
+
     finishGameDate: Date,
 });
 
-export const BloggersModelClass = mongoose.model("bloggers", bloggersSchema);
+export const BlogsModelClass = mongoose.model("blogs", blogsSchema);
 export const PostsModelClass = mongoose.model("posts", postsSchema);
 export const UsersAccountModelClass = mongoose.model("users", usersAccountSchema);
 export const CommentsModelClass = mongoose.model("comments", commentsSchema);

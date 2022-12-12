@@ -22,7 +22,7 @@ export class CommentsController {
     @UseGuards(JwtAccessTokenAuthGuard)
     @Delete(":id")
     @HttpCode(204)
-    async deleteBlogger(@Param() params: CommentsIdValidationModel, @CurrentUserId() userId: string): Promise<boolean> {
+    async deleteblog(@Param() params: CommentsIdValidationModel, @CurrentUserId() userId: string): Promise<boolean> {
         return await this.commentsService.deleteCommentById(params.id, userId);
     }
     @UseGuards(JwtAccessTokenAuthGuard)

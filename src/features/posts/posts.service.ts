@@ -1,6 +1,6 @@
 import { PostsRepository } from "./posts.repository";
 import { ObjectId } from "mongodb";
-import { BloggersRepository } from "../bloggers/bloggers.repository";
+import { BlogsRepository } from "../blogs/blogs.repository";
 import { Injectable } from "@nestjs/common";
 import {
     ExtendedLikesInfoClass,
@@ -13,7 +13,7 @@ import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts } from ".
 
 @Injectable()
 export class PostsService {
-    constructor(protected bloggersRepository: BloggersRepository, protected postsRepository: PostsRepository) {}
+    constructor(protected blogsRepository: BlogsRepository, protected postsRepository: PostsRepository) {}
     async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostDBClassPagination> {
         const allPosts = await this.postsRepository.getAllPosts(dto);
         if (userId) {
@@ -37,12 +37,12 @@ export class PostsService {
         }
         return allPosts;
     }
-    async getAllPostsForSpecificBlogger(
+    async getAllPostsForSpecificBlog(
         model: ModelForGettingAllPosts,
-        bloggerId: string,
+        blogId: string,
         userId: string | undefined,
     ): Promise<PostDBClassPagination> {
-        const posts = await this.postsRepository.getAllPostsForSpecificBlogger(model, bloggerId);
+        const posts = await this.postsRepository.getAllPostsForSpecificblog(model, blogId);
         if (userId) {
             for (let i = 0; i < posts.items.length; i++) {
                 posts.items[i].extendedLikesInfo.newestLikes = posts.items[i].extendedLikesInfo.newestLikes
@@ -80,9 +80,9 @@ export class PostsService {
         return post;
     }
     async createPost(dto: InputModelForCreatingAndUpdatingPost): Promise<NewPostClassResponseModel> {
-        const blogger = await this.bloggersRepository.getBloggerById(dto.bloggerId);
-        let bloggerName;
-        blogger ? (bloggerName = blogger.name) : (bloggerName = "");
+        const blog = await this.blogsRepository.getBlogById(dto.blogId);
+        let blogName;
+        blog ? (blogName = blog.name) : (blogName = "");
         const likesInfo: ExtendedLikesInfoClass = new ExtendedLikesInfoClass(0, 0, "None", []);
         const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass([], []);
         const post: PostDBClass = new PostDBClass(
@@ -91,20 +91,20 @@ export class PostsService {
             dto.title,
             dto.shortDescription,
             dto.content,
-            dto.bloggerId,
-            bloggerName,
+            dto.blogId,
+            blogName,
             new Date(),
             likesInfo,
             usersLikesInfo,
         );
         const newPost = await this.postsRepository.createPost(post);
-        return (({ id, title, shortDescription, content, bloggerId, bloggerName, addedAt, extendedLikesInfo }) => ({
+        return (({ id, title, shortDescription, content, blogId, blogName, addedAt, extendedLikesInfo }) => ({
             id,
             title,
             shortDescription,
             content,
-            bloggerId,
-            bloggerName,
+            blogId,
+            blogName,
             addedAt,
             extendedLikesInfo,
         }))(newPost);
@@ -114,9 +114,9 @@ export class PostsService {
         title: string,
         shortDescription: string,
         content: string,
-        bloggerId: string,
+        blogId: string,
     ): Promise<boolean> {
-        return this.postsRepository.updatePost(id, title, shortDescription, content, bloggerId);
+        return this.postsRepository.updatePost(id, title, shortDescription, content, blogId);
     }
     async deletePost(id: string): Promise<boolean> {
         return this.postsRepository.deletePostById(id);

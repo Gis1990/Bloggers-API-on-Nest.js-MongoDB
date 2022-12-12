@@ -2,23 +2,23 @@ import { forwardRef, Module } from "@nestjs/common";
 import { PostsController } from "./posts.controller";
 import { PostsService } from "./posts.service";
 import { PostsRepository } from "./posts.repository";
-import { BloggersModule } from "../bloggers/bloggers.module";
-import { IsBloggersIdExistConstraint } from "../bloggers/bloggers.custom.decorators";
+import { BlogsModule } from "../blogs/blogs.module";
+import { IsBlogsIdExistConstraint } from "../blogs/blogs.custom.decorators";
 import { IsPostIdExistExistConstraint } from "./posts.custom.decorators";
-import { BloggersService } from "../bloggers/bloggers.service";
+import { BlogsService } from "../blogs/blogs.service";
 import { CommentsService } from "../comments/comments.service";
 import { CommentsRepository } from "../comments/comments.repository";
 
 @Module({
-    imports: [forwardRef(() => BloggersModule)],
+    imports: [forwardRef(() => BlogsModule)],
     controllers: [PostsController],
     providers: [
         PostsService,
         PostsRepository,
-        BloggersService,
+        BlogsService,
         CommentsService,
         CommentsRepository,
-        IsBloggersIdExistConstraint,
+        IsBlogsIdExistConstraint,
         IsPostIdExistExistConstraint,
     ],
     exports: [PostsService],

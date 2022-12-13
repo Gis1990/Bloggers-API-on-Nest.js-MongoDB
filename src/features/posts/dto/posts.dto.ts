@@ -1,10 +1,16 @@
 import { IsBlogsIdExist } from "../../blogs/blogs.custom.decorators";
-import { IsString, Length, IsNotEmpty } from "class-validator";
+import { IsString, Length, IsNotEmpty, IsNumber } from "class-validator";
 import { IsPostIdExist } from "../posts.custom.decorators";
 
 export class ModelForGettingAllPosts {
-    PageNumber: number;
-    PageSize: number;
+    @IsNumber()
+    pageNumber: number;
+    @IsNumber()
+    pageSize: number;
+    @IsString()
+    sortBy: string;
+    @IsString()
+    sortDirection: string;
 }
 
 export class InputModelForCreatingAndUpdatingPost {
@@ -26,7 +32,7 @@ export class InputModelForCreatingAndUpdatingPost {
     blogId: string;
 }
 
-export class InputModelForCreatingNewPostForSpecificblog {
+export class InputModelForCreatingNewPostForSpecificBlog {
     @IsString()
     @Length(1, 30)
     @IsNotEmpty()

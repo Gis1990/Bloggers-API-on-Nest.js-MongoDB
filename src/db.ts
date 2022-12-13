@@ -3,18 +3,19 @@ import { BlogDBClass } from "./features/blogs/entities/blogs.entity";
 import { NewestLikesClass, PostDBClass } from "./features/posts/entities/posts.entity";
 import {
     LoginAttemptsClass,
-    RefreshTokenClass,
     SentEmailsClass,
     UserAccountDBClass,
+    userDevicesDataClass,
 } from "./features/users/entities/users.entity";
-import { GameQuestionClass, PlayerClass, QuizGameDBClass } from "./features/gamequiz/entities/gamequiz.entity";
 import { CommentDBClass } from "./features/comments/entities/comments.entity";
 
 const blogsSchema = new mongoose.Schema<BlogDBClass>(
     {
         id: String,
         name: String,
-        youtubeUrl: String,
+        description: String,
+        websiteUrl: String,
+        createdAt: Date,
     },
     {
         versionKey: false,
@@ -68,35 +69,12 @@ const sentEmailsSchema = new mongoose.Schema<SentEmailsClass>(
     { _id: false },
 );
 
-const blacklistedRefreshTokensSchema = new mongoose.Schema<RefreshTokenClass>(
+const userDevicesDataSchema = new mongoose.Schema<userDevicesDataClass>(
     {
-        token: String,
-    },
-    { _id: false },
-);
-
-const playerSchema = new mongoose.Schema<PlayerClass>(
-    {
-        answers: [
-            {
-                questionId: String,
-                answerStatus: String,
-                addedAt: Date,
-            },
-        ],
-        user: {
-            id: String,
-            login: String,
-        },
-        score: Number,
-    },
-    { _id: false },
-);
-
-const gameQuestionSchema = new mongoose.Schema<GameQuestionClass>(
-    {
-        id: String,
-        body: String,
+        ip: String,
+        lastActiveDate: Date,
+        deviceId: String,
+        title: String,
     },
     { _id: false },
 );
@@ -108,6 +86,10 @@ const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>(
         email: String,
         passwordHash: String,
         createdAt: String,
+        emailRecoveryCode: {
+            recoveryCode: String,
+            expirationDate: Date,
+        },
         loginAttempts: [loginAttemptsSchema],
         emailConfirmation: {
             isConfirmed: Boolean,
@@ -115,7 +97,7 @@ const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>(
             expirationDate: Date,
             sentEmails: [sentEmailsSchema],
         },
-        blacklistedRefreshTokens: [blacklistedRefreshTokensSchema],
+        userDevicesData: [userDevicesDataSchema],
     },
     {
         versionKey: false,
@@ -145,20 +127,7 @@ const commentsSchema = new mongoose.Schema<CommentDBClass>(
     },
 );
 
-const quizSchema = new mongoose.Schema<QuizGameDBClass>({
-    id: String,
-    firstPlayer: playerSchema,
-    secondPlayer: playerSchema,
-    questions: [gameQuestionSchema],
-    status: String,
-    pairCreatedDate: Date,
-    startGameDate: Date,
-
-    finishGameDate: Date,
-});
-
 export const BlogsModelClass = mongoose.model("blogs", blogsSchema);
 export const PostsModelClass = mongoose.model("posts", postsSchema);
 export const UsersAccountModelClass = mongoose.model("users", usersAccountSchema);
 export const CommentsModelClass = mongoose.model("comments", commentsSchema);
-export const QuizModelClass = mongoose.model("quiz", quizSchema);

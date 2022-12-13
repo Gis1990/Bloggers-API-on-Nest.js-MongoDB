@@ -7,6 +7,7 @@ import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 @Controller("users")
 export class UsersController {
     constructor(protected usersService: UsersService) {}
+
     @Get()
     async getAllUsers(
         @Query()
@@ -14,11 +15,13 @@ export class UsersController {
     ): Promise<UserDBClassPagination> {
         return await this.usersService.getAllUsers(dto);
     }
+
     @UseGuards(BasicAuthGuard)
     @Post()
-    async createblog(@Body() dto: InputModelForCreatingNewUser): Promise<NewUserClassResponseModel> {
+    async createBlog(@Body() dto: InputModelForCreatingNewUser): Promise<NewUserClassResponseModel> {
         return await this.usersService.createUserWithoutConfirmationEmail(dto);
     }
+
     @UseGuards(BasicAuthGuard)
     @Delete(":id")
     @HttpCode(204)

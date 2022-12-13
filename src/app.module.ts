@@ -6,10 +6,10 @@ import { BlogsModule } from "./features/blogs/blogs.module";
 import { PostsModule } from "./features/posts/posts.module";
 import { UsersModule } from "./features/users/users.module";
 import { AuthModule } from "./features/auth/auth.module";
-import { GamequizModule } from "./features/gamequiz/gamequiz.module";
 import { ConfigModule } from "@nestjs/config";
 import { CommentsModule } from "./features/comments/comments.module";
 import { TestingModule } from "./features/testing(delete all)/testing.module";
+import { SecurityModule } from "./features/security/security.module";
 
 @Module({
     imports: [
@@ -18,9 +18,9 @@ import { TestingModule } from "./features/testing(delete all)/testing.module";
         PostsModule,
         UsersModule,
         AuthModule,
-        GamequizModule,
         CommentsModule,
         TestingModule,
+        SecurityModule,
     ],
     controllers: [AppController],
     providers: [AppService],

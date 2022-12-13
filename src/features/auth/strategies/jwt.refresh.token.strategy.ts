@@ -21,11 +21,8 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-ref
     }
 
     async validate(request: Request, payload: any) {
-        const oldRefreshToken = request.cookies?.refreshToken;
         const user = await this.usersService.findUserById(payload.userId);
-        const blacklistedToken = await this.usersService.findRefreshTokenInBlackList(payload.userId, oldRefreshToken);
-        await this.usersService.addRefreshTokenIntoBlackList(user.id, oldRefreshToken);
-        if (user && !blacklistedToken) {
+        if (user) {
             return user;
         } else {
             throw new UnauthorizedException();

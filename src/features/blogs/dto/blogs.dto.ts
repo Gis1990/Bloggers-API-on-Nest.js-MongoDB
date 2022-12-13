@@ -1,18 +1,26 @@
-import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsMongoId } from "class-validator";
+import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsMongoId, IsOptional } from "class-validator";
 import { IsBlogsIdExist } from "../blogs.custom.decorators";
+import { Type } from "class-transformer";
 
 const pattern = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/;
 
 export class ModelForGettingAllBlogs {
     @IsString()
+    @IsOptional()
     searchNameTerm: string;
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     pageNumber: number;
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     pageSize: number;
     @IsString()
+    @IsOptional()
     sortBy: string;
     @IsString()
+    @IsOptional()
     sortDirection: string;
 }
 

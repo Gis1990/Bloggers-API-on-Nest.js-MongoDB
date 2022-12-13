@@ -1,5 +1,5 @@
 {
-  "name": "bloggers_api_nest.js_framework",
+  "name": "blogs-api-nest.js.framework",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -48,7 +48,7 @@
     "uuidv4": "^6.2.13"
   },
   "engines": {
-    "node": "16.17.1"
+    "node": "16.18.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

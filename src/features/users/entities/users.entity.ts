@@ -18,9 +18,23 @@ export class UserAccountDBClass {
         public email: string,
         public passwordHash: string,
         public createdAt: string,
+        public emailRecoveryCode: UserRecoveryCodeClass,
         public loginAttempts: LoginAttemptsClass[],
         public emailConfirmation: UserAccountEmailClass,
-        public blacklistedRefreshTokens: RefreshTokenClass[],
+        public userDevicesData: userDevicesDataClass[],
+    ) {}
+}
+
+export class UserRecoveryCodeClass {
+    constructor(public recoveryCode: string, public expirationDate: Date) {}
+}
+
+export class userDevicesDataClass {
+    constructor(
+        public ip: string,
+        public lastActiveDate: Date,
+        public deviceId: string,
+        public title: string | undefined,
     ) {}
 }
 
@@ -34,7 +48,7 @@ export class UserAccountEmailClass {
 }
 
 export class NewUserClassResponseModel {
-    constructor(public id: string, public login: string) {}
+    constructor(public id: string, public login: string, public email: string, public createdAt: string) {}
 }
 
 export class LoginAttemptsClass {

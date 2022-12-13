@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import {
     LoginAttemptsClass,
-    RefreshTokenClass,
     SentEmailsClass,
     UserAccountDBClass,
     UserDBClassPagination,
+    userDevicesDataClass,
+    UserRecoveryCodeClass,
 } from "./entities/users.entity";
 import { v4 as uuidv4 } from "uuid";
 import { UsersAccountModelClass } from "../../db";
@@ -22,6 +23,7 @@ export class UsersRepository {
         const totalCount = await UsersAccountModelClass.count({});
         return new UserDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
     }
+
     async findUserById(id: string): Promise<UserAccountDBClass | null> {
         const user = await UsersAccountModelClass.findOne(
             { id: id },
@@ -40,15 +42,23 @@ export class UsersRepository {
             return null;
         }
     }
+
     async findByLogin(login: string): Promise<UserAccountDBClass | null> {
         return UsersAccountModelClass.findOne({ login: login });
     }
+
     async findByEmail(email: string): Promise<UserAccountDBClass | null> {
         return UsersAccountModelClass.findOne({ email: email });
     }
+
+    async findByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDBClass | null> {
+        return UsersAccountModelClass.findOne({ $or: [{ email: loginOrEmail }, { login: loginOrEmail }] });
+    }
+
     async findUserByConfirmationCode(emailConfirmationCode: string): Promise<UserAccountDBClass | null> {
         return UsersAccountModelClass.findOne({ "emailConfirmation.confirmationCode": emailConfirmationCode });
     }
+
     async updateConfirmation(id: string): Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne(
             { id: id },
@@ -56,6 +66,7 @@ export class UsersRepository {
         );
         return result.modifiedCount === 1;
     }
+
     async updateConfirmationCode(id: string): Promise<boolean> {
         const newConfirmationCode = uuidv4();
         const result = await UsersAccountModelClass.updateOne(
@@ -64,11 +75,63 @@ export class UsersRepository {
         );
         return result.modifiedCount === 1;
     }
+
     async addLoginAttempt(id: string, ip: string): Promise<boolean> {
         const loginAttempt: LoginAttemptsClass = new LoginAttemptsClass(new Date(), ip);
         const result = await UsersAccountModelClass.updateOne({ id: id }, { $push: { loginAttempts: loginAttempt } });
         return result.modifiedCount === 1;
     }
+
+    async addPasswordRecoveryCode(id: string, passwordRecoveryData: UserRecoveryCodeClass): Promise<boolean> {
+        const result = await UsersAccountModelClass.updateOne(
+            { id: id },
+            { $set: { emailRecoveryCode: passwordRecoveryData } },
+        );
+        return result.modifiedCount === 1;
+    }
+
+    async updatePasswordHash(id: string, passwordHash: string): Promise<boolean> {
+        const result = await UsersAccountModelClass.updateOne({ id: id }, { $set: { passwordHash: passwordHash } });
+        return result.modifiedCount === 1;
+    }
+
+    async addUserDevicesData(id: string, userDevicesData: userDevicesDataClass): Promise<boolean> {
+        const result = await UsersAccountModelClass.updateOne(
+            { id: id },
+            { $push: { userDevicesData: userDevicesData } },
+        );
+        return result.modifiedCount === 1;
+    }
+
+    async updateLastActiveDate(
+        id: string,
+        userDevicesData: userDevicesDataClass,
+        newLastActiveDate: string,
+    ): Promise<boolean> {
+        const result = await UsersAccountModelClass.updateOne(
+            { "userDevicesData.deviceId": userDevicesData.deviceId },
+            { $set: { "userDevicesData.$.lastActiveDate": newLastActiveDate } },
+        );
+        return result.modifiedCount === 1;
+    }
+
+    async terminateAllDevices(id: string, userDevicesData: userDevicesDataClass): Promise<boolean> {
+        await UsersAccountModelClass.updateOne({ id: id }, { $set: { userDevicesData: [] } });
+        const result = await UsersAccountModelClass.updateOne(
+            { id: id },
+            { $push: { userDevicesData: userDevicesData } },
+        );
+        return result.modifiedCount === 1;
+    }
+
+    async terminateSpecificDevice(id: string, deviceId: string): Promise<boolean> {
+        const result = await UsersAccountModelClass.updateOne(
+            { id: id },
+            { $pull: { userDevicesData: { deviceId: deviceId } } },
+        );
+        return result.modifiedCount === 1;
+    }
+
     async addEmailLog(email: string): Promise<boolean> {
         const emailData: SentEmailsClass = new SentEmailsClass(Number(new Date()).toString());
         const result = await UsersAccountModelClass.updateOne(
@@ -77,25 +140,12 @@ export class UsersRepository {
         );
         return result.modifiedCount === 1;
     }
-    async addRefreshTokenIntoBlackList(id: string, token: string): Promise<boolean> {
-        const tokenForBlackList: RefreshTokenClass = new RefreshTokenClass(token);
-        const result = await UsersAccountModelClass.updateOne(
-            { id: id },
-            { $push: { blacklistedRefreshTokens: tokenForBlackList } },
-        );
-        return result.modifiedCount === 1;
-    }
-    async findRefreshTokenInBlackList(id: string, token: string) {
-        const blacklistedToken = UsersAccountModelClass.findOne(
-            { id: id, blacklistedRefreshTokens: { $in: { token } } },
-            { _id: 1 },
-        ).lean();
-        return !blacklistedToken;
-    }
+
     async createUser(newUser: UserAccountDBClass): Promise<UserAccountDBClass> {
         await UsersAccountModelClass.insertMany([newUser]);
         return newUser;
     }
+
     async deleteUserById(id: string): Promise<boolean> {
         const result = await UsersAccountModelClass.deleteOne({ id: id });
         return result.deletedCount === 1;

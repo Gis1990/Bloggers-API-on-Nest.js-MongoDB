@@ -7,6 +7,7 @@ import { Response } from "express";
 import { AccessTokenClass } from "./entities/auth.entity";
 import { JwtRefreshTokenAuthGuard } from "./guards/jwtRefreshToken-auth.guard";
 import { CurrentUserId, CurrentUser } from "./auth.cutsom.decorators";
+import { userDevicesDataClass } from "../users/entities/users.entity";
 
 @Controller("auth")
 export class AuthController {
@@ -35,9 +36,10 @@ export class AuthController {
     @HttpCode(200)
     async login(
         @CurrentUserId() userId: string,
+        userDevicesData: userDevicesDataClass,
         @Res({ passthrough: true }) response: Response,
     ): Promise<AccessTokenClass> {
-        const result = await this.authService.refreshAllTokens(userId);
+        const result = await this.authService.refreshAllTokens(userId, userDevicesData);
         const accessToken = result[0];
         const refreshToken = result[1];
         response.cookie("refreshToken", refreshToken, {
@@ -53,9 +55,10 @@ export class AuthController {
     @HttpCode(200)
     async refreshAllTokens(
         @CurrentUserId() userId: string,
+        userDevicesData: userDevicesDataClass,
         @Res({ passthrough: true }) response: Response,
     ): Promise<AccessTokenClass> {
-        const result = await this.authService.refreshAllTokens(userId);
+        const result = await this.authService.refreshAllTokens(userId, userDevicesData);
         const accessToken = result[0];
         const refreshToken = result[1];
         response.cookie("refreshToken", refreshToken, {
@@ -69,8 +72,12 @@ export class AuthController {
     @UseGuards(JwtRefreshTokenAuthGuard)
     @Post("logout")
     @HttpCode(204)
-    async logout(@CurrentUserId() userId: string, @Res({ passthrough: true }) response: Response): Promise<void> {
-        const newRefreshToken = await this.authService.refreshOnlyRefreshToken(userId);
+    async logout(
+        @CurrentUserId() userId: string,
+        userDevicesData: userDevicesDataClass,
+        @Res({ passthrough: true }) response: Response,
+    ): Promise<void> {
+        const newRefreshToken = await this.authService.refreshOnlyRefreshToken(userId, userDevicesData);
         response.cookie("refreshToken", newRefreshToken, {
             httpOnly: true,
             secure: true,

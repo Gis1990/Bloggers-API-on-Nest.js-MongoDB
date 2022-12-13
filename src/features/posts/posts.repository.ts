@@ -6,32 +6,63 @@ import { ModelForGettingAllPosts } from "./dto/posts.dto";
 @Injectable()
 export class PostsRepository {
     async getAllPosts(dto: ModelForGettingAllPosts): Promise<PostDBClassPagination> {
-        const { PageNumber = 1, PageSize = 10 } = dto;
-        const skips = PageSize * (PageNumber - 1);
-        const cursor = await PostsModelClass.find({}, { _id: 0, usersLikesInfo: 0 }).skip(skips).limit(PageSize).lean();
+        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
+        const skips = pageSize * (pageNumber - 1);
         const totalCount = await PostsModelClass.count({});
-        return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
-    }
-    async getAllPostsForSpecificblog(
-        dto: ModelForGettingAllPosts,
-        blogId: string,
-    ): Promise<PostDBClassPagination> {
-        const { PageNumber = 1, PageSize = 10 } = dto;
-        const skips = PageSize * (PageNumber - 1);
-        const cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
+        const sortObj: any = {};
+        if (sortDirection === "desc") {
+            sortObj[sortBy] = -1;
+        } else {
+            sortObj[sortBy] = 1;
+        }
+        const cursor = await PostsModelClass.find(
+            {},
+            {
+                _id: 0,
+                usersLikesInfo: 0,
+            },
+        )
+            .sort(sortObj)
             .skip(skips)
-            .limit(PageSize)
+            .limit(pageSize)
             .lean();
-        const totalCount = await PostsModelClass.count({ blogId: blogId });
-        return new PostDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
+        return new PostDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
+
+    async getAllPostsForSpecificblog(dto: ModelForGettingAllPosts, blogId: string): Promise<PostDBClassPagination> {
+        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
+        const skips = pageSize * (pageNumber - 1);
+        const sortObj: any = {};
+        let cursor;
+        const totalCount = await PostsModelClass.count({ blogId: blogId });
+        if (sortDirection === "desc") {
+            sortObj[sortBy] = -1;
+            cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
+                .sort(sortObj)
+                .skip(skips)
+                .limit(pageSize)
+                .lean();
+        } else {
+            sortObj[sortBy] = 1;
+            cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
+                .sort(sortObj)
+                .skip(skips)
+                .limit(pageSize)
+                .lean();
+        }
+
+        return new PostDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
+    }
+
     async getPostById(id: string): Promise<PostDBClass | null> {
         return PostsModelClass.findOne({ id: id }, { _id: 0, usersLikesInfo: 0 });
     }
+
     async createPost(post: PostDBClass): Promise<PostDBClass> {
         await PostsModelClass.insertMany([post]);
         return post;
     }
+
     async updatePost(
         id: string,
         title: string,
@@ -50,10 +81,12 @@ export class PostsRepository {
         );
         return result.matchedCount === 1;
     }
+
     async deletePostById(id: string): Promise<boolean> {
         const result = await PostsModelClass.deleteOne({ id: id });
         return result.deletedCount === 1;
     }
+
     async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
         const post = await PostsModelClass.findOne({ id: id });
         if (!post) {
@@ -180,6 +213,7 @@ export class PostsRepository {
         }
         return true;
     }
+
     async returnUsersLikeStatus(id: string, userId: string): Promise<string> {
         const post = await PostsModelClass.findOne({ id: id });
         const findUsersLikes = post?.usersLikesInfo.usersWhoPutLike.filter((user) => user === userId);

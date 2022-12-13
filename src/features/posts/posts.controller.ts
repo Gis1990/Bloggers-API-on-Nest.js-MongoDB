@@ -18,7 +18,8 @@ import { CurrentUserModel } from "../auth/dto/auth.dto";
 @Controller("posts")
 export class PostsController {
     constructor(protected postsService: PostsService, protected commentsService: CommentsService) {}
-    @UseGuards(OnlyCheckRefreshTokenGuard)
+
+    // @UseGuards(OnlyCheckRefreshTokenGuard)
     @Get()
     async getAllPosts(
         @Query() dto: ModelForGettingAllPosts,
@@ -26,12 +27,14 @@ export class PostsController {
     ): Promise<PostDBClassPagination> {
         return await this.postsService.getAllPosts(dto, userId);
     }
-    @UseGuards(BasicAuthGuard)
+
+    // @UseGuards(BasicAuthGuard)
     @Post()
     async createPost(@Body() dto: InputModelForCreatingAndUpdatingPost): Promise<NewPostClassResponseModel> {
         return await this.postsService.createPost(dto);
     }
-    @UseGuards(OnlyCheckRefreshTokenGuard)
+
+    // @UseGuards(OnlyCheckRefreshTokenGuard)
     @Get("/:id/comments")
     async getAllCommentsForSpecificPost(
         @Param() params: PostsIdValidationModel,
@@ -40,7 +43,8 @@ export class PostsController {
     ): Promise<CommentDBClassPagination> {
         return await this.commentsService.getAllCommentsForSpecificPost(model, params.id, userId);
     }
-    @UseGuards(JwtAccessTokenAuthGuard)
+
+    // @UseGuards(JwtAccessTokenAuthGuard)
     @Post("/:id/comments")
     async createComment(
         @Param() params: PostsIdValidationModel,
@@ -49,7 +53,8 @@ export class PostsController {
     ): Promise<NewCommentClassResponseModel> {
         return await this.commentsService.createComment(model, params.id, user);
     }
-    @UseGuards(OnlyCheckRefreshTokenGuard)
+
+    // @UseGuards(OnlyCheckRefreshTokenGuard)
     @Get(":id")
     async getPost(
         @Param() params: PostsIdValidationModel,
@@ -57,7 +62,8 @@ export class PostsController {
     ): Promise<PostDBClass | null> {
         return await this.postsService.getPostById(params.id, userId);
     }
-    @UseGuards(BasicAuthGuard)
+
+    // @UseGuards(BasicAuthGuard)
     @Put(":id")
     @HttpCode(204)
     async updatePost(
@@ -72,13 +78,15 @@ export class PostsController {
             body.blogId,
         );
     }
-    @UseGuards(BasicAuthGuard)
+
+    // @UseGuards(BasicAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deletePost(@Param() params: PostsIdValidationModel): Promise<boolean> {
         return await this.postsService.deletePost(params.id);
     }
-    @UseGuards(JwtAccessTokenAuthGuard)
+
+    // @UseGuards(JwtAccessTokenAuthGuard)
     @Put(":id/like-status")
     @HttpCode(204)
     async likeOperation(

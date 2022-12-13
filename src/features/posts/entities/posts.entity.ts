@@ -9,7 +9,7 @@ export class PostDBClass {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public addedAt: Date,
+        public createdAt: Date,
         public extendedLikesInfo: ExtendedLikesInfoClass,
         public usersLikesInfo: UsersLikesInfoClass,
     ) {}
@@ -33,7 +33,7 @@ export class NewPostClassResponseModel {
         public content: string,
         public blogId: string,
         public blogName: string,
-        public addedAt: Date,
+        public createdAt: Date,
         public extendedLikesInfo: ExtendedLikesInfoClass,
     ) {}
 }

@@ -14,6 +14,7 @@ import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts } from ".
 @Injectable()
 export class PostsService {
     constructor(protected blogsRepository: BlogsRepository, protected postsRepository: PostsRepository) {}
+
     async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostDBClassPagination> {
         const allPosts = await this.postsRepository.getAllPosts(dto);
         if (userId) {
@@ -37,6 +38,7 @@ export class PostsService {
         }
         return allPosts;
     }
+
     async getAllPostsForSpecificBlog(
         model: ModelForGettingAllPosts,
         blogId: string,
@@ -64,6 +66,7 @@ export class PostsService {
         }
         return posts;
     }
+
     async getPostById(id: string, userId: string | undefined): Promise<PostDBClass | null> {
         const post = await this.postsRepository.getPostById(id);
         if (!post) {
@@ -79,6 +82,7 @@ export class PostsService {
         }
         return post;
     }
+
     async createPost(dto: InputModelForCreatingAndUpdatingPost): Promise<NewPostClassResponseModel> {
         const blog = await this.blogsRepository.getBlogById(dto.blogId);
         let blogName;
@@ -98,17 +102,18 @@ export class PostsService {
             usersLikesInfo,
         );
         const newPost = await this.postsRepository.createPost(post);
-        return (({ id, title, shortDescription, content, blogId, blogName, addedAt, extendedLikesInfo }) => ({
+        return (({ id, title, shortDescription, content, blogId, blogName, createdAt, extendedLikesInfo }) => ({
             id,
             title,
             shortDescription,
             content,
             blogId,
             blogName,
-            addedAt,
+            createdAt,
             extendedLikesInfo,
         }))(newPost);
     }
+
     async updatePost(
         id: string,
         title: string,
@@ -118,9 +123,11 @@ export class PostsService {
     ): Promise<boolean> {
         return this.postsRepository.updatePost(id, title, shortDescription, content, blogId);
     }
+
     async deletePost(id: string): Promise<boolean> {
         return this.postsRepository.deletePostById(id);
     }
+
     async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
         return this.postsRepository.likeOperation(id, userId, login, likeStatus);
     }

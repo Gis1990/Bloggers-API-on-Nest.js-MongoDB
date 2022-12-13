@@ -1,15 +1,22 @@
 import { IsBlogsIdExist } from "../../blogs/blogs.custom.decorators";
-import { IsString, Length, IsNotEmpty, IsNumber } from "class-validator";
+import { IsString, Length, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsPostIdExist } from "../posts.custom.decorators";
+import { Type } from "class-transformer";
 
 export class ModelForGettingAllPosts {
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     pageNumber: number;
     @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
     pageSize: number;
     @IsString()
+    @IsOptional()
     sortBy: string;
     @IsString()
+    @IsOptional()
     sortDirection: string;
 }
 

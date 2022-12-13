@@ -45,6 +45,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "mongodb": "^4.5.0",
+    "mongoose": "^6.4.4",
     "uuidv4": "^6.2.13"
   },
   "engines": {

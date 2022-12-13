@@ -16,13 +16,13 @@ export class UsersController {
         return await this.usersService.getAllUsers(dto);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Post()
     async createBlog(@Body() dto: InputModelForCreatingNewUser): Promise<NewUserClassResponseModel> {
         return await this.usersService.createUserWithoutConfirmationEmail(dto);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deleteUser(@Param() param: UsersIdValidationModel): Promise<boolean> {

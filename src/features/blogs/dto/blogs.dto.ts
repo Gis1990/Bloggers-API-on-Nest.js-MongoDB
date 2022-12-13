@@ -5,11 +5,15 @@ const pattern = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*
 
 export class ModelForGettingAllBlogs {
     @IsString()
-    SearchNameTerm: string;
+    searchNameTerm: string;
     @IsNumber()
-    PageNumber: number;
+    pageNumber: number;
     @IsNumber()
-    PageSize: number;
+    pageSize: number;
+    @IsString()
+    sortBy: string;
+    @IsString()
+    sortDirection: string;
 }
 
 export class InputModelForCreatingBlog {
@@ -18,10 +22,14 @@ export class InputModelForCreatingBlog {
     @IsNotEmpty()
     name: string;
     @IsString()
+    @Length(1, 500)
+    @IsNotEmpty()
+    description: string;
+    @IsString()
     @Length(1, 100)
     @Matches(pattern)
     @IsNotEmpty()
-    youtubeUrl: string;
+    websiteUrl: string;
 }
 
 export class BlogsIdValidationModel {
@@ -41,7 +49,11 @@ export class InputModelForUpdatingBlog {
     @Length(1, 15)
     name: string;
     @IsString()
+    @Length(1, 500)
+    @IsNotEmpty()
+    description: string;
+    @IsString()
     @Length(1, 100)
     @Matches(pattern)
-    youtubeUrl: string;
+    websiteUrl: string;
 }

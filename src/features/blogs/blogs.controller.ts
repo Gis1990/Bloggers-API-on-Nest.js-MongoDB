@@ -80,8 +80,9 @@ export class BlogsController {
     async getAllPostsForSpecificBlog(
         @Param() params: BlogsIdValidationModel,
         @Body() model: ModelForGettingAllPosts,
-        @CurrentUserId() userId: string,
+        // @CurrentUserId() userId: string,
     ): Promise<PostDBClassPagination> {
+        const userId = undefined;
         return await this.postsService.getAllPostsForSpecificBlog(model, params.id, userId);
     }
 

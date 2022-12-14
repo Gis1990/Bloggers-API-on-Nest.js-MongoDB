@@ -14,14 +14,100 @@ import { ModelForGettingAllUsers } from "./dto/users.dto";
 @Injectable()
 export class UsersRepository {
     async getAllUsers(dto: ModelForGettingAllUsers): Promise<UserDBClassPagination> {
-        const { PageNumber = 1, PageSize = 10 } = dto;
-        const skips = PageSize * (PageNumber - 1);
-        const cursor = await UsersAccountModelClass.find({}, { _id: 0, id: 1, login: 1 })
-            .skip(skips)
-            .limit(PageSize)
-            .lean();
-        const totalCount = await UsersAccountModelClass.count({});
-        return new UserDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
+        const {
+            searchLoginTerm = null,
+            searchEmailTerm = null,
+            pageNumber = 1,
+            pageSize = 10,
+            sortBy = "createdAt",
+            sortDirection = "desc",
+        } = dto;
+        const skips = pageSize * (pageNumber - 1);
+        let cursor;
+        let totalCount;
+        const sortObj: any = {};
+        if (!searchLoginTerm || !searchEmailTerm) {
+            if (sortDirection === "desc") {
+                sortObj[sortBy] = -1;
+                cursor = await UsersAccountModelClass.find(
+                    {},
+                    {
+                        _id: 0,
+                        id: 1,
+                        login: 1,
+                        email: 1,
+                        createdAt: 1,
+                    },
+                )
+                    .sort(sortObj)
+                    .skip(skips)
+                    .limit(pageSize)
+                    .lean();
+                totalCount = await UsersAccountModelClass.count({});
+            } else {
+                sortObj[sortBy] = 1;
+                cursor = await UsersAccountModelClass.find(
+                    {},
+                    {
+                        _id: 0,
+                        id: 1,
+                        login: 1,
+                        email: 1,
+                        createdAt: 1,
+                    },
+                )
+                    .sort(sortObj)
+                    .skip(skips)
+                    .limit(pageSize)
+                    .lean();
+                totalCount = await UsersAccountModelClass.count({});
+            }
+        } else {
+            if (sortDirection === "desc") {
+                sortObj[sortBy] = -1;
+                cursor = await UsersAccountModelClass.find(
+                    {
+                        $or: [
+                            { login: { $regex: searchLoginTerm, $options: "i" } },
+                            { email: { $regex: searchEmailTerm, $options: "i" } },
+                        ],
+                    },
+                    { _id: 0, id: 1, login: 1, email: 1, createdAt: 1 },
+                )
+                    .sort(sortObj)
+                    .skip(skips)
+                    .limit(pageSize)
+                    .lean();
+                totalCount = await UsersAccountModelClass.count({
+                    $or: [
+                        { login: { $regex: searchLoginTerm, $options: "i" } },
+                        { email: { $regex: searchEmailTerm, $options: "i" } },
+                    ],
+                });
+            } else {
+                sortObj[sortBy] = 1;
+                cursor = await UsersAccountModelClass.find(
+                    {
+                        $or: [
+                            { login: { $regex: searchLoginTerm, $options: "i" } },
+                            { email: { $regex: searchEmailTerm, $options: "i" } },
+                        ],
+                    },
+                    { _id: 0, id: 1, login: 1, email: 1, createdAt: 1 },
+                )
+                    .sort(sortObj)
+                    .skip(skips)
+                    .limit(pageSize)
+                    .lean();
+                totalCount = await UsersAccountModelClass.count({
+                    $or: [
+                        { login: { $regex: searchLoginTerm, $options: "i" } },
+                        { email: { $regex: searchEmailTerm, $options: "i" } },
+                    ],
+                });
+            }
+        }
+        return new UserDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
 
     async findUserById(id: string): Promise<UserAccountDBClass | null> {

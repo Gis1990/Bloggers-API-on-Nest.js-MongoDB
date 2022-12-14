@@ -1,11 +1,30 @@
-import { IsString, Length, Matches, IsNotEmpty } from "class-validator";
+import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsEmailExist, IsLoginExist, IsUsersIdExist } from "../users.custom.decorators";
+import { Type } from "class-transformer";
 
 const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
 export class ModelForGettingAllUsers {
-    PageNumber: number;
-    PageSize: number;
+    @IsString()
+    @IsOptional()
+    searchLoginTerm: string;
+    @IsString()
+    @IsOptional()
+    searchEmailTerm: string;
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    pageNumber: number;
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    pageSize: number;
+    @IsString()
+    @IsOptional()
+    sortBy: string;
+    @IsString()
+    @IsOptional()
+    sortDirection: string;
 }
 
 export class InputModelForCreatingNewUser {

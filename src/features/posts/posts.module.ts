@@ -9,17 +9,22 @@ import { BlogsService } from "../blogs/blogs.service";
 import { CommentsService } from "../comments/comments.service";
 import { CommentsRepository } from "../comments/comments.repository";
 import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
+import { PostsQueryRepository } from "./posts.query.repository";
+import { PostsQueryService } from "./posts.query.service";
 
 @Module({
     imports: [forwardRef(() => BlogsModule)],
     controllers: [PostsController],
     providers: [
         PostsService,
+        PostsQueryService,
         PostsRepository,
+        PostsQueryRepository,
         BlogsService,
         CommentsService,
         CommentsRepository,
         BlogsQueryRepository,
+
         IsBlogsIdExistConstraint,
         IsPostIdExistExistConstraint,
     ],

@@ -1,16 +1,28 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts, PostsIdValidationModel } from "./dto/posts.dto";
 import { CurrentUser } from "../auth/auth.cutsom.decorators";
 import { NewPostClassResponseModel, PostDBClass, PostDBClassPagination } from "./entities/posts.entity";
 import { CommentsService } from "../comments/comments.service";
-import { ModelForGettingAllComments, ModelForLikeStatus } from "../comments/dto/comments.dto";
-import { CommentDBClassPagination } from "../comments/entities/comments.entity";
+import {
+    ModelForCreatingNewComment,
+    ModelForGettingAllComments,
+    ModelForLikeStatus,
+} from "../comments/dto/comments.dto";
+import { CommentDBClassPagination, NewCommentClassResponseModel } from "../comments/entities/comments.entity";
 import { CurrentUserModel } from "../auth/dto/auth.dto";
+import { PostsQueryService } from "./posts.query.service";
+import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
+import { OnlyCheckRefreshTokenGuard } from "../auth/guards/only-check-refresh-token-guard.service";
+import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
 
 @Controller("posts")
 export class PostsController {
-    constructor(protected postsService: PostsService, protected commentsService: CommentsService) {}
+    constructor(
+        protected postsService: PostsService,
+        protected postsQueryService: PostsQueryService,
+        protected commentsService: CommentsService,
+    ) {}
 
     // @UseGuards(OnlyCheckRefreshTokenGuard)
     @Get()
@@ -19,7 +31,7 @@ export class PostsController {
         // @CurrentUserId() userId: string,
     ): Promise<PostDBClassPagination> {
         const userId = undefined;
-        return await this.postsService.getAllPosts(dto, userId);
+        return await this.postsQueryService.getAllPosts(dto, userId);
     }
 
     // @UseGuards(BasicAuthGuard)
@@ -39,16 +51,16 @@ export class PostsController {
         return await this.commentsService.getAllCommentsForSpecificPost(model, params.id, userId);
     }
 
-    // // @UseGuards(JwtAccessTokenAuthGuard)
-    // @Post("/:id/comments")
-    // async createComment(
-    //     @Param() params: PostsIdValidationModel,
-    //     @Body() model: ModelForCreatingNewComment,
-    //     // @CurrentUser() user: CurrentUserModel,
-    // ): Promise<NewCommentClassResponseModel> {
-    //     const userId = undefined;
-    //     return await this.commentsService.createComment(model, params.id, user);
-    // }
+    // @UseGuards(JwtAccessTokenAuthGuard)
+    @Post("/:id/comments")
+    async createComment(
+        @Param() params: PostsIdValidationModel,
+        @Body() model: ModelForCreatingNewComment,
+        @CurrentUser() user: CurrentUserModel,
+    ): Promise<NewCommentClassResponseModel> {
+        const userId = undefined;
+        return await this.commentsService.createComment(model, params.id, user);
+    }
 
     // @UseGuards(OnlyCheckRefreshTokenGuard)
     @Get(":id")
@@ -57,7 +69,7 @@ export class PostsController {
         // @CurrentUserId() userId: string,
     ): Promise<PostDBClass | null> {
         const userId = undefined;
-        return await this.postsService.getPostById(params.id, userId);
+        return await this.postsQueryService.getPostById(params.id, userId);
     }
 
     // @UseGuards(BasicAuthGuard)

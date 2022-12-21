@@ -3,85 +3,22 @@ import { ObjectId } from "mongodb";
 import { Injectable } from "@nestjs/common";
 import {
     ExtendedLikesInfoClass,
+    NewestLikesClass,
     NewPostClassResponseModel,
     PostDBClass,
-    PostDBClassPagination,
     UsersLikesInfoClass,
 } from "./entities/posts.entity";
-import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts } from "./dto/posts.dto";
+import { InputModelForCreatingAndUpdatingPost } from "./dto/posts.dto";
 import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
+import { PostsQueryRepository } from "./posts.query.repository";
 
 @Injectable()
 export class PostsService {
-    constructor(protected blogsQueryRepository: BlogsQueryRepository, protected postsRepository: PostsRepository) {}
-
-    async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostDBClassPagination> {
-        const allPosts = await this.postsRepository.getAllPosts(dto);
-        if (userId) {
-            for (let i = 0; i < allPosts.items.length; i++) {
-                allPosts.items[i].extendedLikesInfo.newestLikes = allPosts.items[i].extendedLikesInfo.newestLikes
-                    .slice(-3)
-                    .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
-                allPosts.items[i].extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(
-                    allPosts.items[i].id,
-                    userId,
-                );
-            }
-        } else {
-            allPosts.items.forEach((elem) => (elem.extendedLikesInfo.myStatus = "None"));
-            allPosts.items.forEach(
-                (elem) =>
-                    (elem.extendedLikesInfo.newestLikes = elem.extendedLikesInfo.newestLikes
-                        .slice(-3)
-                        .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime())),
-            );
-        }
-        return allPosts;
-    }
-
-    async getAllPostsForSpecificBlog(
-        model: ModelForGettingAllPosts,
-        blogId: string,
-        userId: string | undefined,
-    ): Promise<PostDBClassPagination> {
-        const posts = await this.postsRepository.getAllPostsForSpecificBlog(model, blogId);
-        if (userId) {
-            for (let i = 0; i < posts.items.length; i++) {
-                posts.items[i].extendedLikesInfo.newestLikes = posts.items[i].extendedLikesInfo.newestLikes
-                    .slice(-3)
-                    .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
-                posts.items[i].extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(
-                    posts.items[i].id,
-                    userId,
-                );
-            }
-        } else {
-            posts.items.forEach(
-                (elem) =>
-                    (elem.extendedLikesInfo.newestLikes = elem.extendedLikesInfo.newestLikes
-                        .slice(-3)
-                        .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime())),
-            );
-            posts.items.forEach((elem) => (elem.extendedLikesInfo.myStatus = "None"));
-        }
-        return posts;
-    }
-
-    async getPostById(id: string, userId: string | undefined): Promise<PostDBClass | null> {
-        const post = await this.postsRepository.getPostById(id);
-        if (!post) {
-            return null;
-        }
-        post.extendedLikesInfo.newestLikes = post?.extendedLikesInfo.newestLikes
-            .slice(-3)
-            .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
-        if (userId) {
-            post.extendedLikesInfo.myStatus = await this.postsRepository.returnUsersLikeStatus(id, userId);
-        } else {
-            post.extendedLikesInfo.myStatus = "None";
-        }
-        return post;
-    }
+    constructor(
+        protected postsRepository: PostsRepository,
+        protected blogsQueryRepository: BlogsQueryRepository,
+        protected postsQueryRepository: PostsQueryRepository,
+    ) {}
 
     async createPost(dto: InputModelForCreatingAndUpdatingPost): Promise<NewPostClassResponseModel> {
         const blog = await this.blogsQueryRepository.getBlogById(dto.blogId);
@@ -129,6 +66,108 @@ export class PostsService {
     }
 
     async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
-        return this.postsRepository.likeOperation(id, userId, login, likeStatus);
+        // Find the post with the given ID
+        const post = await this.postsQueryRepository.getPostByIdForLikeOperation(id);
+
+        // If the post does not exist, return false
+        if (!post) {
+            return false;
+        }
+        // Check if the user has already liked or disliked the post
+        const isLiked = post.usersLikesInfo.usersWhoPutLike.includes(userId);
+        const isDisliked = post.usersLikesInfo.usersWhoPutDislike.includes(userId);
+
+        // Declare an update object that will be used to update the post
+        let update: any = {};
+
+        // If the user wants to like the post and has not already liked or disliked it,
+        // change users status to Like,
+        // increase the likes count and add the user to the list of users who liked the post
+        if (likeStatus === "Like" && !isLiked && !isDisliked) {
+            update = {
+                "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount + 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                $push: {
+                    "extendedLikesInfo.newestLikes": new NewestLikesClass(new Date(), userId, login),
+                    "usersLikesInfo.usersWhoPutLike": userId,
+                },
+            };
+        }
+
+        // If the user wants to dislike the post and has not already liked or disliked it,
+        // increase the dislikes count and add the user to the list of users who disliked the post
+        else if (likeStatus === "Dislike" && !isDisliked && !isLiked) {
+            update = {
+                "extendedLikesInfo.dislikesCount": post.extendedLikesInfo.dislikesCount + 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                $push: {
+                    "usersLikesInfo.usersWhoPutDislike": userId,
+                },
+            };
+            // If the user wants to change his status to None,but don't have like or dislike status
+        } else if (likeStatus === "None" && !isDisliked && !isLiked) {
+            update = {
+                "extendedLikesInfo.myStatus": likeStatus,
+            };
+            // If the user wants to change his status to None and has already liked the post,
+            // decrease the likes count,
+            // remove the user from the list of users who liked the post,
+        } else if (likeStatus === "None" && isLiked) {
+            update = {
+                "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount - 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                $pull: {
+                    "extendedLikesInfo.newestLikes": { userId: userId },
+                    "usersLikesInfo.usersWhoPutLike": userId,
+                },
+            };
+            // If the user wants to change his status to None and has already disliked the post,
+            // decrease the dislikes count,
+            // remove the user from the list of users who disliked the post,
+        } else if (likeStatus === "None" && isDisliked) {
+            update = {
+                "extendedLikesInfo.dislikesCount": post.extendedLikesInfo.dislikesCount - 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                $pull: {
+                    "usersLikesInfo.usersWhoPutDislike": userId,
+                },
+            };
+        }
+        // If the user has already liked the post and wants to dislike it,
+        // decrease the likes count, increase the dislikes count,
+        // remove the user from the list of users who liked the post, and add them to the list of users who disliked the post
+        else if (isLiked && likeStatus === "Dislike") {
+            update = {
+                "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount - 1,
+                "extendedLikesInfo.dislikesCount": post.extendedLikesInfo.dislikesCount + 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                $pull: {
+                    "extendedLikesInfo.newestLikes": { userId: userId },
+                    "usersLikesInfo.usersWhoPutLike": userId,
+                },
+                $push: {
+                    "usersLikesInfo.usersWhoPutDislike": userId,
+                },
+            };
+        }
+
+        // If the user has already disliked the post and wants to like it,
+        // decrease the dislikes count, increase the likes count,
+        // remove the user from the list of users who disliked the post, and add them to the list of users who liked the post
+        else if (isDisliked && likeStatus === "Like") {
+            update = {
+                "extendedLikesInfo.dislikesCount": post.extendedLikesInfo.dislikesCount - 1,
+                "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount + 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                $pull: {
+                    "usersLikesInfo.usersWhoPutDislike": userId,
+                },
+                $push: {
+                    "extendedLikesInfo.newestLikes": new NewestLikesClass(new Date(), userId, login),
+                    "usersLikesInfo.usersWhoPutLike": userId,
+                },
+            };
+        }
+        return this.postsRepository.likeOperation(id, update);
     }
 }

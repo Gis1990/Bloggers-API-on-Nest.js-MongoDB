@@ -7,56 +7,56 @@ export class ModelForGettingAllPosts {
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    pageNumber: number;
+    public pageNumber: number;
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    pageSize: number;
+    public pageSize: number;
     @IsString()
     @IsOptional()
-    sortBy: string;
+    public sortBy: string;
     @IsString()
     @IsOptional()
-    sortDirection: string;
+    public sortDirection: string;
 }
 
 export class InputModelForCreatingAndUpdatingPost {
     @IsString()
     @Length(1, 30)
     @IsNotEmpty()
-    title: string;
+    public title: string;
     @IsString()
     @Length(1, 100)
     @IsNotEmpty()
-    shortDescription: string;
+    public shortDescription: string;
     @IsString()
     @Length(1, 1000)
     @IsNotEmpty()
-    content: string;
+    public content: string;
     @IsString()
     @IsNotEmpty()
     @IsBlogsIdExist()
-    blogId: string;
+    public blogId: string;
 }
 
 export class InputModelForCreatingNewPostForSpecificBlog {
     @IsString()
     @Length(1, 30)
     @IsNotEmpty()
-    title: string;
+    public title: string;
     @IsString()
     @Length(1, 100)
     @IsNotEmpty()
-    shortDescription: string;
+    public shortDescription: string;
     @IsString()
     @Length(1, 1000)
     @IsNotEmpty()
-    content: string;
+    public content: string;
 }
 
 export class PostsIdValidationModel {
     @IsString()
     @IsNotEmpty()
     @IsPostIdExist()
-    id: string;
+    public id: string;
 }

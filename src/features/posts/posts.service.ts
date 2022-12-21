@@ -1,6 +1,5 @@
 import { PostsRepository } from "./posts.repository";
 import { ObjectId } from "mongodb";
-import { BlogsRepository } from "../blogs/blogs.repository";
 import { Injectable } from "@nestjs/common";
 import {
     ExtendedLikesInfoClass,
@@ -10,10 +9,11 @@ import {
     UsersLikesInfoClass,
 } from "./entities/posts.entity";
 import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts } from "./dto/posts.dto";
+import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
 
 @Injectable()
 export class PostsService {
-    constructor(protected blogsRepository: BlogsRepository, protected postsRepository: PostsRepository) {}
+    constructor(protected blogsQueryRepository: BlogsQueryRepository, protected postsRepository: PostsRepository) {}
 
     async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostDBClassPagination> {
         const allPosts = await this.postsRepository.getAllPosts(dto);
@@ -44,7 +44,7 @@ export class PostsService {
         blogId: string,
         userId: string | undefined,
     ): Promise<PostDBClassPagination> {
-        const posts = await this.postsRepository.getAllPostsForSpecificblog(model, blogId);
+        const posts = await this.postsRepository.getAllPostsForSpecificBlog(model, blogId);
         if (userId) {
             for (let i = 0; i < posts.items.length; i++) {
                 posts.items[i].extendedLikesInfo.newestLikes = posts.items[i].extendedLikesInfo.newestLikes
@@ -84,7 +84,7 @@ export class PostsService {
     }
 
     async createPost(dto: InputModelForCreatingAndUpdatingPost): Promise<NewPostClassResponseModel> {
-        const blog = await this.blogsRepository.getBlogById(dto.blogId);
+        const blog = await this.blogsQueryRepository.getBlogById(dto.blogId);
         let blogName;
         blog ? (blogName = blog.name) : (blogName = "");
         const likesInfo: ExtendedLikesInfoClass = new ExtendedLikesInfoClass(0, 0, "None", []);

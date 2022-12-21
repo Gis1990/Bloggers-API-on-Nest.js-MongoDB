@@ -6,14 +6,15 @@ import {
 } from "class-validator";
 
 import { HttpException, Injectable } from "@nestjs/common";
-import { BlogsService } from "./blogs.service";
+import { BlogsQueryRepository } from "./blogs.query.repository";
 
-@ValidatorConstraint({ name: "IsblogsIdExist", async: true })
+@ValidatorConstraint({ name: "IsBlogsIdExist", async: true })
 @Injectable()
 export class IsBlogsIdExistConstraint implements ValidatorConstraintInterface {
-    constructor(protected blogsService: BlogsService) {}
+    constructor(protected blogsQueryRepository: BlogsQueryRepository) {}
+
     async validate(blogId: string) {
-        const blog = await this.blogsService.getBlogById(blogId);
+        const blog = await this.blogsQueryRepository.getBlogById(blogId);
         if (!blog) {
             throw new HttpException("blog not found", 404);
         } else {

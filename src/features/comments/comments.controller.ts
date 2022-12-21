@@ -9,7 +9,7 @@ import { CommentDBClass } from "./entities/comments.entity";
 export class CommentsController {
     constructor(protected commentsService: CommentsService) {}
 
-    // @UseGuards(JwtAccessTokenAuthGuard)
+    @UseGuards(JwtAccessTokenAuthGuard)
     @Put(":id")
     @HttpCode(204)
     async updateCommentById(
@@ -21,14 +21,14 @@ export class CommentsController {
         return await this.commentsService.updateCommentById(params.id, body.content, userId);
     }
 
-    // @UseGuards(JwtAccessTokenAuthGuard)
+    @UseGuards(JwtAccessTokenAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deleteblog(@Param() params: CommentsIdValidationModel, @CurrentUserId() userId: string): Promise<boolean> {
         return await this.commentsService.deleteCommentById(params.id, userId);
     }
 
-    // @UseGuards(JwtAccessTokenAuthGuard)
+    @UseGuards(JwtAccessTokenAuthGuard)
     @Get(":id")
     async getCommentById(
         @Param() params: CommentsIdValidationModel,
@@ -37,7 +37,7 @@ export class CommentsController {
         return await this.commentsService.getCommentById(params.id, userId);
     }
 
-    // @UseGuards(JwtAccessTokenAuthGuard)
+    @UseGuards(JwtAccessTokenAuthGuard)
     @Put(":id/like-status")
     @HttpCode(204)
     async likeOperation(

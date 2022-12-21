@@ -6,10 +6,11 @@ import { AppModule } from "./app.module";
 import mongoose from "mongoose";
 import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { HttpExceptionFilter } from "./exception.filter";
-import cookieParser from "cookie-parser";
+import * as cookieParser from "cookie-parser";
 
 export async function runDb(mongoUri: string) {
     try {
+        mongoose.set("strictQuery", true);
         await mongoose.connect(mongoUri);
         console.log("Connected successfully to mongo server");
     } catch {
@@ -18,7 +19,7 @@ export async function runDb(mongoUri: string) {
     }
 }
 
-const validationPipeSettings = {
+export const validationPipeSettings = {
     transform: true,
     stopAtFirstError: true,
     exceptionFactory: (errors) => {

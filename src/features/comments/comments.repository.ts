@@ -44,108 +44,83 @@ export class CommentsRepository {
     }
 
     async likeOperation(id: string, userId: string, likeStatus: string): Promise<boolean> {
+        // Find the comment with the given id
         const comment = await CommentsModelClass.findOne({ id: id });
         if (!comment) {
+            // Return false if the comment is not found
             return false;
         }
-        const findUsersLikes = comment.usersLikesInfo.usersWhoPutLike.filter((user) => user === userId);
-        const findUsersDislikes = comment.usersLikesInfo.usersWhoPutDislike.filter((user) => user === userId);
-        if (findUsersLikes?.length === 0 && likeStatus === "Like" && findUsersDislikes?.length === 0) {
-            let likesCount = comment.likesInfo.likesCount;
+
+        // Get the current like and dislike count for the comment
+        let likesCount = comment.likesInfo.likesCount;
+        let dislikesCount = comment.likesInfo.dislikesCount;
+
+        // Check if the user is liking, disliking, or removing their like/dislike
+        const isLike = likeStatus === "Like";
+        const isDislike = likeStatus === "Dislike";
+        const isNone = likeStatus === "None";
+
+        // Check if the user has already liked or disliked the comment
+        const isLiked = comment.usersLikesInfo.usersWhoPutLike.includes(userId);
+        const isDisliked = comment.usersLikesInfo.usersWhoPutDislike.includes(userId);
+
+        // Update the like/dislike count and user lists based on the likeStatus
+        if (isLike && !isLiked && !isDisliked) {
+            // Increment the like count and add the user to the list of users who liked the comment
             likesCount++;
             await CommentsModelClass.updateOne({ id: id }, { $push: { "usersLikesInfo.usersWhoPutLike": userId } });
-            const result = await CommentsModelClass.updateOne(
-                { id: id },
-                { $set: { "likesInfo.likesCount": likesCount, "likesInfo.myStatus": likeStatus } },
-            );
-            return result.matchedCount === 1;
-        }
-        if (findUsersDislikes?.length === 0 && likeStatus === "Dislike" && findUsersLikes?.length === 0) {
-            let dislikesCount = comment.likesInfo.dislikesCount;
+        } else if (isDislike && !isDisliked && !isLiked) {
+            // Increment the dislike count and add the user to the list of users who disliked the comment
             dislikesCount++;
             await CommentsModelClass.updateOne({ id: id }, { $push: { "usersLikesInfo.usersWhoPutDislike": userId } });
-            const result = await CommentsModelClass.updateOne(
-                { id: id },
-                { $set: { "likesInfo.dislikesCount": dislikesCount, "likesInfo.myStatus": likeStatus } },
-            );
-            return result.matchedCount === 1;
-        }
-        if (findUsersLikes?.length === 1 && likeStatus === "Like") {
-            return true;
-        }
-        if (findUsersDislikes?.length === 1 && likeStatus === "Dislike") {
-            return true;
-        }
-        if (findUsersLikes?.length === 1 && likeStatus === "Dislike") {
-            let likesCount = comment.likesInfo.likesCount;
+        } else if (isLiked && isDislike) {
+            // Decrement the like count, increment the dislike count, and update the lists of users who liked/disliked the comment
             likesCount--;
-            let dislikesCount = comment.likesInfo.dislikesCount;
             dislikesCount++;
             await CommentsModelClass.updateOne({ id: id }, { $pull: { "usersLikesInfo.usersWhoPutLike": userId } });
             await CommentsModelClass.updateOne({ id: id }, { $push: { "usersLikesInfo.usersWhoPutDislike": userId } });
-            const result = await CommentsModelClass.updateOne(
-                { id: id },
-                {
-                    $set: {
-                        "likesInfo.likesCount": likesCount,
-                        "likesInfo.dislikesCount": dislikesCount,
-                        "likesInfo.myStatus": likeStatus,
-                    },
-                },
-            );
-            return result.matchedCount === 1;
-        }
-        if (findUsersDislikes?.length === 1 && likeStatus === "Like") {
-            let dislikesCount = comment.likesInfo.dislikesCount;
+        } else if (isDisliked && isLike) {
+            // Decrement the dislike count, increment the like count, and update the lists of users who liked/disliked the comment
             dislikesCount--;
-            let likesCount = comment.likesInfo.likesCount;
             likesCount++;
             await CommentsModelClass.updateOne({ id: id }, { $pull: { "usersLikesInfo.usersWhoPutDislike": userId } });
             await CommentsModelClass.updateOne({ id: id }, { $push: { "usersLikesInfo.usersWhoPutLike": userId } });
-            const result = await CommentsModelClass.updateOne(
-                { id: id },
-                {
-                    $set: {
-                        "likesInfo.likesCount": likesCount,
-                        "likesInfo.dislikesCount": dislikesCount,
-                        "likesInfo.myStatus": likeStatus,
-                    },
-                },
-            );
-            return result.matchedCount === 1;
-        }
-        if (findUsersLikes?.length === 1 && likeStatus === "None") {
-            let likesCount = comment.likesInfo.likesCount;
+        } else if (isLiked && isNone) {
+            // Decrement the like count, and update the lists of users who liked the comment
             likesCount--;
             await CommentsModelClass.updateOne({ id: id }, { $pull: { "usersLikesInfo.usersWhoPutLike": userId } });
-            const result = await CommentsModelClass.updateOne(
-                { id: id },
-                { $set: { "likesInfo.likesCount": likesCount, "likesInfo.myStatus": likeStatus } },
-            );
-            return result.matchedCount === 1;
-        }
-        if (findUsersDislikes?.length === 1 && likeStatus === "None") {
-            let dislikesCount = comment.likesInfo.dislikesCount;
+        } else if (isDisliked && isNone) {
+            // Decrement the dislike count, and update the lists of users who disliked the comment
             dislikesCount--;
             await CommentsModelClass.updateOne({ id: id }, { $pull: { "usersLikesInfo.usersWhoPutDislike": userId } });
-            const result = await CommentsModelClass.updateOne(
-                { id: id },
-                { $set: { "likesInfo.dislikesCount": dislikesCount, "likesInfo.myStatus": likeStatus } },
-            );
-            return result.matchedCount === 1;
         }
-        return true;
+
+        const result = await CommentsModelClass.updateOne(
+            { id: id },
+            {
+                $set: {
+                    "likesInfo.likesCount": likesCount,
+                    "likesInfo.dislikesCount": dislikesCount,
+                    "likesInfo.myStatus": likeStatus,
+                },
+            },
+        );
+
+        return result.matchedCount === 1;
     }
+
     async returnUsersLikeStatus(id: string, userId: string): Promise<string> {
         const comment = await CommentsModelClass.findOne({ id: id });
-        const findUsersLikes = comment?.usersLikesInfo.usersWhoPutLike.filter((user) => user === userId);
-        const findUsersDislikes = comment?.usersLikesInfo.usersWhoPutDislike.filter((user) => user === userId);
-        if (findUsersLikes?.length === 1) {
+        const isLiked = comment?.usersLikesInfo.usersWhoPutLike.includes(userId);
+        const isDisliked = comment?.usersLikesInfo.usersWhoPutDislike.includes(userId);
+        if (isLiked) {
             return "Like";
         }
-        if (findUsersDislikes?.length === 1) {
+
+        if (isDisliked) {
             return "Dislike";
         }
+
         return "None";
     }
 }

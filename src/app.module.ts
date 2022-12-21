@@ -9,7 +9,8 @@ import { AuthModule } from "./features/auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
 import { CommentsModule } from "./features/comments/comments.module";
 import { TestingModule } from "./features/testing(delete all)/testing.module";
-import { SecurityModule } from "./features/security/security.module";
+
+// import { SecurityModule } from "./features/security/security.module";
 
 @Module({
     imports: [
@@ -20,7 +21,7 @@ import { SecurityModule } from "./features/security/security.module";
         AuthModule,
         CommentsModule,
         TestingModule,
-        SecurityModule,
+        // SecurityModule,
     ],
     controllers: [AppController],
     providers: [AppService],

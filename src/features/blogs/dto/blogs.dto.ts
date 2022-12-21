@@ -1,4 +1,4 @@
-import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsMongoId, IsOptional } from "class-validator";
+import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsBlogsIdExist } from "../blogs.custom.decorators";
 import { Type } from "class-transformer";
 
@@ -7,61 +7,56 @@ const pattern = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*
 export class ModelForGettingAllBlogs {
     @IsString()
     @IsOptional()
-    searchNameTerm: string;
+    public searchNameTerm: string;
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    pageNumber: number;
+    public pageNumber: number;
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    pageSize: number;
+    public pageSize: number;
     @IsString()
     @IsOptional()
-    sortBy: string;
+    public sortBy: string;
     @IsString()
     @IsOptional()
-    sortDirection: string;
+    public sortDirection: string;
 }
 
 export class InputModelForCreatingBlog {
     @IsString()
     @Length(1, 15)
     @IsNotEmpty()
-    name: string;
+    public name: string;
     @IsString()
     @Length(1, 500)
     @IsNotEmpty()
-    description: string;
+    public description: string;
     @IsString()
     @Length(1, 100)
     @Matches(pattern)
     @IsNotEmpty()
-    websiteUrl: string;
+    public websiteUrl: string;
 }
 
 export class BlogsIdValidationModel {
     @IsString()
     @IsNotEmpty()
     @IsBlogsIdExist()
-    id: string;
+    public id: string;
 }
 
 export class InputModelForUpdatingBlog {
     @IsString()
-    @IsNotEmpty()
-    @IsBlogsIdExist()
-    @IsMongoId()
-    id: string;
-    @IsString()
     @Length(1, 15)
-    name: string;
+    public name: string;
     @IsString()
     @Length(1, 500)
     @IsNotEmpty()
-    description: string;
+    public description: string;
     @IsString()
     @Length(1, 100)
     @Matches(pattern)
-    websiteUrl: string;
+    public websiteUrl: string;
 }

@@ -12,7 +12,7 @@ import {
 import { InputModelForCreatingNewUser, ModelForGettingAllUsers } from "./dto/users.dto";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import { v4 as uuidv4 } from "uuid";
-import add from "date-fns/add";
+import { add } from "date-fns";
 
 @Injectable()
 export class UsersService {

@@ -1,18 +1,11 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts, PostsIdValidationModel } from "./dto/posts.dto";
-import { OnlyCheckRefreshTokenGuard } from "../auth/guards/only-check-refresh-token-guard.service";
-import { CurrentUser, CurrentUserId } from "../auth/auth.cutsom.decorators";
+import { CurrentUser } from "../auth/auth.cutsom.decorators";
 import { NewPostClassResponseModel, PostDBClass, PostDBClassPagination } from "./entities/posts.entity";
-import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { CommentsService } from "../comments/comments.service";
-import {
-    ModelForCreatingNewComment,
-    ModelForGettingAllComments,
-    ModelForLikeStatus,
-} from "../comments/dto/comments.dto";
-import { CommentDBClassPagination, NewCommentClassResponseModel } from "../comments/entities/comments.entity";
-import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
+import { ModelForGettingAllComments, ModelForLikeStatus } from "../comments/dto/comments.dto";
+import { CommentDBClassPagination } from "../comments/entities/comments.entity";
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 
 @Controller("posts")
@@ -23,8 +16,9 @@ export class PostsController {
     @Get()
     async getAllPosts(
         @Query() dto: ModelForGettingAllPosts,
-        @CurrentUserId() userId: string,
+        // @CurrentUserId() userId: string,
     ): Promise<PostDBClassPagination> {
+        const userId = undefined;
         return await this.postsService.getAllPosts(dto, userId);
     }
 
@@ -39,27 +33,30 @@ export class PostsController {
     async getAllCommentsForSpecificPost(
         @Param() params: PostsIdValidationModel,
         @Query() model: ModelForGettingAllComments,
-        @CurrentUserId() userId: string,
+        // @CurrentUserId() userId: string,
     ): Promise<CommentDBClassPagination> {
+        const userId = undefined;
         return await this.commentsService.getAllCommentsForSpecificPost(model, params.id, userId);
     }
 
-    // @UseGuards(JwtAccessTokenAuthGuard)
-    @Post("/:id/comments")
-    async createComment(
-        @Param() params: PostsIdValidationModel,
-        @Body() model: ModelForCreatingNewComment,
-        @CurrentUser() user: CurrentUserModel,
-    ): Promise<NewCommentClassResponseModel> {
-        return await this.commentsService.createComment(model, params.id, user);
-    }
+    // // @UseGuards(JwtAccessTokenAuthGuard)
+    // @Post("/:id/comments")
+    // async createComment(
+    //     @Param() params: PostsIdValidationModel,
+    //     @Body() model: ModelForCreatingNewComment,
+    //     // @CurrentUser() user: CurrentUserModel,
+    // ): Promise<NewCommentClassResponseModel> {
+    //     const userId = undefined;
+    //     return await this.commentsService.createComment(model, params.id, user);
+    // }
 
     // @UseGuards(OnlyCheckRefreshTokenGuard)
     @Get(":id")
     async getPost(
         @Param() params: PostsIdValidationModel,
-        @CurrentUserId() userId: string,
+        // @CurrentUserId() userId: string,
     ): Promise<PostDBClass | null> {
+        const userId = undefined;
         return await this.postsService.getPostById(params.id, userId);
     }
 

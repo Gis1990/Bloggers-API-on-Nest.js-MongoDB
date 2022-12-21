@@ -1,17 +1,4 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    forwardRef,
-    Get,
-    HttpCode,
-    Inject,
-    Param,
-    Post,
-    Put,
-    Query,
-    UseGuards,
-} from "@nestjs/common";
+import { Body, Controller, Delete, forwardRef, Get, HttpCode, Inject, Param, Post, Put, Query } from "@nestjs/common";
 import { BlogsService } from "./blogs.service";
 import {
     BlogsIdValidationModel,
@@ -21,17 +8,16 @@ import {
 } from "./dto/blogs.dto";
 import { BlogClassResponseModel, BlogDBClass, BlogDBClassPagination } from "./entities/blogs.entity";
 import { PostsService } from "../posts/posts.service";
-import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { NewPostClassResponseModel, PostDBClassPagination } from "../posts/entities/posts.entity";
-import { OnlyCheckRefreshTokenGuard } from "../auth/guards/only-check-refresh-token-guard.service";
 import { InputModelForCreatingNewPostForSpecificBlog, ModelForGettingAllPosts } from "../posts/dto/posts.dto";
-import { CurrentUserId } from "../auth/auth.cutsom.decorators";
+import { BlogsQueryRepository } from "./blogs.query.repository";
 
 @Controller("blogs")
 export class BlogsController {
     constructor(
         protected blogsService: BlogsService,
         @Inject(forwardRef(() => PostsService)) protected postsService: PostsService,
+        protected blogsQueryRepository: BlogsQueryRepository,
     ) {}
 
     @Get()
@@ -39,12 +25,12 @@ export class BlogsController {
         @Query()
         dto: ModelForGettingAllBlogs,
     ): Promise<BlogDBClassPagination> {
-        return await this.blogsService.getAllBlogs(dto);
+        return await this.blogsQueryRepository.getAllBlogs(dto);
     }
 
     @Get(":id")
     async getBlog(@Param() params: BlogsIdValidationModel): Promise<BlogDBClass> {
-        return await this.blogsService.getBlogById(params.id);
+        return await this.blogsQueryRepository.getBlogById(params.id);
     }
 
     // @UseGuards(BasicAuthGuard)

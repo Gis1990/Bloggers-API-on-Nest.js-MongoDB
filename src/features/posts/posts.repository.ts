@@ -29,7 +29,7 @@ export class PostsRepository {
         return new PostDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
 
-    async getAllPostsForSpecificblog(dto: ModelForGettingAllPosts, blogId: string): Promise<PostDBClassPagination> {
+    async getAllPostsForSpecificBlog(dto: ModelForGettingAllPosts, blogId: string): Promise<PostDBClassPagination> {
         const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
         const skips = pageSize * (pageNumber - 1);
         const sortObj: any = {};
@@ -88,142 +88,116 @@ export class PostsRepository {
     }
 
     async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
+        // Find the post with the given ID
         const post = await PostsModelClass.findOne({ id: id });
+
+        // If the post does not exist, return false
         if (!post) {
             return false;
         }
-        const findUsersLikes = post.usersLikesInfo.usersWhoPutLike.filter((user) => user === userId);
-        const findUsersDislikes = post.usersLikesInfo.usersWhoPutDislike.filter((user) => user === userId);
-        if (findUsersLikes?.length === 0 && likeStatus === "Like" && findUsersDislikes?.length === 0) {
-            const newLikes: NewestLikesClass = new NewestLikesClass(new Date(), userId, login);
-            let newLikesCount = post.extendedLikesInfo.likesCount;
-            newLikesCount++;
-            await PostsModelClass.updateOne(
-                { id: id },
-                { $set: { "extendedLikesInfo.likesCount": newLikesCount, "extendedLikesInfo.myStatus": likeStatus } },
-            );
-            const result = await PostsModelClass.updateOne(
-                { id: id },
-                { $push: { "extendedLikesInfo.newestLikes": newLikes, "usersLikesInfo.usersWhoPutLike": userId } },
-            );
-            return result.matchedCount === 1;
+
+        // Check if the user has already liked or disliked the post
+        const isLiked = post.usersLikesInfo.usersWhoPutLike.includes(userId);
+        const isDisliked = post.usersLikesInfo.usersWhoPutDislike.includes(userId);
+
+        // Declare an update object that will be used to update the post
+        let update: any = {};
+
+        // If the user wants to like the post and has not already liked or disliked it,
+        // increase the likes count and add the user to the list of users who liked the post
+        if (likeStatus === "Like" && !isLiked && !isDisliked) {
+            update = {
+                "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount + 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                "extendedLikesInfo.newestLikes": new NewestLikesClass(new Date(), userId, login),
+                "usersLikesInfo.usersWhoPutLike": userId,
+            };
         }
-        if (findUsersDislikes?.length === 0 && likeStatus === "Dislike" && findUsersLikes?.length === 0) {
-            let newDislikesCount = post.extendedLikesInfo.dislikesCount;
-            newDislikesCount++;
-            await PostsModelClass.updateOne({ id: id }, { $push: { "usersLikesInfo.usersWhoPutDislike": userId } });
-            const result = await PostsModelClass.updateOne(
-                { id: id },
-                {
-                    $set: {
-                        "extendedLikesInfo.dislikesCount": newDislikesCount,
-                        "extendedLikesInfo.myStatus": likeStatus,
-                    },
+
+        // If the user wants to dislike the post and has not already liked or disliked it,
+        // increase the dislikes count and add the user to the list of users who disliked the post
+        else if (likeStatus === "Dislike" && !isDisliked && !isLiked) {
+            update = {
+                "extendedLikesInfo.dislikesCount": post.extendedLikesInfo.dislikesCount + 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                "usersLikesInfo.usersWhoPutDislike": userId,
+            };
+            // If the user wants to change his status to None,but don't have like or dislike status
+        } else if (likeStatus === "None" && !isDisliked && !isLiked) {
+            update = {
+                "extendedLikesInfo.myStatus": likeStatus,
+            };
+            // If the user wants to change his status to None and has already liked the post,
+            // decrease the likes count,
+            // remove the user from the list of users who liked the post,
+        } else if (likeStatus === "None" && isLiked) {
+            update = {
+                "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount - 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                $pull: {
+                    "usersLikesInfo.usersWhoPutLike": userId,
                 },
-            );
-            return result.matchedCount === 1;
-        }
-        if (findUsersLikes?.length === 1 && likeStatus === "Like") {
-            return true;
-        }
-        if (findUsersDislikes?.length === 1 && likeStatus === "Dislike") {
-            return true;
-        }
-        if (findUsersLikes?.length === 1 && likeStatus === "Dislike") {
-            let newLikesCount = post.extendedLikesInfo.likesCount;
-            newLikesCount--;
-            let newDislikesCount = post.extendedLikesInfo.dislikesCount;
-            newDislikesCount++;
-            await PostsModelClass.updateOne(
-                { id: id },
-                {
-                    $pull: {
-                        "usersLikesInfo.usersWhoPutLike": userId,
-                        "extendedLikesInfo.newestLikes": { userId: userId },
-                    },
+            };
+            // If the user wants to change his status to None and has already disliked the post,
+            // decrease the dislikes count,
+            // remove the user from the list of users who disliked the post,
+        } else if (likeStatus === "None" && isDisliked) {
+            update = {
+                "extendedLikesInfo.dislikesCount": post.extendedLikesInfo.dislikesCount - 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                $pull: {
+                    "usersLikesInfo.usersWhoPutDislike": userId,
                 },
-            );
-            await PostsModelClass.updateOne({ id: id }, { $push: { "usersLikesInfo.usersWhoPutDislike": userId } });
-            const result = await PostsModelClass.updateOne(
-                { id: id },
-                {
-                    $set: {
-                        "extendedLikesInfo.likesCount": newLikesCount,
-                        "extendedLikesInfo.dislikesCount": newDislikesCount,
-                        "extendedLikesInfo.myStatus": likeStatus,
-                    },
-                },
-            );
-            return result.matchedCount === 1;
+            };
         }
-        if (findUsersDislikes?.length === 1 && likeStatus === "Like") {
-            const newLikes: NewestLikesClass = new NewestLikesClass(new Date(), userId, login);
-            let newDislikesCount = post?.extendedLikesInfo.dislikesCount;
-            newDislikesCount--;
-            let newLikesCount = post.extendedLikesInfo.likesCount;
-            newLikesCount++;
-            await PostsModelClass.updateOne(
-                { id: id },
-                { $push: { "extendedLikesInfo.newestLikes": newLikes, "usersLikesInfo.usersWhoPutLike": userId } },
-            );
-            const result = await PostsModelClass.updateOne(
-                { id: id },
-                {
-                    $set: {
-                        "extendedLikesInfo.likesCount": newLikesCount,
-                        "extendedLikesInfo.dislikesCount": newDislikesCount,
-                        "extendedLikesInfo.myStatus": likeStatus,
-                    },
+        // If the user has already liked the post and wants to dislike it,
+        // decrease the likes count, increase the dislikes count,
+        // remove the user from the list of users who liked the post, and add them to the list of users who disliked the post
+        else if (isLiked && likeStatus === "Dislike") {
+            update = {
+                "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount - 1,
+                "extendedLikesInfo.dislikesCount": post.extendedLikesInfo.dislikesCount + 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                $pull: {
+                    "extendedLikesInfo.newestLikes": { userId: userId },
+                    "usersLikesInfo.usersWhoPutLike": userId,
                 },
-            );
-            return result.matchedCount === 1;
-        }
-        if (findUsersLikes?.length === 1 && likeStatus === "None") {
-            let newLikesCount = post.extendedLikesInfo.likesCount;
-            newLikesCount--;
-            await PostsModelClass.updateOne(
-                { id: id },
-                {
-                    $pull: {
-                        "usersLikesInfo.usersWhoPutLike": userId,
-                        "extendedLikesInfo.newestLikes": { userId: userId },
-                    },
+                $push: {
+                    "usersLikesInfo.usersWhoPutDislike": userId,
                 },
-            );
-            const result = await PostsModelClass.updateOne(
-                { id: id },
-                { $set: { "extendedLikesInfo.likesCount": newLikesCount, "extendedLikesInfo.myStatus": likeStatus } },
-            );
-            return result.matchedCount === 1;
+            };
         }
-        if (findUsersDislikes?.length === 1 && likeStatus === "None") {
-            let newDislikesCount = post?.extendedLikesInfo.dislikesCount;
-            newDislikesCount--;
-            await PostsModelClass.updateOne({ id: id }, { $pull: { "usersLikesInfo.usersWhoPutDislike": userId } });
-            const result = await PostsModelClass.updateOne(
-                { id: id },
-                {
-                    $set: {
-                        "extendedLikesInfo.dislikesCount": newDislikesCount,
-                        "extendedLikesInfo.myStatus": likeStatus,
-                    },
+
+        // If the user has already disliked the post and wants to like it,
+        // decrease the dislikes count, increase the likes count,
+        // remove the user from the list of users who disliked the post, and add them to the list of users who liked the post
+        else if (isDisliked && likeStatus === "Like") {
+            update = {
+                "extendedLikesInfo.dislikesCount": post.extendedLikesInfo.dislikesCount - 1,
+                "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount + 1,
+                "extendedLikesInfo.myStatus": likeStatus,
+                $pull: {
+                    "usersLikesInfo.usersWhoPutDislike": userId,
                 },
-            );
-            return result.matchedCount === 1;
+                $push: {
+                    "extendedLikesInfo.newestLikes": new NewestLikesClass(new Date(), userId, login),
+                    "usersLikesInfo.usersWhoPutLike": userId,
+                },
+            };
         }
-        return true;
+
+        const result = await PostsModelClass.updateOne({ id: id }, update);
+        return result.matchedCount === 1;
     }
 
     async returnUsersLikeStatus(id: string, userId: string): Promise<string> {
         const post = await PostsModelClass.findOne({ id: id });
-        const findUsersLikes = post?.usersLikesInfo.usersWhoPutLike.filter((user) => user === userId);
-        const findUsersDislikes = post?.usersLikesInfo.usersWhoPutDislike.filter((user) => user === userId);
-        if (findUsersLikes?.length === 1) {
+        if (post?.usersLikesInfo.usersWhoPutLike.includes(userId)) {
             return "Like";
-        }
-        if (findUsersDislikes?.length === 1) {
+        } else if (post?.usersLikesInfo.usersWhoPutDislike.includes(userId)) {
             return "Dislike";
+        } else {
+            return "None";
         }
-        return "None";
     }
 }

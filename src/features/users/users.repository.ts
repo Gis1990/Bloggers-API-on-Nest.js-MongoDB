@@ -23,90 +23,27 @@ export class UsersRepository {
             sortDirection = "desc",
         } = dto;
         const skips = pageSize * (pageNumber - 1);
-        let cursor;
-        let totalCount;
         const sortObj: any = {};
-        if (!searchLoginTerm || !searchEmailTerm) {
-            if (sortDirection === "desc") {
-                sortObj[sortBy] = -1;
-                cursor = await UsersAccountModelClass.find(
-                    {},
-                    {
-                        _id: 0,
-                        id: 1,
-                        login: 1,
-                        email: 1,
-                        createdAt: 1,
-                    },
-                )
-                    .sort(sortObj)
-                    .skip(skips)
-                    .limit(pageSize)
-                    .lean();
-                totalCount = await UsersAccountModelClass.count({});
-            } else {
-                sortObj[sortBy] = 1;
-                cursor = await UsersAccountModelClass.find(
-                    {},
-                    {
-                        _id: 0,
-                        id: 1,
-                        login: 1,
-                        email: 1,
-                        createdAt: 1,
-                    },
-                )
-                    .sort(sortObj)
-                    .skip(skips)
-                    .limit(pageSize)
-                    .lean();
-                totalCount = await UsersAccountModelClass.count({});
-            }
+        if (sortDirection === "desc") {
+            sortObj[sortBy] = -1;
         } else {
-            if (sortDirection === "desc") {
-                sortObj[sortBy] = -1;
-                cursor = await UsersAccountModelClass.find(
-                    {
-                        $or: [
-                            { login: { $regex: searchLoginTerm, $options: "i" } },
-                            { email: { $regex: searchEmailTerm, $options: "i" } },
-                        ],
-                    },
-                    { _id: 0, id: 1, login: 1, email: 1, createdAt: 1 },
-                )
-                    .sort(sortObj)
-                    .skip(skips)
-                    .limit(pageSize)
-                    .lean();
-                totalCount = await UsersAccountModelClass.count({
-                    $or: [
-                        { login: { $regex: searchLoginTerm, $options: "i" } },
-                        { email: { $regex: searchEmailTerm, $options: "i" } },
-                    ],
-                });
-            } else {
-                sortObj[sortBy] = 1;
-                cursor = await UsersAccountModelClass.find(
-                    {
-                        $or: [
-                            { login: { $regex: searchLoginTerm, $options: "i" } },
-                            { email: { $regex: searchEmailTerm, $options: "i" } },
-                        ],
-                    },
-                    { _id: 0, id: 1, login: 1, email: 1, createdAt: 1 },
-                )
-                    .sort(sortObj)
-                    .skip(skips)
-                    .limit(pageSize)
-                    .lean();
-                totalCount = await UsersAccountModelClass.count({
-                    $or: [
-                        { login: { $regex: searchLoginTerm, $options: "i" } },
-                        { email: { $regex: searchEmailTerm, $options: "i" } },
-                    ],
-                });
-            }
+            sortObj[sortBy] = 1;
         }
+        let query: any = {};
+        if (searchLoginTerm && searchEmailTerm) {
+            query = {
+                $or: [
+                    { login: { $regex: searchLoginTerm, $options: "i" } },
+                    { email: { $regex: searchEmailTerm, $options: "i" } },
+                ],
+            };
+        }
+        const cursor = await UsersAccountModelClass.find(query, { _id: 0, id: 1, login: 1, email: 1, createdAt: 1 })
+            .sort(sortObj)
+            .skip(skips)
+            .limit(pageSize)
+            .lean();
+        const totalCount = await UsersAccountModelClass.count(query);
         return new UserDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
 

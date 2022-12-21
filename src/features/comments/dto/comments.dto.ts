@@ -8,37 +8,37 @@ export class ModelForGettingAllComments {
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    PageNumber: number;
+    public PageNumber: number;
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    PageSize: number;
+    public PageSize: number;
 }
 
 export class ModelForUpdatingComment {
     @IsString()
     @Length(20, 300)
     @IsNotEmpty()
-    content: string;
+    public content: string;
 }
 
 export class CommentsIdValidationModel {
     @IsString()
     @IsNotEmpty()
     @IsCommentsIdExist()
-    id: string;
+    public id: string;
 }
 
 export class ModelForLikeStatus {
     @IsString()
     @IsNotEmpty()
     @IsIn(listOfCorrectLikeStatus)
-    likeStatus: string;
+    public likeStatus: string;
 }
 
 export class ModelForCreatingNewComment {
     @IsString()
     @Length(20, 300)
     @IsNotEmpty()
-    content: string;
+    public content: string;
 }

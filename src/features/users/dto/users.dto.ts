@@ -7,24 +7,24 @@ const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export class ModelForGettingAllUsers {
     @IsString()
     @IsOptional()
-    searchLoginTerm: string;
+    public searchLoginTerm: string;
     @IsString()
     @IsOptional()
-    searchEmailTerm: string;
+    public searchEmailTerm: string;
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    pageNumber: number;
+    public pageNumber: number;
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    pageSize: number;
+    public pageSize: number;
     @IsString()
     @IsOptional()
-    sortBy: string;
+    public sortBy: string;
     @IsString()
     @IsOptional()
-    sortDirection: string;
+    public sortDirection: string;
 }
 
 export class InputModelForCreatingNewUser {
@@ -34,22 +34,22 @@ export class InputModelForCreatingNewUser {
     @IsLoginExist({
         message: "Login is already exist",
     })
-    login: string;
+    public login: string;
     @IsNotEmpty()
     @IsString()
     @Length(6, 20)
-    password: string;
+    public password: string;
     @IsString()
     @Matches(pattern)
     @IsEmailExist({
         message: "Email is already exist",
     })
-    email: string;
+    public email: string;
 }
 
 export class UsersIdValidationModel {
     @IsString()
     @IsNotEmpty()
     @IsUsersIdExist()
-    id: string;
+    public id: string;
 }

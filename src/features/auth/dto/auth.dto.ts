@@ -9,16 +9,16 @@ export class InputModelForResendingEmail {
     @IsEmailExist({
         message: "Email is already exist",
     })
-    email: string;
+    public email: string;
 }
 export class InputModelForCode {
     @IsString()
     @IsNotEmpty()
-    code: string;
+    public code: string;
 }
 
 export class CurrentUserModel {
-    email: string;
-    login: string;
-    userId: string;
+    public email: string;
+    public login: string;
+    public userId: string;
 }

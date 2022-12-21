@@ -30,3 +30,7 @@ export class BlogDBClassPagination {
         public items: BlogDBClass[],
     ) {}
 }
+
+export class ModelForUpdatingBlog {
+    constructor(public id: string, public name: string, public description: string, public websiteUrl: string) {}
+}

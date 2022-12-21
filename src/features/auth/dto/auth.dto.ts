@@ -11,6 +11,7 @@ export class InputModelForResendingEmail {
     })
     public email: string;
 }
+
 export class InputModelForCode {
     @IsString()
     @IsNotEmpty()

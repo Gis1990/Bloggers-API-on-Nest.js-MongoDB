@@ -23,6 +23,7 @@ import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
         IsBlogsIdExistConstraint,
         IsPostIdExistExistConstraint,
     ],
+
     exports: [PostsService],
 })
 export class PostsModule {}

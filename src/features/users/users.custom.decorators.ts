@@ -12,6 +12,7 @@ import { UsersService } from "./users.service";
 @Injectable()
 export class IsUsersIdExistConstraint implements ValidatorConstraintInterface {
     constructor(protected usersService: UsersService) {}
+
     async validate(userId: string) {
         const user = await this.usersService.findUserById(userId);
         if (!user) {
@@ -38,6 +39,7 @@ export function IsUsersIdExist(validationOptions?: ValidationOptions) {
 @Injectable()
 export class IsEmailExistConstraint implements ValidatorConstraintInterface {
     constructor(protected usersService: UsersService) {}
+
     async validate(value: string) {
         const user = await this.usersService.findByEmail(value);
         return !user;
@@ -60,6 +62,7 @@ export function IsEmailExist(validationOptions?: ValidationOptions) {
 @Injectable()
 export class IsLoginExistConstraint implements ValidatorConstraintInterface {
     constructor(protected usersService: UsersService) {}
+
     async validate(value: string) {
         const user = await this.usersService.findByLogin(value);
         return !user;

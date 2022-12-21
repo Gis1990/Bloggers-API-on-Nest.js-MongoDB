@@ -12,6 +12,7 @@ import { PostsService } from "./posts.service";
 @Injectable()
 export class IsPostIdExistExistConstraint implements ValidatorConstraintInterface {
     constructor(protected postsService: PostsService) {}
+
     async validate(postId: string) {
         const post = await this.postsService.getPostById(postId, undefined);
         if (!post) {

@@ -89,7 +89,7 @@ export class BlogsController {
         return await this.postsQueryService.getAllPostsForSpecificBlog(model, params.id, userId);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Post("/:id/posts")
     async createNewPostForSpecificBlog(
         @Param() params: BlogsIdValidationModel,

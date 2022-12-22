@@ -123,6 +123,7 @@ export class AuthService {
 
     async registrationEmailResending(dto: InputModelForResendingEmail): Promise<boolean> {
         const user = await this.usersQueryRepository.findByLoginOrEmail(dto.email);
+        console.log(user);
         if (user) {
             await this.usersService.updateConfirmationCode(user.id);
         } else {

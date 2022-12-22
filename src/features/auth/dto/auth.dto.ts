@@ -41,7 +41,6 @@ export class CurrentUserModel {
 }
 
 export class CurrentUserWithDevicesDataModel {
-    public id: string;
     public email: string;
     public login: string;
     public userId: string;

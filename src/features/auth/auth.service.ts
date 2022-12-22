@@ -146,7 +146,7 @@ export class AuthService {
         const [newAccessToken, newRefreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
-                    userId: user.id,
+                    userId: user.userId,
                 },
                 {
                     secret: this.configService.get<string>("jwtAccessTokenSecret"),
@@ -155,7 +155,7 @@ export class AuthService {
             ),
             this.jwtService.signAsync(
                 {
-                    userId: user.id,
+                    userId: user.userId,
                     ip: user.userDevicesData[0].ip,
                     title: user.userDevicesData[0].title,
                     lastActiveDate: user.userDevicesData[0].lastActiveDate,
@@ -173,7 +173,7 @@ export class AuthService {
     async refreshOnlyRefreshToken(user: CurrentUserWithDevicesDataModel): Promise<string> {
         return await this.jwtService.signAsync(
             {
-                userId: user.id,
+                userId: user.userId,
                 ip: user.userDevicesData[0].ip,
                 title: user.userDevicesData[0].title,
                 lastActiveDate: user.userDevicesData[0].lastActiveDate,

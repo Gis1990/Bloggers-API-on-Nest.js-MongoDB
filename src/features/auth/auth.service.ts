@@ -12,17 +12,26 @@ import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import { MailService } from "../../utils/email/mail.service";
 import { InputModelForCreatingNewUser } from "../users/dto/users.dto";
-import { InputModelForResendingEmail } from "./dto/auth.dto";
+import {
+    CurrentUserWithDevicesDataModel,
+    InputModelForNewPassword,
+    InputModelForPasswordRecovery,
+    InputModelForResendingEmail,
+} from "./dto/auth.dto";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import { add } from "date-fns";
+import { UsersQueryRepository } from "../users/users.query.repository";
+import { UsersRepository } from "../users/users.repository";
 
 @Injectable()
 export class AuthService {
     constructor(
-        protected mailService: MailService,
-        protected usersService: UsersService,
-        protected jwtService: JwtService,
-        protected bcryptService: BcryptService,
+        private mailService: MailService,
+        private usersService: UsersService,
+        private usersQueryRepository: UsersQueryRepository,
+        private usersRepository: UsersRepository,
+        private jwtService: JwtService,
+        private bcryptService: BcryptService,
         private configService: ConfigService,
     ) {}
 
@@ -58,8 +67,8 @@ export class AuthService {
         password: string,
         ip: string,
         title: string | undefined,
-    ): Promise<string | null> {
-        const user = await this.usersService.findByLoginOrEmail(loginOrEmail);
+    ): Promise<UserAccountDBClass | null> {
+        const user = await this.usersQueryRepository.findByLoginOrEmail(loginOrEmail);
         if (!user) return null;
         await this.usersService.addLoginAttempt(user.id, ip);
         const isHashesEqual = await this.bcryptService._isHashesEquals(password, user.passwordHash);
@@ -71,14 +80,17 @@ export class AuthService {
                 title,
             );
             await this.usersService.addUserDevicesData(user.id, userDevicesData);
-            return user.id;
+            const updatedUser = await this.usersQueryRepository.findUserById(user.id);
+            updatedUser.userDevicesData = [];
+            updatedUser.userDevicesData.push(userDevicesData);
+            return updatedUser;
         } else {
             return null;
         }
     }
 
     async confirmEmail(code: string): Promise<boolean> {
-        const user = await this.usersService.findUserByConfirmationCode(code);
+        const user = await this.usersQueryRepository.findUserByConfirmationCode(code);
         if (!user) throw new HttpException("Code is incorrect", 406);
         if (user.emailConfirmation.isConfirmed) throw new HttpException("Code is incorrect", 406);
         if (user.emailConfirmation.confirmationCode !== code) throw new HttpException("Code is incorrect", 406);
@@ -86,15 +98,38 @@ export class AuthService {
         return await this.usersService.updateConfirmation(user.id);
     }
 
+    async passwordRecovery(dto: InputModelForPasswordRecovery): Promise<true> {
+        const user = await this.usersQueryRepository.findByLoginOrEmail(dto.email);
+        if (user) {
+            const passwordRecoveryData: UserRecoveryCodeClass = new UserRecoveryCodeClass(
+                uuidv4(),
+                add(new Date(), { hours: 1 }),
+            );
+            await this.mailService.sendEmailWithPasswordRecovery(dto.email, passwordRecoveryData.recoveryCode);
+            await this.usersRepository.addPasswordRecoveryCode(user.id, passwordRecoveryData);
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    async acceptNewPassword(dto: InputModelForNewPassword): Promise<boolean> {
+        const user = await this.usersQueryRepository.findUserByRecoveryCode(dto.recoveryCode);
+        if (!user) return false;
+        if (user.emailRecoveryCode.expirationDate < new Date()) return false;
+        const passwordHash = await this.bcryptService._generateHash(dto.newPassword);
+        return await this.usersRepository.updatePasswordHash(user.id, passwordHash);
+    }
+
     async registrationEmailResending(dto: InputModelForResendingEmail): Promise<boolean> {
-        const user = await this.usersService.findByLoginOrEmail(dto.email);
+        const user = await this.usersQueryRepository.findByLoginOrEmail(dto.email);
         if (user) {
             await this.usersService.updateConfirmationCode(user.id);
         } else {
             return false;
         }
         await this.usersService.updateConfirmationCode(user.id);
-        const updatedUser = await this.usersService.findByLoginOrEmail(dto.email);
+        const updatedUser = await this.usersQueryRepository.findByLoginOrEmail(dto.email);
         if (updatedUser) {
             await this.mailService.sendEmail(dto.email, updatedUser.emailConfirmation.confirmationCode);
             await this.usersService.addEmailLog(dto.email);
@@ -104,15 +139,13 @@ export class AuthService {
         }
     }
 
-    async refreshAllTokens(userId: string, userDevicesData: userDevicesDataClass): Promise<string[]> {
+    async refreshAllTokens(user: CurrentUserWithDevicesDataModel): Promise<string[]> {
+        const newLastActiveDate = new Date();
+        await this.usersRepository.updateLastActiveDate(user.userDevicesData[0], newLastActiveDate);
         const [newAccessToken, newRefreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
-                    userId: userId,
-                    ip: userDevicesData.ip,
-                    title: userDevicesData.title,
-                    lastActiveDate: userDevicesData.lastActiveDate,
-                    deviceId: userDevicesData.deviceId,
+                    userId: user.id,
                 },
                 {
                     secret: this.configService.get<string>("jwtAccessTokenSecret"),
@@ -121,7 +154,11 @@ export class AuthService {
             ),
             this.jwtService.signAsync(
                 {
-                    userId: userId,
+                    userId: user.id,
+                    ip: user.userDevicesData[0].ip,
+                    title: user.userDevicesData[0].title,
+                    lastActiveDate: user.userDevicesData[0].lastActiveDate,
+                    deviceId: user.userDevicesData[0].deviceId,
                 },
                 {
                     secret: this.configService.get<string>("jwtRefreshTokenSecret"),
@@ -132,14 +169,14 @@ export class AuthService {
         return [newAccessToken, newRefreshToken];
     }
 
-    async refreshOnlyRefreshToken(userId: string, userDevicesData: userDevicesDataClass): Promise<string> {
+    async refreshOnlyRefreshToken(user: CurrentUserWithDevicesDataModel): Promise<string> {
         return await this.jwtService.signAsync(
             {
-                userId: userId,
-                ip: userDevicesData.ip,
-                title: userDevicesData.title,
-                lastActiveDate: userDevicesData.lastActiveDate,
-                deviceId: userDevicesData.deviceId,
+                userId: user.id,
+                ip: user.userDevicesData[0].ip,
+                title: user.userDevicesData[0].title,
+                lastActiveDate: user.userDevicesData[0].lastActiveDate,
+                deviceId: user.userDevicesData[0].deviceId,
             },
             {
                 secret: this.configService.get<string>("jwtRefreshTokenSecret"),

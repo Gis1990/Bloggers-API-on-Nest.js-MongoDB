@@ -6,6 +6,7 @@ import { UsersRepository } from "./users.repository";
 import { JwtModule } from "@nestjs/jwt";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import { BcryptModule } from "../../utils/bcrypt/bcrypt.module";
+import { UsersQueryRepository } from "./users.query.repository";
 
 @Module({
     exports: [UsersModule],
@@ -14,6 +15,7 @@ import { BcryptModule } from "../../utils/bcrypt/bcrypt.module";
         BcryptService,
         UsersService,
         UsersRepository,
+        UsersQueryRepository,
         IsUsersIdExistConstraint,
         IsLoginExistConstraint,
         IsEmailExistConstraint,

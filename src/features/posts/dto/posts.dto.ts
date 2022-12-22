@@ -1,4 +1,4 @@
-import { IsBlogsIdExist } from "../../blogs/blogs.custom.decorators";
+import { IsBlogsIdExistInTheRequestBody } from "../../blogs/blogs.custom.decorators";
 import { IsString, Length, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsPostIdExist } from "../posts.custom.decorators";
 import { Type } from "class-transformer";
@@ -35,7 +35,9 @@ export class InputModelForCreatingAndUpdatingPost {
     public content: string;
     @IsString()
     @IsNotEmpty()
-    @IsBlogsIdExist()
+    @IsBlogsIdExistInTheRequestBody({
+        message: "BlogsId is not exist",
+    })
     public blogId: string;
 }
 

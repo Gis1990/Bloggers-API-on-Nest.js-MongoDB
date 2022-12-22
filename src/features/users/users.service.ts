@@ -13,13 +13,18 @@ import { InputModelForCreatingNewUser, ModelForGettingAllUsers } from "./dto/use
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import { v4 as uuidv4 } from "uuid";
 import { add } from "date-fns";
+import { UsersQueryRepository } from "./users.query.repository";
 
 @Injectable()
 export class UsersService {
-    constructor(protected usersRepository: UsersRepository, protected bcryptService: BcryptService) {}
+    constructor(
+        protected usersRepository: UsersRepository,
+        protected bcryptService: BcryptService,
+        protected usersQueryRepository: UsersQueryRepository,
+    ) {}
 
     async getAllUsers(dto: ModelForGettingAllUsers): Promise<UserDBClassPagination> {
-        return this.usersRepository.getAllUsers(dto);
+        return this.usersQueryRepository.getAllUsers(dto);
     }
 
     async createUserWithConfirmationEmail(newUser: UserAccountDBClass): Promise<boolean> {
@@ -50,26 +55,6 @@ export class UsersService {
         );
         const user = await this.usersRepository.createUser(newUser);
         return (({ id, login, email, createdAt }) => ({ id, login, email, createdAt }))(user);
-    }
-
-    async findUserById(id: string): Promise<UserAccountDBClass | null> {
-        return this.usersRepository.findUserById(id);
-    }
-
-    async findUserByConfirmationCode(code: string): Promise<UserAccountDBClass | null> {
-        return this.usersRepository.findUserByConfirmationCode(code);
-    }
-
-    async findByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDBClass | null> {
-        return this.usersRepository.findByLoginOrEmail(loginOrEmail);
-    }
-
-    async findByLogin(loginOrEmail: string): Promise<UserAccountDBClass | null> {
-        return this.usersRepository.findByLogin(loginOrEmail);
-    }
-
-    async findByEmail(loginOrEmail: string): Promise<UserAccountDBClass | null> {
-        return this.usersRepository.findByEmail(loginOrEmail);
     }
 
     async deleteUser(userId: string): Promise<boolean> {

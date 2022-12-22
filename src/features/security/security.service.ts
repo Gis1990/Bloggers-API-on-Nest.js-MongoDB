@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { UsersRepository } from "../users/users.repository";
 import { userDevicesDataClass } from "../users/entities/users.entity";
+import { UsersQueryRepository } from "../users/users.query.repository";
 
 @Injectable()
 export class SecurityService {
-    constructor(protected usersRepository: UsersRepository) {}
+    constructor(protected usersQueryRepository: UsersQueryRepository) {}
 
     async returnAllDevices(userId: string): Promise<userDevicesDataClass[] | null> {
-        const user = await this.usersRepository.findUserById(userId);
+        const user = await this.usersQueryRepository.findUserById(userId);
         if (user) {
             return user.userDevicesData;
         } else {

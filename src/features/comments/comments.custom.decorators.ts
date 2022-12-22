@@ -6,14 +6,15 @@ import {
 } from "class-validator";
 
 import { HttpException, Injectable } from "@nestjs/common";
-import { CommentsService } from "./comments.service";
+import { CommentsQueryRepository } from "./comments.query.repository";
 
 @ValidatorConstraint({ name: "IsCommentsIdExist", async: true })
 @Injectable()
 export class IsCommentsIdExistConstraint implements ValidatorConstraintInterface {
-    constructor(protected commentsService: CommentsService) {}
+    constructor(protected commentsQueryRepository: CommentsQueryRepository) {}
+
     async validate(commentId: string) {
-        const comment = await this.commentsService.getCommentById(commentId, undefined);
+        const comment = await this.commentsQueryRepository.getCommentById(commentId);
         if (!comment) {
             throw new HttpException("Comment  not found", 404);
         } else {

@@ -32,7 +32,6 @@ export class PostsQueryRepository {
     async getAllPostsForSpecificBlog(dto: ModelForGettingAllPosts, blogId: string): Promise<PostDBClassPagination> {
         const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
         let cursor;
-        console.log(pageSize);
         const skips = pageSize * (pageNumber - 1);
         const sortObj: any = {};
         const totalCount = await PostsModelClass.count({ blogId: blogId });

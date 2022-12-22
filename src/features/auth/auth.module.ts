@@ -14,6 +14,7 @@ import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import { BcryptModule } from "../../utils/bcrypt/bcrypt.module";
 import { JwtRefreshTokenStrategy } from "./strategies/jwt.refresh.token.strategy";
 import { CheckOnlyRefreshTokenStrategy } from "./strategies/only.check.refresh.token.strategy";
+import { UsersQueryRepository } from "../users/users.query.repository";
 
 @Module({
     controllers: [AuthController],
@@ -27,6 +28,7 @@ import { CheckOnlyRefreshTokenStrategy } from "./strategies/only.check.refresh.t
         CheckOnlyRefreshTokenStrategy,
         MailService,
         UsersRepository,
+        UsersQueryRepository,
         BcryptService,
     ],
     imports: [PassportModule, JwtModule.register({}), MailModule, BcryptModule],

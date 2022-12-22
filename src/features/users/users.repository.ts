@@ -3,85 +3,14 @@ import {
     LoginAttemptsClass,
     SentEmailsClass,
     UserAccountDBClass,
-    UserDBClassPagination,
     userDevicesDataClass,
     UserRecoveryCodeClass,
 } from "./entities/users.entity";
 import { v4 as uuidv4 } from "uuid";
 import { UsersAccountModelClass } from "../../db";
-import { ModelForGettingAllUsers } from "./dto/users.dto";
 
 @Injectable()
 export class UsersRepository {
-    async getAllUsers(dto: ModelForGettingAllUsers): Promise<UserDBClassPagination> {
-        const {
-            searchLoginTerm = null,
-            searchEmailTerm = null,
-            pageNumber = 1,
-            pageSize = 10,
-            sortBy = "createdAt",
-            sortDirection = "desc",
-        } = dto;
-        const skips = pageSize * (pageNumber - 1);
-        const sortObj: any = {};
-        if (sortDirection === "desc") {
-            sortObj[sortBy] = -1;
-        } else {
-            sortObj[sortBy] = 1;
-        }
-        let query: any = {};
-        if (searchLoginTerm && searchEmailTerm) {
-            query = {
-                $or: [
-                    { login: { $regex: searchLoginTerm, $options: "i" } },
-                    { email: { $regex: searchEmailTerm, $options: "i" } },
-                ],
-            };
-        }
-        const cursor = await UsersAccountModelClass.find(query, { _id: 0, id: 1, login: 1, email: 1, createdAt: 1 })
-            .sort(sortObj)
-            .skip(skips)
-            .limit(pageSize)
-            .lean();
-        const totalCount = await UsersAccountModelClass.count(query);
-        return new UserDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
-    }
-
-    async findUserById(id: string): Promise<UserAccountDBClass | null> {
-        const user = await UsersAccountModelClass.findOne(
-            { id: id },
-            {
-                _id: 0,
-                emailConfirmation: 0,
-                loginAttempts: 0,
-                passwordHash: 0,
-                createdAt: 0,
-                blacklistedRefreshTokens: 0,
-            },
-        );
-        if (user) {
-            return user;
-        } else {
-            return null;
-        }
-    }
-
-    async findByLogin(login: string): Promise<UserAccountDBClass | null> {
-        return UsersAccountModelClass.findOne({ login: login });
-    }
-
-    async findByEmail(email: string): Promise<UserAccountDBClass | null> {
-        return UsersAccountModelClass.findOne({ email: email });
-    }
-
-    async findByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDBClass | null> {
-        return UsersAccountModelClass.findOne({ $or: [{ email: loginOrEmail }, { login: loginOrEmail }] });
-    }
-
-    async findUserByConfirmationCode(emailConfirmationCode: string): Promise<UserAccountDBClass | null> {
-        return UsersAccountModelClass.findOne({ "emailConfirmation.confirmationCode": emailConfirmationCode });
-    }
-
     async updateConfirmation(id: string): Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne(
             { id: id },
@@ -126,11 +55,7 @@ export class UsersRepository {
         return result.modifiedCount === 1;
     }
 
-    async updateLastActiveDate(
-        id: string,
-        userDevicesData: userDevicesDataClass,
-        newLastActiveDate: string,
-    ): Promise<boolean> {
+    async updateLastActiveDate(userDevicesData: userDevicesDataClass, newLastActiveDate: Date): Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne(
             { "userDevicesData.deviceId": userDevicesData.deviceId },
             { $set: { "userDevicesData.$.lastActiveDate": newLastActiveDate } },

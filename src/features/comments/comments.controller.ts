@@ -17,14 +17,13 @@ export class CommentsController {
         @Body() body: ModelForUpdatingComment,
         @CurrentUserId() userId: string,
     ): Promise<boolean> {
-        console.log(userId);
         return await this.commentsService.updateCommentById(params.id, body.content, userId);
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Delete(":id")
     @HttpCode(204)
-    async deleteblog(@Param() params: CommentsIdValidationModel, @CurrentUserId() userId: string): Promise<boolean> {
+    async deleteBlog(@Param() params: CommentsIdValidationModel, @CurrentUserId() userId: string): Promise<boolean> {
         return await this.commentsService.deleteCommentById(params.id, userId);
     }
 

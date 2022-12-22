@@ -3,11 +3,11 @@ import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { Request } from "express";
-import { UsersService } from "../../users/users.service";
+import { UsersQueryRepository } from "../../users/users.query.repository";
 
 @Injectable()
 export class CheckOnlyRefreshTokenStrategy extends PassportStrategy(Strategy, "only-check-jwt-refresh") {
-    constructor(private configService: ConfigService, private usersService: UsersService) {
+    constructor(private configService: ConfigService, private usersQueryRepository: UsersQueryRepository) {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (request: Request) => {
@@ -21,7 +21,7 @@ export class CheckOnlyRefreshTokenStrategy extends PassportStrategy(Strategy, "o
     }
 
     async validate(request: Request, payload: any) {
-        const user = await this.usersService.findUserById(payload.userId);
+        const user = await this.usersQueryRepository.findUserById(payload.userId);
         if (user) {
             return user;
         }

@@ -1,5 +1,5 @@
 import { IsString, Matches, IsNotEmpty, Length } from "class-validator";
-import { IsEmailExist } from "../../users/users.custom.decorators";
+import { IsEmailNotExist } from "../../users/users.custom.decorators";
 import { userDevicesDataClass } from "../../users/entities/users.entity";
 import { Transform, TransformFnParams } from "class-transformer";
 
@@ -8,8 +8,8 @@ const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export class InputModelForResendingEmail {
     @IsString()
     @Matches(pattern)
-    @IsEmailExist({
-        message: "Email is already exist",
+    @IsEmailNotExist({
+        message: `Email doesn't exist`,
     })
     public email: string;
 }

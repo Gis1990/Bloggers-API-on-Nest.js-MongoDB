@@ -15,6 +15,7 @@ import { BcryptModule } from "../../utils/bcrypt/bcrypt.module";
 import { JwtRefreshTokenStrategy } from "./strategies/jwt.refresh.token.strategy";
 import { UsersQueryRepository } from "../users/users.query.repository";
 import { strategyForUnauthorizedUser } from "./strategies/strategy.for.unauthorized.user";
+import { IsEmailNotExistConstraint } from "../users/users.custom.decorators";
 
 @Module({
     controllers: [AuthController],
@@ -30,6 +31,7 @@ import { strategyForUnauthorizedUser } from "./strategies/strategy.for.unauthori
         UsersRepository,
         UsersQueryRepository,
         BcryptService,
+        IsEmailNotExistConstraint,
     ],
     imports: [PassportModule, JwtModule.register({}), MailModule, BcryptModule],
 })

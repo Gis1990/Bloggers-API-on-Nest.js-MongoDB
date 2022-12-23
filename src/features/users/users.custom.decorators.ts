@@ -80,3 +80,26 @@ export function IsLoginExist(validationOptions?: ValidationOptions) {
         });
     };
 }
+
+@ValidatorConstraint({ name: "IsEmailNotExist", async: true })
+@Injectable()
+export class IsEmailNotExistConstraint implements ValidatorConstraintInterface {
+    constructor(private usersQueryRepository: UsersQueryRepository) {}
+
+    async validate(value: string) {
+        const user = await this.usersQueryRepository.findByLoginOrEmail(value);
+        return !!user;
+    }
+}
+
+export function IsEmailNotExist(validationOptions?: ValidationOptions) {
+    return function (object: any, propertyName: string) {
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [],
+            validator: IsEmailNotExistConstraint,
+        });
+    };
+}

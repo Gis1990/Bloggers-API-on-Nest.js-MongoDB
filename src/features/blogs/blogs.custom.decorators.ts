@@ -42,7 +42,7 @@ export class IsBlogsIdExistInTheRequestBodyConstraint implements ValidatorConstr
 
     async validate(blogId: string) {
         const blog = await this.blogsQueryRepository.getBlogById(blogId);
-        return !blog;
+        return !!blog;
     }
 }
 

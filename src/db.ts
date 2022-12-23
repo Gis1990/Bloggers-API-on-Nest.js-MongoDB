@@ -98,6 +98,7 @@ const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>(
             sentEmails: [sentEmailsSchema],
         },
         userDevicesData: [userDevicesDataSchema],
+        currentSession: {},
     },
     {
         versionKey: false,
@@ -111,7 +112,7 @@ const commentsSchema = new mongoose.Schema<CommentDBClass>(
         userId: String,
         userLogin: String,
         postId: String,
-        addedAt: String,
+        createdAt: String,
         likesInfo: {
             likesCount: Number,
             dislikesCount: Number,

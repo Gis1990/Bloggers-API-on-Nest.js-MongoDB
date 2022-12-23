@@ -11,7 +11,7 @@ export class SecurityService {
     async returnAllDevices(
         userWithDeviceData: CurrentUserWithDevicesDataModel,
     ): Promise<userDevicesDataClass[] | null> {
-        const user = await this.usersQueryRepository.findUserById(userWithDeviceData.userId);
+        const user = await this.usersQueryRepository.findUserById(userWithDeviceData.id);
         if (user) {
             return user.userDevicesData;
         } else {
@@ -21,7 +21,7 @@ export class SecurityService {
 
     async terminateAllDevices(userWithDeviceData: CurrentUserWithDevicesDataModel): Promise<boolean> {
         return await this.usersRepository.terminateAllDevices(
-            userWithDeviceData.userId,
+            userWithDeviceData.id,
             userWithDeviceData.userDevicesData[0],
         );
     }
@@ -30,13 +30,13 @@ export class SecurityService {
         userWithDeviceData: CurrentUserWithDevicesDataModel,
         deviceId: string,
     ): Promise<boolean> {
-        return await this.usersRepository.terminateSpecificDevice(userWithDeviceData.userId, deviceId);
+        return await this.usersRepository.terminateSpecificDevice(userWithDeviceData.id, deviceId);
     }
 
     async checkAccessRights(userWithDeviceData: CurrentUserWithDevicesDataModel, deviceId: string): Promise<boolean> {
         const userByDeviceId = await this.usersQueryRepository.findUserByDeviceId(deviceId);
         if (userByDeviceId) {
-            return userWithDeviceData.userId === userByDeviceId.id;
+            return userWithDeviceData.id === userByDeviceId.id;
         } else {
             return false;
         }

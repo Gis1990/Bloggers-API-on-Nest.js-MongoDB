@@ -2,8 +2,10 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Put, UseGuards } from "
 import { CommentsService } from "./comments.service";
 import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
 import { CommentsIdValidationModel, ModelForLikeStatus, ModelForUpdatingComment } from "./dto/comments.dto";
-import { CurrentUserId } from "../auth/auth.cutsom.decorators";
+import { CurrentUser, CurrentUserId } from "../auth/auth.cutsom.decorators";
 import { CommentDBClass } from "./entities/comments.entity";
+import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard.service";
+import { CurrentUserModel } from "../auth/dto/auth.dto";
 
 @Controller("comments")
 export class CommentsController {
@@ -15,9 +17,9 @@ export class CommentsController {
     async updateCommentById(
         @Param() params: CommentsIdValidationModel,
         @Body() body: ModelForUpdatingComment,
-        @CurrentUserId() userId: string,
+        @CurrentUser() user: CurrentUserModel,
     ): Promise<boolean> {
-        return await this.commentsService.updateCommentById(params.id, body.content, userId);
+        return await this.commentsService.updateCommentById(params.id, body.content, user.id);
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
@@ -27,7 +29,7 @@ export class CommentsController {
         return await this.commentsService.deleteCommentById(params.id, userId);
     }
 
-    @UseGuards(JwtAccessTokenAuthGuard)
+    @UseGuards(strategyForUnauthorizedUser)
     @Get(":id")
     async getCommentById(
         @Param() params: CommentsIdValidationModel,
@@ -42,8 +44,8 @@ export class CommentsController {
     async likeOperation(
         @Param() params: CommentsIdValidationModel,
         @Body() body: ModelForLikeStatus,
-        @CurrentUserId() userId: string,
+        @CurrentUser() user: CurrentUserModel,
     ): Promise<boolean> {
-        return await this.commentsService.likeOperation(params.id, userId, body.likeStatus);
+        return await this.commentsService.likeOperation(params.id, user.id, body.likeStatus);
     }
 }

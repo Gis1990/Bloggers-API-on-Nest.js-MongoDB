@@ -5,27 +5,17 @@ import {
     NewUserClassResponseModel,
     UserAccountDBClass,
     UserAccountEmailClass,
-    UserDBClassPagination,
     userDevicesDataClass,
     UserRecoveryCodeClass,
 } from "./entities/users.entity";
-import { InputModelForCreatingNewUser, ModelForGettingAllUsers } from "./dto/users.dto";
+import { InputModelForCreatingNewUser } from "./dto/users.dto";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import { v4 as uuidv4 } from "uuid";
 import { add } from "date-fns";
-import { UsersQueryRepository } from "./users.query.repository";
 
 @Injectable()
 export class UsersService {
-    constructor(
-        protected usersRepository: UsersRepository,
-        protected bcryptService: BcryptService,
-        protected usersQueryRepository: UsersQueryRepository,
-    ) {}
-
-    async getAllUsers(dto: ModelForGettingAllUsers): Promise<UserDBClassPagination> {
-        return this.usersQueryRepository.getAllUsers(dto);
-    }
+    constructor(protected usersRepository: UsersRepository, protected bcryptService: BcryptService) {}
 
     async createUserWithConfirmationEmail(newUser: UserAccountDBClass): Promise<boolean> {
         await this.usersRepository.createUser(newUser);
@@ -52,6 +42,7 @@ export class UsersService {
             [],
             emailConfirmation,
             [],
+            {},
         );
         const user = await this.usersRepository.createUser(newUser);
         return (({ id, login, email, createdAt }) => ({ id, login, email, createdAt }))(user);
@@ -75,6 +66,10 @@ export class UsersService {
 
     async addUserDevicesData(id: string, userDevicesData: userDevicesDataClass): Promise<boolean> {
         return this.usersRepository.addUserDevicesData(id, userDevicesData);
+    }
+
+    async addCurrentSession(id: string, userDevicesData: userDevicesDataClass): Promise<boolean> {
+        return this.usersRepository.addCurrentSession(id, userDevicesData);
     }
 
     async updateConfirmation(userId: string): Promise<boolean> {

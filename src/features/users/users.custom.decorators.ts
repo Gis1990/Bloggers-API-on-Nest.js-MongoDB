@@ -42,7 +42,7 @@ export class IsEmailExistConstraint implements ValidatorConstraintInterface {
 
     async validate(value: string) {
         const user = await this.usersQueryRepository.findByLoginOrEmail(value);
-        return !!user;
+        return !user;
     }
 }
 

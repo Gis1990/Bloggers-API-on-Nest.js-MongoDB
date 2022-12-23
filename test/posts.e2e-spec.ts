@@ -232,7 +232,7 @@ describe("posts endpoint (e2e)", () => {
             .send(incorrectNewPost7)
             .expect(400);
         expect(response8.body).toEqual({ errorsMessages: [{ field: "blogId", message: expect.any(String) }] });
-        const incorrectNewPost8 = createPostForTesting(0, 0, 0, blog!.id);
+        const incorrectNewPost8 = createPostForTesting(0, 0, 0, blog?.id);
         // Test creating a new post with an invalid title,shortDescription,content and expecting a status code of 400
         const response9 = await request(app.getHttpServer())
             .post("/posts")
@@ -276,6 +276,7 @@ describe("posts endpoint (e2e)", () => {
             .send(correctNewPostForComments)
             .expect(201);
         const postId = response4.body.id;
+        // Test trying to create a new comment for  post and expecting a status code of 201
         const outputComment = createOutputCommentForTesting(50, userId, correctUser.login, 0, 0, "None");
         const response5 = await request(app.getHttpServer())
             .post(`/posts/${postId}/comments`)
@@ -359,10 +360,8 @@ describe("posts endpoint (e2e)", () => {
         // Test successfully retrieving a post and expecting a status code of 200
         const response2 = await request(app.getHttpServer()).get(`/posts/${postId}`).expect(200);
         expect(response2.body).toEqual(result);
-        // Test trying to update a non-existent post and expecting a status code of 404
-        const correctDataForUpdating = createPostForTesting(20, 50, 500, blog?.id);
-        await request(app.getHttpServer()).put(`/posts/5`).set("authorization", "Basic YWRtaW46cXdlcnR5").expect(404);
         // Test updating a post without being logged in and expecting a status code of 401
+        const correctDataForUpdating = createPostForTesting(20, 50, 500, blog?.id);
         await request(app.getHttpServer()).put(`/posts/${postId}`).send(correctDataForUpdating).expect(401);
         // Test successfully updating a post and expecting a status code of 204
         await request(app.getHttpServer())

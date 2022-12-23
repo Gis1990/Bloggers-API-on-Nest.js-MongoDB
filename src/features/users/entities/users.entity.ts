@@ -22,6 +22,7 @@ export class UserAccountDBClass {
         public loginAttempts: LoginAttemptsClass[],
         public emailConfirmation: UserAccountEmailClass,
         public userDevicesData: userDevicesDataClass[],
+        public currentSession: Record<string, string>,
     ) {}
 }
 
@@ -53,10 +54,6 @@ export class NewUserClassResponseModel {
 
 export class LoginAttemptsClass {
     constructor(public attemptDate: Date, public ip: string) {}
-}
-
-export class RefreshTokenClass {
-    constructor(public token: string) {}
 }
 
 export class SentEmailsClass {

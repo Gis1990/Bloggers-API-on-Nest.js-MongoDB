@@ -17,6 +17,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
             response.sendStatus(status);
             return;
         }
+        if (status === 403) {
+            response.sendStatus(status);
+            return;
+        }
         if (status === 406) {
             const errorResponse = { errorsMessages: [{ message: "Code is incorrect", field: "code" }] };
             response.status(400).json(errorResponse);

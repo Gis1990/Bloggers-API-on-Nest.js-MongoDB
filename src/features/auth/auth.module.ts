@@ -13,8 +13,8 @@ import { UsersRepository } from "../users/users.repository";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import { BcryptModule } from "../../utils/bcrypt/bcrypt.module";
 import { JwtRefreshTokenStrategy } from "./strategies/jwt.refresh.token.strategy";
-import { CheckOnlyRefreshTokenStrategy } from "./strategies/only.check.refresh.token.strategy";
 import { UsersQueryRepository } from "../users/users.query.repository";
+import { strategyForUnauthorizedUser } from "./strategies/strategy.for.unauthorized.user";
 
 @Module({
     controllers: [AuthController],
@@ -25,7 +25,7 @@ import { UsersQueryRepository } from "../users/users.query.repository";
         JwtRefreshTokenStrategy,
         JwtAccessTokenStrategy,
         BasicStrategy,
-        CheckOnlyRefreshTokenStrategy,
+        strategyForUnauthorizedUser,
         MailService,
         UsersRepository,
         UsersQueryRepository,

@@ -25,9 +25,9 @@ import { NewPostClassResponseModel, PostDBClassPagination } from "../posts/entit
 import { InputModelForCreatingNewPostForSpecificBlog, ModelForGettingAllPosts } from "../posts/dto/posts.dto";
 import { BlogsQueryRepository } from "./blogs.query.repository";
 import { PostsQueryService } from "../posts/posts.query.service";
-import { OnlyCheckRefreshTokenGuard } from "../auth/guards/only-check-refresh-token-guard.service";
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { CurrentUserId } from "../auth/auth.cutsom.decorators";
+import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard.service";
 
 @Controller("blogs")
 export class BlogsController {
@@ -79,7 +79,7 @@ export class BlogsController {
         return await this.blogsService.deleteBlog(params.id);
     }
 
-    @UseGuards(OnlyCheckRefreshTokenGuard)
+    @UseGuards(strategyForUnauthorizedUser)
     @Get("/:id/posts")
     async getAllPostsForSpecificBlog(
         @Param() params: BlogsIdValidationModel,

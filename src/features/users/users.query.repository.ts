@@ -55,12 +55,10 @@ export class UsersQueryRepository {
             { id: id },
             {
                 _id: 0,
-                emailConfirmation: 0,
-                emailRecoveryCode: 0,
-                loginAttempts: 0,
-                passwordHash: 0,
-                createdAt: 0,
-                blacklistedRefreshTokens: 0,
+                id: 1,
+                login: 1,
+                userDevicesData: 1,
+                currentSession: 1,
             },
         );
         if (user) {

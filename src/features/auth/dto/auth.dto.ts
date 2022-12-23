@@ -37,12 +37,13 @@ export class InputModelForNewPassword {
 export class CurrentUserModel {
     public email: string;
     public login: string;
-    public userId: string;
+    public id: string;
 }
 
 export class CurrentUserWithDevicesDataModel {
+    public id: string;
     public email: string;
     public login: string;
-    public userId: string;
     public userDevicesData: userDevicesDataClass[];
+    public currentSession: Record<string, string>;
 }

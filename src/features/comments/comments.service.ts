@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { HttpException, Injectable, NotFoundException } from "@nestjs/common";
 import { CommentsRepository } from "./comments.repository";
 import { CommentDBClass, CommentDBClassPagination, NewCommentClassResponseModel } from "./entities/comments.entity";
 import { LikesInfoClass, UsersLikesInfoClass } from "../posts/entities/posts.entity";
@@ -57,7 +57,7 @@ export class CommentsService {
             new ObjectId(),
             Number(new Date()).toString(),
             model.content,
-            user.userId,
+            user.id,
             user.login,
             postId,
             new Date().toISOString(),
@@ -65,12 +65,12 @@ export class CommentsService {
             usersLikesInfo,
         );
         const newComment = await this.commentsRepository.createComment(comment);
-        return (({ id, content, userId, userLogin, addedAt, likesInfo }) => ({
+        return (({ id, content, userId, userLogin, createdAt, likesInfo }) => ({
             id,
             content,
             userId,
             userLogin,
-            addedAt,
+            createdAt,
             likesInfo,
         }))(newComment);
     }
@@ -80,9 +80,7 @@ export class CommentsService {
         if (!comment) {
             return false;
         }
-        if (userId !== comment.userId) {
-            return false;
-        }
+        if (userId !== comment.userId) throw new HttpException("Incorrect id", 403);
         return this.commentsRepository.deleteCommentById(id);
     }
 
@@ -91,9 +89,7 @@ export class CommentsService {
         if (!comment) {
             return false;
         }
-        if (userId !== comment.userId) {
-            return false;
-        }
+        if (userId !== comment.userId) throw new HttpException("Incorrect id", 403);
         return this.commentsRepository.updateCommentById(id, content);
     }
 

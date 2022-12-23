@@ -55,6 +55,7 @@ export class AuthService {
             [],
             emailConfirmation,
             [],
+            {},
         );
         await this.usersService.createUserWithConfirmationEmail(newUser);
         await this.mailService.sendEmail(dto.email, newUser.emailConfirmation.confirmationCode);
@@ -80,10 +81,8 @@ export class AuthService {
                 title,
             );
             await this.usersService.addUserDevicesData(user.id, userDevicesData);
-            const updatedUser = await this.usersQueryRepository.findUserById(user.id);
-            updatedUser.userDevicesData = [];
-            updatedUser.userDevicesData.push(userDevicesData);
-            return updatedUser;
+            await this.usersService.addCurrentSession(user.id, userDevicesData);
+            return await this.usersQueryRepository.findUserById(user.id);
         } else {
             return null;
         }
@@ -123,7 +122,6 @@ export class AuthService {
 
     async registrationEmailResending(dto: InputModelForResendingEmail): Promise<boolean> {
         const user = await this.usersQueryRepository.findByLoginOrEmail(dto.email);
-        console.log(user);
         if (user) {
             await this.usersService.updateConfirmationCode(user.id);
         } else {
@@ -142,11 +140,13 @@ export class AuthService {
 
     async refreshAllTokens(user: CurrentUserWithDevicesDataModel): Promise<string[]> {
         const newLastActiveDate = new Date();
+        user.userDevicesData[0].lastActiveDate = newLastActiveDate;
         await this.usersRepository.updateLastActiveDate(user.userDevicesData[0], newLastActiveDate);
+        await this.usersService.addCurrentSession(user.id, user.userDevicesData[0]);
         const [newAccessToken, newRefreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
-                    userId: user.userId,
+                    id: user.id,
                 },
                 {
                     secret: this.configService.get<string>("jwtAccessTokenSecret"),
@@ -155,7 +155,7 @@ export class AuthService {
             ),
             this.jwtService.signAsync(
                 {
-                    userId: user.userId,
+                    id: user.id,
                     ip: user.userDevicesData[0].ip,
                     title: user.userDevicesData[0].title,
                     lastActiveDate: user.userDevicesData[0].lastActiveDate,
@@ -171,9 +171,13 @@ export class AuthService {
     }
 
     async refreshOnlyRefreshToken(user: CurrentUserWithDevicesDataModel): Promise<string> {
+        const newLastActiveDate = new Date();
+        user.userDevicesData[0].lastActiveDate = newLastActiveDate;
+        await this.usersRepository.updateLastActiveDate(user.userDevicesData[0], newLastActiveDate);
+        await this.usersService.addCurrentSession(user.id, user.userDevicesData[0]);
         return await this.jwtService.signAsync(
             {
-                userId: user.userId,
+                id: user.id,
                 ip: user.userDevicesData[0].ip,
                 title: user.userDevicesData[0].title,
                 lastActiveDate: user.userDevicesData[0].lastActiveDate,

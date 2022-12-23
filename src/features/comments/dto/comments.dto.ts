@@ -2,7 +2,7 @@ import { IsString, Length, IsIn, IsNotEmpty, IsNumber, IsOptional } from "class-
 import { IsCommentsIdExist } from "../comments.custom.decorators";
 import { Type } from "class-transformer";
 
-const listOfCorrectLikeStatus = ["None", "Like", "Dislike"];
+const listOfCorrectLikeStatus = ["Like", "Dislike", "None"];
 
 export class ModelForGettingAllComments {
     @IsNumber()

@@ -13,8 +13,8 @@ import { CommentDBClassPagination, NewCommentClassResponseModel } from "../comme
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { PostsQueryService } from "./posts.query.service";
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
-import { OnlyCheckRefreshTokenGuard } from "../auth/guards/only-check-refresh-token-guard.service";
 import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
+import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard.service";
 
 @Controller("posts")
 export class PostsController {
@@ -24,7 +24,7 @@ export class PostsController {
         protected commentsService: CommentsService,
     ) {}
 
-    @UseGuards(OnlyCheckRefreshTokenGuard)
+    @UseGuards(strategyForUnauthorizedUser)
     @Get()
     async getAllPosts(
         @Query() dto: ModelForGettingAllPosts,
@@ -39,7 +39,7 @@ export class PostsController {
         return await this.postsService.createPost(dto);
     }
 
-    @UseGuards(OnlyCheckRefreshTokenGuard)
+    @UseGuards(strategyForUnauthorizedUser)
     @Get("/:id/comments")
     async getAllCommentsForSpecificPost(
         @Param() params: PostsIdValidationModel,
@@ -59,7 +59,7 @@ export class PostsController {
         return await this.commentsService.createComment(model, params.id, user);
     }
 
-    @UseGuards(OnlyCheckRefreshTokenGuard)
+    @UseGuards(strategyForUnauthorizedUser)
     @Get(":id")
     async getPost(
         @Param() params: PostsIdValidationModel,
@@ -99,6 +99,6 @@ export class PostsController {
         @Body() body: ModelForLikeStatus,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<boolean> {
-        return await this.postsService.likeOperation(params.id, user.userId, user.login, body.likeStatus);
+        return await this.postsService.likeOperation(params.id, user.id, user.login, body.likeStatus);
     }
 }

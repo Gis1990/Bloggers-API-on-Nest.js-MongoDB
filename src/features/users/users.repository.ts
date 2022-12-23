@@ -55,6 +55,14 @@ export class UsersRepository {
         return result.modifiedCount === 1;
     }
 
+    async addCurrentSession(id: string, userDevicesData: userDevicesDataClass): Promise<boolean> {
+        const result = await UsersAccountModelClass.updateOne(
+            { id: id },
+            { $set: { currentSession: userDevicesData } },
+        );
+        return result.modifiedCount === 1;
+    }
+
     async updateLastActiveDate(userDevicesData: userDevicesDataClass, newLastActiveDate: Date): Promise<boolean> {
         const result = await UsersAccountModelClass.updateOne(
             { "userDevicesData.deviceId": userDevicesData.deviceId },

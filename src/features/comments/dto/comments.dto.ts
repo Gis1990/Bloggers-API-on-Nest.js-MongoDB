@@ -13,6 +13,12 @@ export class ModelForGettingAllComments {
     @IsOptional()
     @Type(() => Number)
     public PageSize: number;
+    @IsString()
+    @IsOptional()
+    public sortBy: string;
+    @IsString()
+    @IsOptional()
+    public sortDirection: string;
 }
 
 export class ModelForUpdatingComment {

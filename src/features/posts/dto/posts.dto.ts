@@ -24,14 +24,17 @@ export class InputModelForCreatingAndUpdatingPost {
     @IsString()
     @Length(1, 30)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public title: string;
     @IsString()
     @Length(1, 100)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public shortDescription: string;
     @IsString()
     @Length(1, 1000)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public content: string;
     @IsString()
     @IsNotEmpty()

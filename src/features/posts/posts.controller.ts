@@ -91,7 +91,7 @@ export class PostsController {
         return await this.postsService.deletePost(params.id);
     }
 
-    // @UseGuards(JwtAccessTokenAuthGuard)
+    @UseGuards(JwtAccessTokenAuthGuard)
     @Put(":id/like-status")
     @HttpCode(204)
     async likeOperation(

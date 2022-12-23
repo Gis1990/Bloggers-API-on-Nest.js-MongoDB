@@ -1,6 +1,7 @@
 import { IsString, Matches, IsNotEmpty, Length } from "class-validator";
 import { IsEmailExist } from "../../users/users.custom.decorators";
 import { userDevicesDataClass } from "../../users/entities/users.entity";
+import { Transform, TransformFnParams } from "class-transformer";
 
 const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
@@ -28,9 +29,11 @@ export class InputModelForCode {
 export class InputModelForNewPassword {
     @IsString()
     @Length(6, 20)
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public newPassword: string;
     @IsString()
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public recoveryCode: string;
 }
 

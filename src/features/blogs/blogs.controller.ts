@@ -51,13 +51,13 @@ export class BlogsController {
         return await this.blogsQueryRepository.getBlogById(params.id);
     }
 
-    // @UseGuards(BasicAuthGuard)
+    @UseGuards(BasicAuthGuard)
     @Post()
     async createBlog(@Body() dto: InputModelForCreatingBlog): Promise<BlogClassResponseModel> {
         return await this.blogsService.createBlog(dto);
     }
 
-    // @UseGuards(BasicAuthGuard)
+    @UseGuards(BasicAuthGuard)
     @Put(":id")
     @HttpCode(204)
     async updateBlog(
@@ -72,25 +72,24 @@ export class BlogsController {
         return await this.blogsService.updateBlog(dto);
     }
 
-    // @UseGuards(BasicAuthGuard)
+    @UseGuards(BasicAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deleteBlog(@Param() params: BlogsIdValidationModel): Promise<boolean> {
         return await this.blogsService.deleteBlog(params.id);
     }
 
-    // @UseGuards(strategyForUnauthorizedUser)
+    @UseGuards(strategyForUnauthorizedUser)
     @Get("/:id/posts")
     async getAllPostsForSpecificBlog(
         @Param() params: BlogsIdValidationModel,
         @Query() model: ModelForGettingAllPosts,
-        // @CurrentUserId() userId: string,
+        @CurrentUserId() userId: string,
     ): Promise<PostDBClassPagination> {
-        const userId = undefined;
         return await this.postsQueryService.getAllPostsForSpecificBlog(model, params.id, userId);
     }
 
-    // @UseGuards(BasicAuthGuard)
+    @UseGuards(BasicAuthGuard)
     @Post("/:id/posts")
     async createNewPostForSpecificBlog(
         @Param() params: BlogsIdValidationModel,

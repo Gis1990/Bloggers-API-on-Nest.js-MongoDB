@@ -1,7 +1,7 @@
 import { IsBlogsIdExistInTheRequestBody } from "../../blogs/blogs.custom.decorators";
 import { IsString, Length, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsPostIdExist } from "../posts.custom.decorators";
-import { Type } from "class-transformer";
+import { Transform, TransformFnParams, Type } from "class-transformer";
 
 export class ModelForGettingAllPosts {
     @IsNumber()
@@ -45,14 +45,17 @@ export class InputModelForCreatingNewPostForSpecificBlog {
     @IsString()
     @Length(1, 30)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public title: string;
     @IsString()
     @Length(1, 100)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public shortDescription: string;
     @IsString()
     @Length(1, 1000)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public content: string;
 }
 

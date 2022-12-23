@@ -1,6 +1,6 @@
 import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsBlogsIdExist } from "../blogs.custom.decorators";
-import { Type } from "class-transformer";
+import { Transform, TransformFnParams, Type } from "class-transformer";
 
 const pattern = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/;
 
@@ -28,10 +28,12 @@ export class InputModelForCreatingBlog {
     @IsString()
     @Length(1, 15)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public name: string;
     @IsString()
     @Length(1, 500)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public description: string;
     @IsString()
     @Length(1, 100)
@@ -50,10 +52,12 @@ export class BlogsIdValidationModel {
 export class InputModelForUpdatingBlog {
     @IsString()
     @Length(1, 15)
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public name: string;
     @IsString()
     @Length(1, 500)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public description: string;
     @IsString()
     @Length(1, 100)

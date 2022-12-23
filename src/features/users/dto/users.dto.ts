@@ -1,6 +1,6 @@
 import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsEmailExist, IsLoginExist, IsUsersIdExist } from "../users.custom.decorators";
-import { Type } from "class-transformer";
+import { Transform, TransformFnParams, Type } from "class-transformer";
 
 const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
@@ -34,10 +34,12 @@ export class InputModelForCreatingNewUser {
     @IsLoginExist({
         message: "Login is already exist",
     })
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public login: string;
     @IsNotEmpty()
     @IsString()
     @Length(6, 20)
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public password: string;
     @IsString()
     @Matches(pattern)

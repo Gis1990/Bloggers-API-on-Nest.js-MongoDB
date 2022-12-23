@@ -1,6 +1,6 @@
 import { IsString, Length, IsIn, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsCommentsIdExist } from "../comments.custom.decorators";
-import { Type } from "class-transformer";
+import { Transform, TransformFnParams, Type } from "class-transformer";
 
 const listOfCorrectLikeStatus = ["Like", "Dislike", "None"];
 
@@ -19,6 +19,7 @@ export class ModelForUpdatingComment {
     @IsString()
     @Length(20, 300)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public content: string;
 }
 
@@ -40,5 +41,6 @@ export class ModelForCreatingNewComment {
     @IsString()
     @Length(20, 300)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public content: string;
 }

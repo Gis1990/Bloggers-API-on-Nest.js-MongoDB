@@ -28,8 +28,9 @@ export class PostsController {
     @Get()
     async getAllPosts(
         @Query() dto: ModelForGettingAllPosts,
-        @CurrentUserId() userId: string,
+        // @CurrentUserId() userId: string,
     ): Promise<PostDBClassPagination> {
+        const userId = undefined;
         return await this.postsQueryService.getAllPosts(dto, userId);
     }
 
@@ -63,8 +64,9 @@ export class PostsController {
     @Get(":id")
     async getPost(
         @Param() params: PostsIdValidationModel,
-        @CurrentUserId() userId: string,
+        // @CurrentUserId() userId: string,
     ): Promise<PostDBClass | null> {
+        const userId = undefined;
         return await this.postsQueryService.getPostById(params.id, userId);
     }
 
@@ -91,14 +93,15 @@ export class PostsController {
         return await this.postsService.deletePost(params.id);
     }
 
-    // @UseGuards(JwtAccessTokenAuthGuard)
-    @Put(":id/like-status")
-    @HttpCode(204)
-    async likeOperation(
-        @Param() params: PostsIdValidationModel,
-        @Body() body: ModelForLikeStatus,
-        @CurrentUser() user: CurrentUserModel,
-    ): Promise<boolean> {
-        return await this.postsService.likeOperation(params.id, user.id, user.login, body.likeStatus);
-    }
+    // // @UseGuards(JwtAccessTokenAuthGuard)
+    // @Put(":id/like-status")
+    // @HttpCode(204)
+    // async likeOperation(
+    //     @Param() params: PostsIdValidationModel,
+    //     @Body() body: ModelForLikeStatus,
+    //     // @CurrentUser() user: CurrentUserModel,
+    // ): Promise<boolean> {
+    //     const userId = undefined;
+    //     return await this.postsService.likeOperation(params.id, user.id, user.login, body.likeStatus);
+    // }
 }

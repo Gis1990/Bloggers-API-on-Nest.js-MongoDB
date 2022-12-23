@@ -84,8 +84,9 @@ export class BlogsController {
     async getAllPostsForSpecificBlog(
         @Param() params: BlogsIdValidationModel,
         @Query() model: ModelForGettingAllPosts,
-        @CurrentUserId() userId: string,
+        // @CurrentUserId() userId: string,
     ): Promise<PostDBClassPagination> {
+        const userId = undefined;
         return await this.postsQueryService.getAllPostsForSpecificBlog(model, params.id, userId);
     }
 

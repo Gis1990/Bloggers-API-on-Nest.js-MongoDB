@@ -82,8 +82,6 @@ export class UsersQueryRepository {
             { $or: [{ email: loginOrEmail }, { login: loginOrEmail }] },
             {
                 _id: 0,
-                emailRecoveryCode: 0,
-                passwordHash: 0,
             },
         );
     }

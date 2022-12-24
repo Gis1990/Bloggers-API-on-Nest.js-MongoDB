@@ -57,6 +57,7 @@ export class UsersQueryRepository {
                 _id: 0,
                 id: 1,
                 login: 1,
+                email: 1,
                 userDevicesData: 1,
                 currentSession: 1,
             },

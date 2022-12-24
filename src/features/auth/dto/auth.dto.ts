@@ -44,10 +44,13 @@ export class CurrentUserModel {
     public id: string;
 }
 
-export class CurrentUserWithDevicesDataModel {
-    public id: string;
+export class CurrentUserModelForMeEndpoint {
     public email: string;
     public login: string;
+    public userId: string;
+}
+
+export class CurrentUserWithDevicesDataModel extends CurrentUserModel {
     public userDevicesData: userDevicesDataClass[];
     public currentSession: Record<string, string>;
 }

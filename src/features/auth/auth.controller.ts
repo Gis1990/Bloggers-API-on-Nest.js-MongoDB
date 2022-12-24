@@ -3,6 +3,7 @@ import { AuthService } from "./auth.service";
 import { InputModelForCreatingNewUser } from "../users/dto/users.dto";
 import {
     CurrentUserModel,
+    CurrentUserModelForMeEndpoint,
     CurrentUserWithDevicesDataModel,
     InputModelForCode,
     InputModelForNewPassword,
@@ -15,6 +16,7 @@ import { AccessTokenClass } from "./entities/auth.entity";
 import { JwtRefreshTokenAuthGuard } from "./guards/jwtRefreshToken-auth.guard";
 import { CurrentUser } from "./auth.cutsom.decorators";
 import { SkipThrottle } from "@nestjs/throttler";
+import { JwtAccessTokenAuthGuard } from "./guards/jwtAccessToken-auth.guard";
 
 @SkipThrottle()
 @Controller("auth")
@@ -109,10 +111,14 @@ export class AuthController {
         return;
     }
 
-    @UseGuards(JwtRefreshTokenAuthGuard)
+    @UseGuards(JwtAccessTokenAuthGuard)
     @Get("me")
     @HttpCode(200)
-    async me(@CurrentUser() user: CurrentUserModel): Promise<CurrentUserModel> {
-        return user;
+    async me(@CurrentUser() user: CurrentUserModel): Promise<CurrentUserModelForMeEndpoint> {
+        return {
+            email: user.email,
+            login: user.login,
+            userId: user.id,
+        };
     }
 }

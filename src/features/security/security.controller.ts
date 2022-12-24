@@ -5,6 +5,7 @@ import { JwtRefreshTokenAuthGuard } from "../auth/guards/jwtRefreshToken-auth.gu
 import { CurrentUser } from "../auth/auth.cutsom.decorators";
 import { CurrentUserWithDevicesDataModel } from "../auth/dto/auth.dto";
 import { SkipThrottle } from "@nestjs/throttler";
+import { deviceIdValidationModel } from "./dto/security.dto";
 
 @SkipThrottle()
 @Controller("security")
@@ -35,11 +36,15 @@ export class SecurityController {
     @Delete("/devices/:deviceId")
     @HttpCode(204)
     async terminateSpecificDevice(
+        @Param() params: deviceIdValidationModel,
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
         @Res({ passthrough: true }) response: Response,
         @Param("deviceId") deviceId: string,
-    ) {
+    ): Promise<boolean> {
         const correct = await this.securityService.checkAccessRights(userWithDeviceData, deviceId);
+        if (!correct) {
+            return false;
+        }
         const deviceTerminated = await this.securityService.terminateSpecificDevice(userWithDeviceData, deviceId);
         if (deviceTerminated) {
             return true;

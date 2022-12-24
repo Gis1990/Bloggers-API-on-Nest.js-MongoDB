@@ -14,41 +14,49 @@ import { Response } from "express";
 import { AccessTokenClass } from "./entities/auth.entity";
 import { JwtRefreshTokenAuthGuard } from "./guards/jwtRefreshToken-auth.guard";
 import { CurrentUser } from "./auth.cutsom.decorators";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller("auth")
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
+    @SkipThrottle(false)
     @Post("password-recovery")
     @HttpCode(204)
     async passwordRecovery(@Body() dto: InputModelForPasswordRecovery): Promise<boolean> {
         return await this.authService.passwordRecovery(dto);
     }
 
+    @SkipThrottle(false)
     @Post("new-Password")
     @HttpCode(204)
     async newPassword(@Body() dto: InputModelForNewPassword): Promise<boolean> {
         return await this.authService.acceptNewPassword(dto);
     }
 
+    @SkipThrottle(false)
     @Post("registration-confirmation")
     @HttpCode(204)
     async confirmRegistration(@Body() body: InputModelForCode): Promise<boolean> {
         return await this.authService.confirmEmail(body.code);
     }
 
+    @SkipThrottle(false)
     @Post("registration")
     @HttpCode(204)
     async createBlog(@Body() dto: InputModelForCreatingNewUser): Promise<boolean> {
         return await this.authService.createUserWithConfirmationEmail(dto);
     }
 
+    @SkipThrottle(false)
     @Post("registration-email-resending")
     @HttpCode(204)
     async registrationEmailResending(@Body() dto: InputModelForResendingEmail): Promise<boolean> {
         return await this.authService.registrationEmailResending(dto);
     }
 
+    @SkipThrottle(false)
     @UseGuards(LocalAuthGuard)
     @Post("login")
     @HttpCode(200)

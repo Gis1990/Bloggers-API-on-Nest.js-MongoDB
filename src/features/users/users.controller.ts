@@ -4,7 +4,9 @@ import { InputModelForCreatingNewUser, ModelForGettingAllUsers, UsersIdValidatio
 import { NewUserClassResponseModel, UserDBClassPagination } from "./entities/users.entity";
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { UsersQueryRepository } from "./users.query.repository";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller("users")
 export class UsersController {
     constructor(protected usersService: UsersService, protected usersQueryRepository: UsersQueryRepository) {}

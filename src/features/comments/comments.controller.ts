@@ -6,7 +6,9 @@ import { CurrentUser, CurrentUserId } from "../auth/auth.cutsom.decorators";
 import { CommentDBClass } from "./entities/comments.entity";
 import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard.service";
 import { CurrentUserModel } from "../auth/dto/auth.dto";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller("comments")
 export class CommentsController {
     constructor(protected commentsService: CommentsService) {}

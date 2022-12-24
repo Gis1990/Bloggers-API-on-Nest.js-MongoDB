@@ -1,7 +1,8 @@
 import { Controller, Delete, HttpCode } from "@nestjs/common";
-
 import { BlogsModelClass, CommentsModelClass, PostsModelClass, UsersAccountModelClass } from "../../db";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller("testing")
 export class TestingController {
     @Delete("/all-data")

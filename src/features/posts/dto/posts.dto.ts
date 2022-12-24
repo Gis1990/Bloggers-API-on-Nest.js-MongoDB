@@ -58,7 +58,6 @@ export class InputModelForCreatingNewPostForSpecificBlog {
     @IsString()
     @Length(1, 1000)
     @IsNotEmpty()
-    @Transform(({ value }: TransformFnParams) => value?.trim())
     public content: string;
 }
 

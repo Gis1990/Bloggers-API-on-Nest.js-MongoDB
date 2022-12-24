@@ -15,7 +15,9 @@ import { PostsQueryService } from "./posts.query.service";
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
 import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard.service";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller("posts")
 export class PostsController {
     constructor(

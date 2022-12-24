@@ -4,7 +4,9 @@ import { userDevicesDataClass } from "../users/entities/users.entity";
 import { JwtRefreshTokenAuthGuard } from "../auth/guards/jwtRefreshToken-auth.guard";
 import { CurrentUser } from "../auth/auth.cutsom.decorators";
 import { CurrentUserWithDevicesDataModel } from "../auth/dto/auth.dto";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller("security")
 export class SecurityController {
     constructor(private readonly securityService: SecurityService) {}

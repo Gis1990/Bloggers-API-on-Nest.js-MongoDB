@@ -28,7 +28,9 @@ import { PostsQueryService } from "../posts/posts.query.service";
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { CurrentUserId } from "../auth/auth.cutsom.decorators";
 import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard.service";
+import { SkipThrottle } from "@nestjs/throttler";
 
+@SkipThrottle()
 @Controller("blogs")
 export class BlogsController {
     constructor(

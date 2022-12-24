@@ -47,6 +47,5 @@ export class ModelForCreatingNewComment {
     @IsString()
     @Length(20, 300)
     @IsNotEmpty()
-    @Transform(({ value }: TransformFnParams) => value?.trim())
     public content: string;
 }

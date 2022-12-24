@@ -78,12 +78,7 @@ export class UsersQueryRepository {
     }
 
     async findByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDBClass | null> {
-        return UsersAccountModelClass.findOne(
-            { $or: [{ email: loginOrEmail }, { login: loginOrEmail }] },
-            {
-                _id: 0,
-            },
-        );
+        return UsersAccountModelClass.findOne({ $or: [{ email: loginOrEmail }, { login: loginOrEmail }] });
     }
 
     async findUserByConfirmationCode(emailConfirmationCode: string): Promise<UserAccountDBClass | null> {

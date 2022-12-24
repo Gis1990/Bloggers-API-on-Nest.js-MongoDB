@@ -23,6 +23,7 @@ export class InputModelForPasswordRecovery {
 export class InputModelForCode {
     @IsString()
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public code: string;
 }
 

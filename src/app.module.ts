@@ -15,11 +15,6 @@ import { APP_GUARD } from "@nestjs/core";
 
 @Module({
     imports: [
-        // ThrottlerModule.forRoot({
-        //     ttl: 10,
-        //     limit: 5,
-        // }),
-
         ConfigModule.forRoot({ isGlobal: true, load: [config] }),
         BlogsModule,
         PostsModule,
@@ -32,10 +27,10 @@ import { APP_GUARD } from "@nestjs/core";
     controllers: [AppController],
     providers: [
         AppService,
-        {
-            provide: APP_GUARD,
-            useClass: ThrottlerGuard,
-        },
+        // {
+        //     provide: APP_GUARD,
+        //     useClass: ThrottlerGuard,
+        // },
     ],
 })
 export class AppModule {}

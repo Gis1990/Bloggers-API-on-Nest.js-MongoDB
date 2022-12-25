@@ -140,7 +140,7 @@ export class AuthService {
 
     async refreshAllTokens(user: CurrentUserWithDevicesDataModel): Promise<string[]> {
         const newLastActiveDate = new Date();
-        await this.usersRepository.updateLastActiveDate(user.currentSession, newLastActiveDate);
+        await this.usersRepository.updateLastActiveDate(user.currentSession.deviceId, newLastActiveDate);
         const [newAccessToken, newRefreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
@@ -170,14 +170,14 @@ export class AuthService {
 
     async refreshOnlyRefreshToken(user: CurrentUserWithDevicesDataModel): Promise<string> {
         const newLastActiveDate = new Date();
-        await this.usersRepository.updateLastActiveDate(user.currentSession, newLastActiveDate);
+        await this.usersRepository.updateLastActiveDate(user.currentSession.deviceId, newLastActiveDate);
         await this.usersRepository.terminateSpecificDevice(user.id, user.currentSession.deviceId);
         return await this.jwtService.signAsync(
             {
                 id: user.id,
                 ip: user.currentSession.ip,
                 title: user.currentSession.title,
-                lastActiveDate: user.currentSession.lastActiveDate,
+                lastActiveDate: newLastActiveDate,
                 deviceId: user.currentSession.deviceId,
             },
             {

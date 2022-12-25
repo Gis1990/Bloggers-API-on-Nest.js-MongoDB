@@ -20,10 +20,7 @@ export class SecurityService {
     }
 
     async terminateAllDevices(userWithDeviceData: CurrentUserWithDevicesDataModel): Promise<boolean> {
-        return await this.usersRepository.terminateAllDevices(
-            userWithDeviceData.id,
-            userWithDeviceData.userDevicesData[0],
-        );
+        return await this.usersRepository.terminateAllDevices(userWithDeviceData.id, userWithDeviceData.currentSession);
     }
 
     async terminateSpecificDevice(

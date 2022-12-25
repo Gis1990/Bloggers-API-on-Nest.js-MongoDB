@@ -140,9 +140,7 @@ export class AuthService {
 
     async refreshAllTokens(user: CurrentUserWithDevicesDataModel): Promise<string[]> {
         const newLastActiveDate = new Date();
-        user.userDevicesData[0].lastActiveDate = newLastActiveDate;
-        await this.usersRepository.updateLastActiveDate(user.userDevicesData[0], newLastActiveDate);
-        await this.usersService.addCurrentSession(user.id, user.userDevicesData[0]);
+        await this.usersRepository.updateLastActiveDate(user.currentSession, newLastActiveDate);
         const [newAccessToken, newRefreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
@@ -156,10 +154,10 @@ export class AuthService {
             this.jwtService.signAsync(
                 {
                     id: user.id,
-                    ip: user.userDevicesData[0].ip,
-                    title: user.userDevicesData[0].title,
-                    lastActiveDate: user.userDevicesData[0].lastActiveDate,
-                    deviceId: user.userDevicesData[0].deviceId,
+                    ip: user.currentSession.ip,
+                    title: user.currentSession.title,
+                    lastActiveDate: newLastActiveDate,
+                    deviceId: user.currentSession.deviceId,
                 },
                 {
                     secret: this.configService.get<string>("jwtRefreshTokenSecret"),
@@ -177,14 +175,14 @@ export class AuthService {
             "invalid",
             "invalid",
         );
-        await this.usersRepository.terminateSpecificDevice(user.id, user.userDevicesData[0].deviceId);
+        await this.usersRepository.terminateSpecificDevice(user.id, user.currentSession.deviceId);
         return await this.jwtService.signAsync(
             {
                 id: user.id,
-                ip: user.userDevicesData[0].ip,
-                title: user.userDevicesData[0].title,
-                lastActiveDate: user.userDevicesData[0].lastActiveDate,
-                deviceId: user.userDevicesData[0].deviceId,
+                ip: invalidUserDevicesData.ip,
+                title: invalidUserDevicesData.title,
+                lastActiveDate: invalidUserDevicesData.lastActiveDate,
+                deviceId: invalidUserDevicesData.deviceId,
             },
             {
                 secret: this.configService.get<string>("jwtRefreshTokenSecret"),

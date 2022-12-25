@@ -98,7 +98,7 @@ const usersAccountSchema = new mongoose.Schema<UserAccountDBClass>(
             sentEmails: [sentEmailsSchema],
         },
         userDevicesData: [userDevicesDataSchema],
-        currentSession: {},
+        currentSession: userDevicesDataSchema,
     },
     {
         versionKey: false,

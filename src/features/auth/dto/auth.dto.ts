@@ -52,5 +52,5 @@ export class CurrentUserModelForMeEndpoint {
 
 export class CurrentUserWithDevicesDataModel extends CurrentUserModel {
     public userDevicesData: userDevicesDataClass[];
-    public currentSession: Record<string, string>;
+    public currentSession: userDevicesDataClass;
 }

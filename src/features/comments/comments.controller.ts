@@ -13,7 +13,7 @@ import { SkipThrottle } from "@nestjs/throttler";
 export class CommentsController {
     constructor(protected commentsService: CommentsService) {}
 
-    @UseGuards(JwtAccessTokenAuthGuard)
+    // @UseGuards(JwtAccessTokenAuthGuard)
     @Put(":id")
     @HttpCode(204)
     async updateCommentById(
@@ -24,14 +24,14 @@ export class CommentsController {
         return await this.commentsService.updateCommentById(params.id, body.content, user.id);
     }
 
-    @UseGuards(JwtAccessTokenAuthGuard)
+    // @UseGuards(JwtAccessTokenAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deleteBlog(@Param() params: CommentsIdValidationModel, @CurrentUserId() userId: string): Promise<boolean> {
         return await this.commentsService.deleteCommentById(params.id, userId);
     }
 
-    @UseGuards(strategyForUnauthorizedUser)
+    // @UseGuards(strategyForUnauthorizedUser)
     @Get(":id")
     async getCommentById(
         @Param() params: CommentsIdValidationModel,
@@ -40,7 +40,7 @@ export class CommentsController {
         return await this.commentsService.getCommentById(params.id, userId);
     }
 
-    @UseGuards(JwtAccessTokenAuthGuard)
+    // @UseGuards(JwtAccessTokenAuthGuard)
     @Put(":id/like-status")
     @HttpCode(204)
     async likeOperation(

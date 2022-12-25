@@ -14,7 +14,7 @@ import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { PostsQueryService } from "./posts.query.service";
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
-import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard.service";
+import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard";
 import { SkipThrottle } from "@nestjs/throttler";
 
 @SkipThrottle()

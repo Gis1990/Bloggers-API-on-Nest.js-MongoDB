@@ -4,7 +4,7 @@ import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guar
 import { CommentsIdValidationModel, ModelForLikeStatus, ModelForUpdatingComment } from "./dto/comments.dto";
 import { CurrentUser, CurrentUserId } from "../auth/auth.cutsom.decorators";
 import { CommentDBClass } from "./entities/comments.entity";
-import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard.service";
+import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard";
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { SkipThrottle } from "@nestjs/throttler";
 

@@ -27,7 +27,7 @@ import { BlogsQueryRepository } from "./blogs.query.repository";
 import { PostsQueryService } from "../posts/posts.query.service";
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { CurrentUserId } from "../auth/auth.cutsom.decorators";
-import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard.service";
+import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard";
 import { SkipThrottle } from "@nestjs/throttler";
 
 @SkipThrottle()

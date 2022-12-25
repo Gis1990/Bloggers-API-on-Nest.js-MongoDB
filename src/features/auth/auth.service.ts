@@ -161,7 +161,7 @@ export class AuthService {
                 },
                 {
                     secret: this.configService.get<string>("jwtRefreshTokenSecret"),
-                    expiresIn: "60 seconds",
+                    expiresIn: "20 seconds",
                 },
             ),
         ]);
@@ -182,7 +182,7 @@ export class AuthService {
             },
             {
                 secret: this.configService.get<string>("jwtRefreshTokenSecret"),
-                expiresIn: "60 seconds",
+                expiresIn: "20 seconds",
             },
         );
     }

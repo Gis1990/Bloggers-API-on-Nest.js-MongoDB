@@ -1,4 +1,4 @@
-import { Controller, Response, Get, Delete, Param, UseGuards, HttpCode, Res } from "@nestjs/common";
+import { Controller, Response, Get, Delete, Param, UseGuards, HttpCode, Res, HttpException } from "@nestjs/common";
 import { SecurityService } from "./security.service";
 import { userDevicesDataClass } from "../users/entities/users.entity";
 import { JwtRefreshTokenAuthGuard } from "../auth/guards/jwtRefreshToken-auth.guard";
@@ -23,7 +23,7 @@ export class SecurityController {
     }
 
     @UseGuards(JwtRefreshTokenAuthGuard)
-    @Delete("/devices")
+    @Delete(":deviceId")
     @HttpCode(204)
     async terminateAllDevices(
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
@@ -39,13 +39,13 @@ export class SecurityController {
         @Param() params: deviceIdValidationModel,
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
         @Res({ passthrough: true }) response: Response,
-        @Param("deviceId") deviceId: string,
     ): Promise<boolean> {
-        const correct = await this.securityService.checkAccessRights(userWithDeviceData, deviceId);
-        if (!correct) {
-            return false;
-        }
-        const deviceTerminated = await this.securityService.terminateSpecificDevice(userWithDeviceData, deviceId);
+        const correct = await this.securityService.checkAccessRights(userWithDeviceData, params.deviceId);
+        if (!correct) throw new HttpException("Access denied", 403);
+        const deviceTerminated = await this.securityService.terminateSpecificDevice(
+            userWithDeviceData,
+            params.deviceId,
+        );
         if (deviceTerminated) {
             return true;
         }

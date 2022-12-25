@@ -28,18 +28,8 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-ref
     async validate(request: Request, payload: any) {
         const user = await this.usersQueryRepository.findUserByDeviceId(payload.deviceId);
         if (!user) {
-            throw new HttpException("Device  not found", 404);
+            throw new HttpException("blog not found", 404);
         }
-        const sessionAdded = await this.usersService.addCurrentSession(payload.id, {
-            ip: payload.ip,
-            title: payload.title,
-            lastActiveDate: payload.lastActiveDate,
-            deviceId: payload.deviceId,
-        });
-        if (!sessionAdded) {
-            throw new UnauthorizedException();
-        }
-
         const userDeviceData = user.userDevicesData.find((item) => item.deviceId === payload.deviceId);
         if (!userDeviceData) {
             throw new UnauthorizedException();
@@ -50,7 +40,12 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-ref
         if (lastActiveDateFromJWT.getTime() !== lastActiveDateFromDB.getTime()) {
             throw new UnauthorizedException();
         }
-
+        await this.usersService.addCurrentSession(payload.id, {
+            ip: payload.ip,
+            title: payload.title,
+            lastActiveDate: payload.lastActiveDate,
+            deviceId: payload.deviceId,
+        });
         return user;
     }
 }

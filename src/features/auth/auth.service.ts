@@ -171,6 +171,13 @@ export class AuthService {
     }
 
     async refreshOnlyRefreshToken(user: CurrentUserWithDevicesDataModel): Promise<string> {
+        const invalidUserDevicesData: userDevicesDataClass = new userDevicesDataClass(
+            "invalid",
+            new Date(),
+            "invalid",
+            "invalid",
+        );
+        await this.usersService.addCurrentSession(user.id, invalidUserDevicesData);
         await this.usersRepository.terminateSpecificDevice(user.id, user.userDevicesData[0].deviceId);
         return await this.jwtService.signAsync(
             {

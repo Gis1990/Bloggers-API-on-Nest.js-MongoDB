@@ -15,10 +15,10 @@ import { APP_GUARD } from "@nestjs/core";
 
 @Module({
     imports: [
-        ThrottlerModule.forRoot({
-            ttl: 10,
-            limit: 5,
-        }),
+        // ThrottlerModule.forRoot({
+        //     ttl: 10,
+        //     limit: 5,
+        // }),
 
         ConfigModule.forRoot({ isGlobal: true, load: [config] }),
         BlogsModule,

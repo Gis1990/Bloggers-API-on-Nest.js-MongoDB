@@ -26,6 +26,8 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-ref
             user?.userDevicesData.find((item) => item.deviceId === payload.deviceId)?.lastActiveDate,
         );
         const lastActiveDateFromJWT = new Date(payload.lastActiveDate);
+        console.log(user);
+        console.log(lastActiveDateFromJWT.getTime() === lastActiveDateFromDB.getTime());
         if (user && lastActiveDateFromJWT.getTime() === lastActiveDateFromDB.getTime()) {
             return user;
         } else {

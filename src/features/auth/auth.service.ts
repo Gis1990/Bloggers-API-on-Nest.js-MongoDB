@@ -171,10 +171,7 @@ export class AuthService {
     }
 
     async refreshOnlyRefreshToken(user: CurrentUserWithDevicesDataModel): Promise<string> {
-        const newLastActiveDate = new Date();
-        user.userDevicesData[0].lastActiveDate = newLastActiveDate;
-        await this.usersRepository.updateLastActiveDate(user.userDevicesData[0], newLastActiveDate);
-        await this.usersService.addCurrentSession(user.id, user.userDevicesData[0]);
+        await this.usersRepository.terminateSpecificDevice(user.id, user.userDevicesData[0].deviceId);
         return await this.jwtService.signAsync(
             {
                 id: user.id,

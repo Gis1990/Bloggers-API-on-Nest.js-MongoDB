@@ -26,9 +26,9 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-ref
     }
 
     async validate(request: Request, payload: any) {
-        const user = await this.usersQueryRepository.findUserByDeviceId(payload.deviceId);
+        const user = await this.usersQueryRepository.findUserById(payload.id);
         if (!user) {
-            throw new HttpException("blog not found", 404);
+            throw new UnauthorizedException();
         }
         const userDeviceData = user.userDevicesData.find((item) => item.deviceId === payload.deviceId);
         if (!userDeviceData) {

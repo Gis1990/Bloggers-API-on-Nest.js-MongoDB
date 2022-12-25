@@ -161,7 +161,7 @@ export class AuthService {
                 },
                 {
                     secret: this.configService.get<string>("jwtRefreshTokenSecret"),
-                    expiresIn: "20 seconds",
+                    expiresIn: "60 seconds",
                 },
             ),
         ]);
@@ -169,24 +169,20 @@ export class AuthService {
     }
 
     async refreshOnlyRefreshToken(user: CurrentUserWithDevicesDataModel): Promise<string> {
-        const invalidUserDevicesData: userDevicesDataClass = new userDevicesDataClass(
-            "invalid",
-            new Date(),
-            "invalid",
-            "invalid",
-        );
+        const newLastActiveDate = new Date();
+        await this.usersRepository.updateLastActiveDate(user.currentSession, newLastActiveDate);
         await this.usersRepository.terminateSpecificDevice(user.id, user.currentSession.deviceId);
         return await this.jwtService.signAsync(
             {
                 id: user.id,
-                ip: invalidUserDevicesData.ip,
-                title: invalidUserDevicesData.title,
-                lastActiveDate: invalidUserDevicesData.lastActiveDate,
-                deviceId: invalidUserDevicesData.deviceId,
+                ip: user.currentSession.ip,
+                title: user.currentSession.title,
+                lastActiveDate: user.currentSession.lastActiveDate,
+                deviceId: user.currentSession.deviceId,
             },
             {
                 secret: this.configService.get<string>("jwtRefreshTokenSecret"),
-                expiresIn: "20 seconds",
+                expiresIn: "60 seconds",
             },
         );
     }

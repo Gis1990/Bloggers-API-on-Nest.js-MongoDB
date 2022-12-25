@@ -20,6 +20,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
             request.ip,
             request.headers["user-agent"],
         );
+        console.log("user", user);
         if (user) {
             return user;
         } else {

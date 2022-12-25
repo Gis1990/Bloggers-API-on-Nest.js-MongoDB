@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { HttpException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { ConfigService } from "@nestjs/config";
@@ -26,6 +26,10 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-ref
     }
 
     async validate(request: Request, payload: any) {
+        const user = await this.usersQueryRepository.findUserByDeviceId(payload.deviceId);
+        if (!user) {
+            throw new HttpException("Device  not found", 404);
+        }
         const sessionAdded = await this.usersService.addCurrentSession(payload.id, {
             ip: payload.ip,
             title: payload.title,
@@ -33,11 +37,6 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-ref
             deviceId: payload.deviceId,
         });
         if (!sessionAdded) {
-            throw new UnauthorizedException();
-        }
-
-        const user = await this.usersQueryRepository.findUserById(payload.id);
-        if (!user) {
             throw new UnauthorizedException();
         }
 

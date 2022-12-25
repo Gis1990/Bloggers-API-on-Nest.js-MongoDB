@@ -70,7 +70,17 @@ export class UsersQueryRepository {
     }
 
     async findUserByDeviceId(deviceId: string): Promise<UserAccountDBClass | null> {
-        const user = await UsersAccountModelClass.findOne({ userDevicesData: { $elemMatch: { deviceId: deviceId } } });
+        const user = await UsersAccountModelClass.findOne(
+            { userDevicesData: { $elemMatch: { deviceId: deviceId } } },
+            {
+                _id: 0,
+                id: 1,
+                login: 1,
+                email: 1,
+                userDevicesData: 1,
+                currentSession: 1,
+            },
+        );
         if (user) {
             return user;
         } else {

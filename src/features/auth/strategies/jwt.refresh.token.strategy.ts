@@ -22,7 +22,9 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-ref
 
     async validate(request: Request, payload: any) {
         const user = await this.usersQueryRepository.findUserById(payload.id);
-        const lastActiveDateFromDB = new Date(user.currentSession.lastActiveDate);
+        const lastActiveDateFromDB = new Date(
+            user?.userDevicesData.find((item) => item.deviceId === payload.deviceId)?.lastActiveDate,
+        );
         const lastActiveDateFromJWT = new Date(payload.lastActiveDate);
         if (user && lastActiveDateFromJWT.getTime() === lastActiveDateFromDB.getTime()) {
             return user;

@@ -19,7 +19,7 @@ import {
     InputModelForUpdatingBlog,
     ModelForGettingAllBlogs,
 } from "./dto/blogs.dto";
-import { BlogClassResponseModel, BlogDBClass, BlogDBClassPagination } from "./entities/blogs.entity";
+import { BlogResponseModelClass, BlogDBClassPagination } from "./entities/blogs.entity";
 import { PostsService } from "../posts/posts.service";
 import { NewPostClassResponseModel, PostDBClassPagination } from "../posts/entities/posts.entity";
 import { InputModelForCreatingNewPostForSpecificBlog, ModelForGettingAllPosts } from "../posts/dto/posts.dto";
@@ -29,6 +29,7 @@ import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { CurrentUserId } from "../auth/auth.cutsom.decorators";
 import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard";
 import { SkipThrottle } from "@nestjs/throttler";
+import { BlogDBClass } from "./blogs.schema";
 
 @SkipThrottle()
 @Controller("blogs")
@@ -55,7 +56,7 @@ export class BlogsController {
 
     @UseGuards(BasicAuthGuard)
     @Post()
-    async createBlog(@Body() dto: InputModelForCreatingBlog): Promise<BlogClassResponseModel> {
+    async createBlog(@Body() dto: InputModelForCreatingBlog): Promise<BlogResponseModelClass> {
         return await this.blogsService.createBlog(dto);
     }
 
@@ -64,14 +65,9 @@ export class BlogsController {
     @HttpCode(204)
     async updateBlog(
         @Param() params: BlogsIdValidationModel,
-        @Body() body: InputModelForUpdatingBlog,
+        @Body() dto: InputModelForUpdatingBlog,
     ): Promise<boolean> {
-        const id = params.id;
-        const name = body.name;
-        const description = body.description;
-        const websiteUrl = body.websiteUrl;
-        const dto = { id, name, description, websiteUrl };
-        return await this.blogsService.updateBlog(dto);
+        return await this.blogsService.updateBlog(params.id, dto);
     }
 
     @UseGuards(BasicAuthGuard)

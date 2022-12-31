@@ -2,14 +2,7 @@ import { ConfigService } from "@nestjs/config";
 import { HttpException, Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
-import {
-    UserAccountDBClass,
-    UserAccountEmailClass,
-    userDevicesDataClass,
-    UserRecoveryCodeClass,
-} from "../users/entities/users.entity";
 import { v4 as uuidv4 } from "uuid";
-import { ObjectId } from "mongodb";
 import { MailService } from "../../utils/email/mail.service";
 import { InputModelForCreatingNewUser } from "../users/dto/users.dto";
 import {
@@ -21,7 +14,15 @@ import {
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import { add } from "date-fns";
 import { UsersQueryRepository } from "../users/users.query.repository";
-import { UsersRepository } from "../users/users.repository";
+import {
+    EmailRecoveryCodeClass,
+    UserAccountDBClass,
+    UserAccountEmailClass,
+    UserDevicesDataClass,
+} from "../users/users.schema";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { NewUserClassResponseModel } from "../users/entities/users.entity";
 
 @Injectable()
 export class AuthService {
@@ -29,38 +30,45 @@ export class AuthService {
         private mailService: MailService,
         private usersService: UsersService,
         private usersQueryRepository: UsersQueryRepository,
-        private usersRepository: UsersRepository,
         private jwtService: JwtService,
         private bcryptService: BcryptService,
         private configService: ConfigService,
+        @InjectModel(UserAccountEmailClass.name) private userAccountEmailModelClass: Model<UserAccountEmailClass>,
+        @InjectModel(UserDevicesDataClass.name) private userDevicesDataModelClass: Model<UserDevicesDataClass>,
+        @InjectModel(EmailRecoveryCodeClass.name) private userRecoveryCodeModelClass: Model<EmailRecoveryCodeClass>,
     ) {}
 
     async createUserWithConfirmationEmail(dto: InputModelForCreatingNewUser): Promise<boolean> {
         const passwordHash = await this.bcryptService._generateHash(dto.password);
-        const emailRecoveryCodeData: UserRecoveryCodeClass = new UserRecoveryCodeClass("", new Date());
-        const emailConfirmation: UserAccountEmailClass = new UserAccountEmailClass(
-            [],
-            uuidv4(),
-            add(new Date(), { hours: 1 }),
-            false,
+        const emailRecoveryCodeData: EmailRecoveryCodeClass = new this.userRecoveryCodeModelClass();
+        const createdEmailConfirmationDto = {
+            isConfirmed: false,
+            confirmationCode: uuidv4(),
+            expirationDate: add(new Date(), { hours: 1 }),
+            sentEmails: [],
+        };
+        const emailConfirmation: UserAccountEmailClass = new this.userAccountEmailModelClass(
+            createdEmailConfirmationDto,
         );
-        const newUser: UserAccountDBClass = new UserAccountDBClass(
-            new ObjectId(),
-            Number(new Date()).toString(),
-            dto.login,
-            dto.email,
-            passwordHash,
-            new Date().toISOString(),
-            emailRecoveryCodeData,
-            [],
-            emailConfirmation,
-            [],
-            {},
-        );
-        await this.usersService.createUserWithConfirmationEmail(newUser);
-        await this.mailService.sendEmail(dto.email, newUser.emailConfirmation.confirmationCode);
+        await this.usersService.createUser(dto, passwordHash, emailConfirmation, emailRecoveryCodeData);
+        await this.mailService.sendEmail(dto.email, createdEmailConfirmationDto.confirmationCode);
         await this.usersService.addEmailLog(dto.email);
         return true;
+    }
+
+    async createUserWithoutConfirmationEmail(dto: InputModelForCreatingNewUser): Promise<NewUserClassResponseModel> {
+        const passwordHash = await this.bcryptService._generateHash(dto.password);
+        const emailRecoveryCodeData: EmailRecoveryCodeClass = new this.userRecoveryCodeModelClass();
+        const createdEmailConfirmationDto = {
+            isConfirmed: true,
+            confirmationCode: uuidv4(),
+            expirationDate: add(new Date(), { hours: 1 }),
+            sentEmails: [],
+        };
+        const emailConfirmation: UserAccountEmailClass = new this.userAccountEmailModelClass(
+            createdEmailConfirmationDto,
+        );
+        return await this.usersService.createUser(dto, passwordHash, emailConfirmation, emailRecoveryCodeData);
     }
 
     async checkCredentials(
@@ -74,12 +82,13 @@ export class AuthService {
         await this.usersService.addLoginAttempt(user.id, ip);
         const isHashesEqual = await this.bcryptService._isHashesEquals(password, user.passwordHash);
         if (isHashesEqual && user.emailConfirmation.isConfirmed) {
-            const userDevicesData: userDevicesDataClass = new userDevicesDataClass(
-                ip,
-                new Date(),
-                Number(new Date()).toString(),
-                title,
-            );
+            const createdUserDevicesData = {
+                ip: ip,
+                lastActiveDate: new Date(),
+                title: title,
+                deviceId: Number(new Date()).toString(),
+            };
+            const userDevicesData: UserDevicesDataClass = new this.userDevicesDataModelClass(createdUserDevicesData);
             await this.usersService.addUserDevicesData(user.id, userDevicesData);
             await this.usersService.addCurrentSession(user.id, userDevicesData);
             return await this.usersQueryRepository.findUserById(user.id);
@@ -100,12 +109,15 @@ export class AuthService {
     async passwordRecovery(dto: InputModelForPasswordRecovery): Promise<true> {
         const user = await this.usersQueryRepository.findByLoginOrEmail(dto.email);
         if (user) {
-            const passwordRecoveryData: UserRecoveryCodeClass = new UserRecoveryCodeClass(
-                uuidv4(),
-                add(new Date(), { hours: 1 }),
+            const createUserRecoveryCodeDto = {
+                recoveryCode: uuidv4(),
+                expirationDate: add(new Date(), { hours: 1 }),
+            };
+            const passwordRecoveryData: EmailRecoveryCodeClass = new this.userRecoveryCodeModelClass(
+                createUserRecoveryCodeDto,
             );
             await this.mailService.sendEmailWithPasswordRecovery(dto.email, passwordRecoveryData.recoveryCode);
-            await this.usersRepository.addPasswordRecoveryCode(user.id, passwordRecoveryData);
+            await this.usersService.addPasswordRecoveryCode(user.id, passwordRecoveryData);
             return true;
         } else {
             return true;
@@ -117,7 +129,7 @@ export class AuthService {
         if (!user) return false;
         if (user.emailRecoveryCode.expirationDate < new Date()) return false;
         const passwordHash = await this.bcryptService._generateHash(dto.newPassword);
-        return await this.usersRepository.updatePasswordHash(user.id, passwordHash);
+        return await this.usersService.updatePasswordHash(user.id, passwordHash);
     }
 
     async registrationEmailResending(dto: InputModelForResendingEmail): Promise<boolean> {
@@ -140,7 +152,7 @@ export class AuthService {
 
     async refreshAllTokens(user: CurrentUserWithDevicesDataModel): Promise<string[]> {
         const newLastActiveDate = new Date();
-        await this.usersRepository.updateLastActiveDate(user.currentSession.deviceId, newLastActiveDate);
+        await this.usersService.updateLastActiveDate(user.currentSession.deviceId, newLastActiveDate);
         const [newAccessToken, newRefreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
@@ -170,8 +182,8 @@ export class AuthService {
 
     async refreshOnlyRefreshToken(user: CurrentUserWithDevicesDataModel): Promise<string> {
         const newLastActiveDate = new Date();
-        await this.usersRepository.updateLastActiveDate(user.currentSession.deviceId, newLastActiveDate);
-        await this.usersRepository.terminateSpecificDevice(user.id, user.currentSession.deviceId);
+        await this.usersService.updateLastActiveDate(user.currentSession.deviceId, newLastActiveDate);
+        await this.usersService.terminateSpecificDevice(user.id, user.currentSession.deviceId);
         return await this.jwtService.signAsync(
             {
                 id: user.id,

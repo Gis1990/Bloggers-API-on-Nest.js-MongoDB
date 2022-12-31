@@ -1,10 +1,14 @@
-import { CommentDBClass, CommentDBClassPagination } from "./entities/comments.entity";
-import { CommentsModelClass } from "../../db";
+import { CommentDBClassPagination } from "./entities/comments.entity";
 import { ModelForGettingAllComments } from "./dto/comments.dto";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { CommentDBClass, CommentDocument } from "./comments.schema";
 
 export class CommentsQueryRepository {
+    constructor(@InjectModel(CommentDBClass.name) private commentsModelClass: Model<CommentDocument>) {}
+
     async getCommentById(id: string): Promise<CommentDBClass | null> {
-        return CommentsModelClass.findOne({ id: id }, { _id: 0, postId: 0, usersLikesInfo: 0 });
+        return this.commentsModelClass.findOne({ id: id }, { _id: 0, postId: 0, usersLikesInfo: 0 });
     }
 
     async getAllCommentsForSpecificPost(
@@ -21,31 +25,32 @@ export class CommentsQueryRepository {
         } else {
             sortObj[sortBy] = 1;
         }
-        // Retrieve the documents from the CommentsModelClass collection, applying the sort, skip, and limit options
-        const cursor = await CommentsModelClass.find(
-            { postId: postId },
-            {
-                _id: 0,
-                postId: 0,
-                usersLikesInfo: 0,
-            },
-        )
+        // Retrieve the documents from the commentsModelClass collection, applying the sort, skip, and limit options
+        const cursor = await this.commentsModelClass
+            .find(
+                { postId: postId },
+                {
+                    _id: 0,
+                    postId: 0,
+                    usersLikesInfo: 0,
+                },
+            )
             .sort(sortObj)
             .skip(skips)
             .limit(PageSize)
             .lean();
         // Count the total number of documents that match the query
-        const totalCount = await CommentsModelClass.count({ postId: postId });
+        const totalCount = await this.commentsModelClass.count({ postId: postId });
         // Return a new CommentDBClassPagination object with the calculated pagination information and the retrieved documents
         return new CommentDBClassPagination(Math.ceil(totalCount / PageSize), PageNumber, PageSize, totalCount, cursor);
     }
 
     async getCommentByIdForLikeOperation(id: string): Promise<CommentDBClass | null> {
-        return CommentsModelClass.findOne({ id: id });
+        return this.commentsModelClass.findOne({ id: id });
     }
 
     async returnUsersLikeStatus(id: string, userId: string): Promise<string> {
-        const comment = await CommentsModelClass.findOne({ id: id });
+        const comment = await this.commentsModelClass.findOne({ id: id });
 
         const isLiked = comment?.usersLikesInfo.usersWhoPutLike.includes(userId);
         const isDisliked = comment?.usersLikesInfo.usersWhoPutDislike.includes(userId);

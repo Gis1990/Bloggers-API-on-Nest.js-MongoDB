@@ -9,7 +9,19 @@ import { HttpExceptionFilter } from "../src/exception.filter";
 import * as cookieParser from "cookie-parser";
 import { useContainer } from "class-validator";
 import { randomString } from "./blogs.e2e-spec";
-import { UsersAccountModelClass } from "../src/db";
+import { MongooseModule } from "@nestjs/mongoose";
+import {
+    EmailRecoveryCodeClass,
+    EmailRecoveryCodeSchema,
+    LoginAttemptsClass,
+    LoginAttemptsSchema,
+    UserAccountDBClass,
+    UserAccountEmailClass,
+    UserAccountEmailSchema,
+    UserDevicesDataClass,
+    UserDevicesDataSchema,
+    UsersAccountSchema,
+} from "../src/features/users/users.schema";
 
 const testValidationPipeSettings = {
     transform: true,
@@ -54,7 +66,32 @@ describe("users endpoint (e2e)", () => {
         await mongoose.connect(mongoUri);
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [
+                AppModule,
+                MongooseModule.forRoot(mongoUri, { useNewUrlParser: true }),
+                MongooseModule.forFeature([
+                    {
+                        name: UserAccountDBClass.name,
+                        schema: UsersAccountSchema,
+                    },
+                    {
+                        name: UserAccountEmailClass.name,
+                        schema: UserAccountEmailSchema,
+                    },
+                    {
+                        name: UserDevicesDataClass.name,
+                        schema: UserDevicesDataSchema,
+                    },
+                    {
+                        name: EmailRecoveryCodeClass.name,
+                        schema: EmailRecoveryCodeSchema,
+                    },
+                    {
+                        name: LoginAttemptsClass.name,
+                        schema: LoginAttemptsSchema,
+                    },
+                ]),
+            ],
         }).compile();
 
         app = moduleFixture.createNestApplication();
@@ -149,124 +186,5 @@ describe("users endpoint (e2e)", () => {
             email: correctUser2.email,
             createdAt: response.body.createdAt,
         });
-    });
-    it("8.Should return status 200 and correct body (/get)", async () => {
-        const dbData = await UsersAccountModelClass.find(
-            {},
-            {
-                _id: 0,
-                id: 1,
-                login: 1,
-                email: 1,
-                createdAt: 1,
-            },
-        )
-            .sort({ createdAt: -1 })
-            .lean();
-        const response = await request(app.getHttpServer()).get("/users").expect(200);
-        expect(response.body).toEqual({
-            pagesCount: 1,
-            page: 1,
-            pageSize: 10,
-            totalCount: 2,
-            items: dbData,
-        });
-    });
-    it("9.Should return status 200 and correct body with pagination (/get)", async () => {
-        const dbData = await UsersAccountModelClass.find(
-            {},
-            {
-                _id: 0,
-                id: 1,
-                login: 1,
-                email: 1,
-                createdAt: 1,
-            },
-        )
-            .sort({ createdAt: -1 })
-            .lean();
-        const response = await request(app.getHttpServer()).get("/users?pageNumber=1&pageSize=1").expect(200);
-        expect(response.body).toEqual({
-            pagesCount: 2,
-            page: 1,
-            pageSize: 1,
-            totalCount: 2,
-            items: [dbData[0]],
-        });
-    });
-    it("10.Should return status 200 and correct body with pagination (/get)", async () => {
-        const dbData = await UsersAccountModelClass.find(
-            {},
-            {
-                _id: 0,
-                id: 1,
-                login: 1,
-                email: 1,
-                createdAt: 1,
-            },
-        )
-            .sort({ createdAt: -1 })
-            .lean();
-        const response = await request(app.getHttpServer()).get("/users?pageNumber=2&pageSize=1").expect(200);
-        expect(response.body).toEqual({
-            pagesCount: 2,
-            page: 2,
-            pageSize: 1,
-            totalCount: 2,
-            items: [dbData[1]],
-        });
-    });
-    it("11.Should return status 401 for not authorized user (/delete)", async () => {
-        const dbData = await UsersAccountModelClass.find(
-            {},
-            {
-                _id: 0,
-                id: 1,
-                login: 1,
-                email: 1,
-                createdAt: 1,
-            },
-        )
-            .sort({ createdAt: -1 })
-            .lean();
-        await request(app.getHttpServer()).delete(`/users/${dbData[0].id}`).expect(401);
-    });
-    it("12.Should return status 404 for non existing id (/delete)", async () => {
-        await request(app.getHttpServer())
-            .delete(`/users/000`)
-            .set("authorization", "Basic YWRtaW46cXdlcnR5")
-            .expect(404);
-    });
-    it("13.Should return status 204 and delete user (/delete)", async () => {
-        const dbData = await UsersAccountModelClass.find(
-            {},
-            {
-                _id: 0,
-                id: 1,
-                login: 1,
-                email: 1,
-                createdAt: 1,
-            },
-        )
-            .sort({ createdAt: -1 })
-            .lean();
-        await request(app.getHttpServer())
-            .delete(`/users/${dbData[0].id}`)
-            .set("authorization", "Basic YWRtaW46cXdlcnR5")
-            .expect(204);
-        expect(
-            await UsersAccountModelClass.find(
-                {},
-                {
-                    _id: 0,
-                    id: 1,
-                    login: 1,
-                    email: 1,
-                    createdAt: 1,
-                },
-            )
-                .sort({ createdAt: -1 })
-                .lean(),
-        ).toEqual([dbData[1]]);
     });
 });

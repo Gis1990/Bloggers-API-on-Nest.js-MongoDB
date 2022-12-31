@@ -9,8 +9,16 @@ import { HttpExceptionFilter } from "../src/exception.filter";
 import * as cookieParser from "cookie-parser";
 import { useContainer } from "class-validator";
 import { creatingBlogForTests } from "./blogs.e2e-spec";
-import { createUserForTesting } from "./users.e2e-spec";
-import { createContentCommentForTesting, createOutputCommentForTesting, createPostForTesting } from "./posts.e2e-spec";
+import {
+    createContentCommentForTesting,
+    createOutputCommentForTesting,
+    createPostForTesting,
+    createUserForTesting,
+} from "./posts.e2e-spec";
+import { MongooseModule } from "@nestjs/mongoose";
+import { CommentDBClass, CommentsSchema } from "../src/features/comments/comments.schema";
+import { PostDBClass, PostsSchema } from "../src/features/posts/posts.schema";
+import { CommentsQueryRepository } from "../src/features/comments/comments.query.repository";
 
 const testValidationPipeSettings = {
     transform: true,
@@ -40,7 +48,21 @@ describe("comments endpoint (e2e)", () => {
         await mongoose.connect(mongoUri);
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [
+                AppModule,
+                MongooseModule.forRoot(mongoUri, { useNewUrlParser: true }),
+                MongooseModule.forFeature([
+                    {
+                        name: CommentDBClass.name,
+                        schema: CommentsSchema,
+                    },
+                    {
+                        name: PostDBClass.name,
+                        schema: PostsSchema,
+                    },
+                ]),
+            ],
+            providers: [CommentsQueryRepository],
         }).compile();
 
         app = moduleFixture.createNestApplication();

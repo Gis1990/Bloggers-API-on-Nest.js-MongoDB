@@ -1,7 +1,7 @@
 import { IsString, Matches, IsNotEmpty, Length } from "class-validator";
 import { IsEmailExistOrConfirmed } from "../../users/users.custom.decorators";
-import { userDevicesDataClass } from "../../users/entities/users.entity";
 import { Transform, TransformFnParams } from "class-transformer";
+import { UserDevicesDataClass } from "../../users/users.schema";
 
 const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
@@ -51,6 +51,6 @@ export class CurrentUserModelForMeEndpoint {
 }
 
 export class CurrentUserWithDevicesDataModel extends CurrentUserModel {
-    public userDevicesData: userDevicesDataClass[];
-    public currentSession: userDevicesDataClass;
+    public userDevicesData: UserDevicesDataClass[];
+    public currentSession: UserDevicesDataClass;
 }

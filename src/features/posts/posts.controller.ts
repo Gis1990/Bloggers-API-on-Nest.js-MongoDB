@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGu
 import { PostsService } from "./posts.service";
 import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts, PostsIdValidationModel } from "./dto/posts.dto";
 import { CurrentUser, CurrentUserId } from "../auth/auth.cutsom.decorators";
-import { NewPostClassResponseModel, PostDBClass, PostDBClassPagination } from "./entities/posts.entity";
+import { NewPostClassResponseModel, PostDBClassPagination } from "./entities/posts.entity";
 import { CommentsService } from "../comments/comments.service";
 import {
     ModelForCreatingNewComment,
@@ -16,6 +16,7 @@ import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
 import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard";
 import { SkipThrottle } from "@nestjs/throttler";
+import { PostDBClass } from "./posts.schema";
 
 @SkipThrottle()
 @Controller("posts")

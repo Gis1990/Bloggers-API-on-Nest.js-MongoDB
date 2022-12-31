@@ -1,35 +1,34 @@
 import { Injectable } from "@nestjs/common";
-import { BlogsModelClass } from "../../db";
-import { BlogClassResponseModel, BlogDBClass, ModelForUpdatingBlog } from "./entities/blogs.entity";
-import { InputModelForCreatingBlog } from "./dto/blogs.dto";
-import { ObjectId } from "mongodb";
+import { BlogResponseModelClass } from "./entities/blogs.entity";
+import { Model } from "mongoose";
+import { InjectModel } from "@nestjs/mongoose";
+import { BlogDBClass, BlogDocument } from "./blogs.schema";
+import { CreatedBlogDto, InputModelForUpdatingBlog } from "./dto/blogs.dto";
 
 @Injectable()
 export class BlogsRepository {
-    async createBlog(dto: InputModelForCreatingBlog): Promise<BlogClassResponseModel> {
-        const blog: BlogDBClass = new BlogDBClass(
-            new ObjectId(),
-            Number(new Date()).toString(),
-            dto.name,
-            dto.description,
-            dto.websiteUrl,
-            new Date(),
-        );
-        await BlogsModelClass.insertMany([blog]);
-        const { _id, ...newBlogRest } = blog;
-        return newBlogRest;
+    constructor(@InjectModel(BlogDBClass.name) private blogsModelClass: Model<BlogDocument>) {}
+
+    async createBlog(newBlog: CreatedBlogDto): Promise<BlogResponseModelClass> {
+        const blog = new this.blogsModelClass(newBlog);
+        await blog.save();
+        const { _id, ...blogRest } = blog.toObject();
+        return blogRest;
     }
 
-    async updateBlog(dto: ModelForUpdatingBlog): Promise<boolean> {
+    async updateBlog(blogId: string, dto: InputModelForUpdatingBlog): Promise<boolean> {
         const name = dto.name;
         const description = dto.description;
         const websiteUrl = dto.websiteUrl;
-        const result = await BlogsModelClass.updateOne({ id: dto.id }, { $set: { name, description, websiteUrl } });
+        const result = await this.blogsModelClass.updateOne(
+            { id: blogId },
+            { $set: { name, description, websiteUrl } },
+        );
         return result.matchedCount === 1;
     }
 
     async deleteBlogById(id: string): Promise<boolean> {
-        const result = await BlogsModelClass.deleteOne({ id: id });
+        const result = await this.blogsModelClass.deleteOne({ id: id });
         return result.deletedCount === 1;
     }
 }

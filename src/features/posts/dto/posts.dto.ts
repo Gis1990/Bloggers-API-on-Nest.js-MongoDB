@@ -2,6 +2,8 @@ import { IsBlogsIdExistInTheRequestBody } from "../../blogs/blogs.custom.decorat
 import { IsString, Length, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsPostIdExist } from "../posts.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
+import { ExtendedLikesInfoClass, UsersLikesInfoClass } from "../posts.schema";
+import { LikesInfoClass } from "../../comments/comments.schema";
 
 export class ModelForGettingAllPosts {
     @IsNumber()
@@ -58,6 +60,7 @@ export class InputModelForCreatingNewPostForSpecificBlog {
     @IsString()
     @Length(1, 1000)
     @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     public content: string;
 }
 
@@ -66,4 +69,16 @@ export class PostsIdValidationModel {
     @IsNotEmpty()
     @IsPostIdExist()
     public id: string;
+}
+
+export class CreatedPostDto {
+    public id: string;
+    public title: string;
+    public shortDescription: string;
+    public content: string;
+    public blogId: string;
+    public blogName: string;
+    public createdAt: Date;
+    public extendedLikesInfo: LikesInfoClass;
+    public usersLikesInfo: UsersLikesInfoClass;
 }

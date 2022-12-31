@@ -5,11 +5,16 @@ import { NewUserClassResponseModel, UserDBClassPagination } from "./entities/use
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { UsersQueryRepository } from "./users.query.repository";
 import { SkipThrottle } from "@nestjs/throttler";
+import { AuthService } from "../auth/auth.service";
 
 @SkipThrottle()
 @Controller("users")
 export class UsersController {
-    constructor(protected usersService: UsersService, protected usersQueryRepository: UsersQueryRepository) {}
+    constructor(
+        protected usersService: UsersService,
+        protected usersQueryRepository: UsersQueryRepository,
+        protected authService: AuthService,
+    ) {}
 
     @Get()
     async getAllUsers(
@@ -21,8 +26,8 @@ export class UsersController {
 
     @UseGuards(BasicAuthGuard)
     @Post()
-    async createBlog(@Body() dto: InputModelForCreatingNewUser): Promise<NewUserClassResponseModel> {
-        return await this.usersService.createUserWithoutConfirmationEmail(dto);
+    async createUser(@Body() dto: InputModelForCreatingNewUser): Promise<NewUserClassResponseModel> {
+        return await this.authService.createUserWithoutConfirmationEmail(dto);
     }
 
     @UseGuards(BasicAuthGuard)

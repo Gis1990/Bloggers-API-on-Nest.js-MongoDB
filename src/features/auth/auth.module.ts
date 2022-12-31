@@ -16,6 +16,19 @@ import { JwtRefreshTokenStrategy } from "./strategies/jwt.refresh.token.strategy
 import { UsersQueryRepository } from "../users/users.query.repository";
 import { strategyForUnauthorizedUser } from "./strategies/strategy.for.unauthorized.user";
 import { IsEmailExistOrConfirmedConstraint } from "../users/users.custom.decorators";
+import { MongooseModule } from "@nestjs/mongoose";
+import {
+    LoginAttemptsClass,
+    LoginAttemptsSchema,
+    UserAccountDBClass,
+    UserAccountEmailClass,
+    UserAccountEmailSchema,
+    UserDevicesDataClass,
+    UserDevicesDataSchema,
+    EmailRecoveryCodeClass,
+    EmailRecoveryCodeSchema,
+    UsersAccountSchema,
+} from "../users/users.schema";
 
 @Module({
     controllers: [AuthController],
@@ -33,6 +46,33 @@ import { IsEmailExistOrConfirmedConstraint } from "../users/users.custom.decorat
         BcryptService,
         IsEmailExistOrConfirmedConstraint,
     ],
-    imports: [PassportModule, JwtModule.register({}), MailModule, BcryptModule],
+    imports: [
+        PassportModule,
+        JwtModule.register({}),
+        MailModule,
+        BcryptModule,
+        MongooseModule.forFeature([
+            {
+                name: UserAccountDBClass.name,
+                schema: UsersAccountSchema,
+            },
+            {
+                name: UserAccountEmailClass.name,
+                schema: UserAccountEmailSchema,
+            },
+            {
+                name: UserDevicesDataClass.name,
+                schema: UserDevicesDataSchema,
+            },
+            {
+                name: EmailRecoveryCodeClass.name,
+                schema: EmailRecoveryCodeSchema,
+            },
+            {
+                name: LoginAttemptsClass.name,
+                schema: LoginAttemptsSchema,
+            },
+        ]),
+    ],
 })
 export class AuthModule {}

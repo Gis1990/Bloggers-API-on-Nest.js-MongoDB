@@ -1,6 +1,12 @@
 import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsEmailExist, IsLoginExist, IsUsersIdExist } from "../users.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
+import {
+    LoginAttemptsClass,
+    UserAccountEmailClass,
+    UserDevicesDataClass,
+    EmailRecoveryCodeClass,
+} from "../users.schema";
 
 const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
@@ -54,4 +60,17 @@ export class UsersIdValidationModel {
     @IsNotEmpty()
     @IsUsersIdExist()
     public id: string;
+}
+
+export class CreatedNewUserDto {
+    public id: string;
+    public login: string;
+    public email: string;
+    public passwordHash: string;
+    public createdAt: string;
+    public emailRecoveryCode: EmailRecoveryCodeClass;
+    public loginAttempts: LoginAttemptsClass[];
+    public emailConfirmation: UserAccountEmailClass;
+    public userDevicesData: UserDevicesDataClass[];
+    public currentSession: UserDevicesDataClass;
 }

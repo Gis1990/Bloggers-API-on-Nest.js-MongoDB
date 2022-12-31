@@ -1,17 +1,6 @@
-import { ObjectId } from "mongodb";
+import { BlogDBClass } from "../blogs.schema";
 
-export class BlogDBClass {
-    constructor(
-        public _id: ObjectId,
-        public id: string,
-        public name: string,
-        public description: string,
-        public websiteUrl: string,
-        public createdAt: Date,
-    ) {}
-}
-
-export class BlogClassResponseModel {
+export class BlogResponseModelClass {
     constructor(
         public id: string,
         public name: string,
@@ -29,8 +18,4 @@ export class BlogDBClassPagination {
         public totalCount: number,
         public items: BlogDBClass[],
     ) {}
-}
-
-export class ModelForUpdatingBlog {
-    constructor(public id: string, public name: string, public description: string, public websiteUrl: string) {}
 }

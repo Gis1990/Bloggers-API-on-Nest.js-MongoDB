@@ -8,7 +8,15 @@ import mongoose from "mongoose";
 import { HttpExceptionFilter } from "../src/exception.filter";
 import * as cookieParser from "cookie-parser";
 import { useContainer } from "class-validator";
-import { createUserForTesting } from "./users.e2e-spec";
+import { randomString } from "./blogs.e2e-spec";
+
+const createUserForTesting = (loginLen: number, emailLen: number, passwordLen: number) => {
+    return {
+        login: randomString(loginLen),
+        email: randomString(emailLen) + "test@email.test",
+        password: randomString(passwordLen),
+    };
+};
 
 const testValidationPipeSettings = {
     transform: true,

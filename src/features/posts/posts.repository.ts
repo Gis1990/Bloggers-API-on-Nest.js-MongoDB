@@ -1,12 +1,19 @@
-import { PostsModelClass } from "../../db";
 import { Injectable } from "@nestjs/common";
-import { PostDBClass } from "./entities/posts.entity";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { PostDBClass, PostDocument } from "./posts.schema";
+import { NewPostClassResponseModel } from "./entities/posts.entity";
+import { CreatedPostDto } from "./dto/posts.dto";
 
 @Injectable()
 export class PostsRepository {
-    async createPost(post: PostDBClass): Promise<PostDBClass> {
-        await PostsModelClass.insertMany([post]);
-        return post;
+    constructor(@InjectModel(PostDBClass.name) private postsModelClass: Model<PostDocument>) {}
+
+    async createPost(newPost: CreatedPostDto): Promise<NewPostClassResponseModel> {
+        const post = new this.postsModelClass(newPost);
+        await post.save();
+        const { _id, usersLikesInfo, ...postRest } = post.toObject();
+        return postRest;
     }
 
     async updatePost(
@@ -16,12 +23,12 @@ export class PostsRepository {
         content: string,
         blogId: string,
     ): Promise<boolean> {
-        const post = await PostsModelClass.findOne({ id: id });
+        const post = await this.postsModelClass.findOne({ id: id });
         let blogName;
         if (post) {
             blogName = post.blogName;
         }
-        const result = await PostsModelClass.updateOne(
+        const result = await this.postsModelClass.updateOne(
             { id: id },
             { $set: { title, shortDescription, content, blogId, blogName } },
         );
@@ -29,12 +36,12 @@ export class PostsRepository {
     }
 
     async deletePostById(id: string): Promise<boolean> {
-        const result = await PostsModelClass.deleteOne({ id: id });
+        const result = await this.postsModelClass.deleteOne({ id: id });
         return result.deletedCount === 1;
     }
 
     async likeOperation(id: string, update: any): Promise<boolean> {
-        const result = await PostsModelClass.updateOne({ id: id }, update);
+        const result = await this.postsModelClass.updateOne({ id: id }, update);
         return result.matchedCount === 1;
     }
 }

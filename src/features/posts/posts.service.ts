@@ -1,16 +1,12 @@
 import { PostsRepository } from "./posts.repository";
-import { ObjectId } from "mongodb";
 import { Injectable } from "@nestjs/common";
-import {
-    ExtendedLikesInfoClass,
-    NewestLikesClass,
-    NewPostClassResponseModel,
-    PostDBClass,
-    UsersLikesInfoClass,
-} from "./entities/posts.entity";
+import { NewPostClassResponseModel } from "./entities/posts.entity";
 import { InputModelForCreatingAndUpdatingPost } from "./dto/posts.dto";
 import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
 import { PostsQueryRepository } from "./posts.query.repository";
+import { ExtendedLikesInfoClass, NewestLikesClass, UsersLikesInfoClass } from "./posts.schema";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
 
 @Injectable()
 export class PostsService {
@@ -18,37 +14,27 @@ export class PostsService {
         protected postsRepository: PostsRepository,
         protected blogsQueryRepository: BlogsQueryRepository,
         protected postsQueryRepository: PostsQueryRepository,
+        @InjectModel(NewestLikesClass.name) private newestLikesModelClass: Model<NewestLikesClass>,
     ) {}
 
     async createPost(dto: InputModelForCreatingAndUpdatingPost): Promise<NewPostClassResponseModel> {
         const blog = await this.blogsQueryRepository.getBlogById(dto.blogId);
         let blogName;
         blog ? (blogName = blog.name) : (blogName = "");
-        const likesInfo: ExtendedLikesInfoClass = new ExtendedLikesInfoClass(0, 0, "None", []);
-        const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass([], []);
-        const post: PostDBClass = new PostDBClass(
-            new ObjectId(),
-            Number(new Date()).toString(),
-            dto.title,
-            dto.shortDescription,
-            dto.content,
-            dto.blogId,
-            blogName,
-            new Date(),
-            likesInfo,
-            usersLikesInfo,
-        );
-        const newPost = await this.postsRepository.createPost(post);
-        return (({ id, title, shortDescription, content, blogId, blogName, createdAt, extendedLikesInfo }) => ({
-            id,
-            title,
-            shortDescription,
-            content,
-            blogId,
-            blogName,
-            createdAt,
-            extendedLikesInfo,
-        }))(newPost);
+        const extendedLikesInfo: ExtendedLikesInfoClass = new ExtendedLikesInfoClass();
+        const usersLikes: UsersLikesInfoClass = new UsersLikesInfoClass();
+        const createdPostDto = {
+            id: Number(new Date()).toString(),
+            title: dto.title,
+            shortDescription: dto.shortDescription,
+            content: dto.content,
+            blogId: dto.blogId,
+            blogName: blogName,
+            createdAt: new Date(),
+            extendedLikesInfo: extendedLikesInfo,
+            usersLikesInfo: usersLikes,
+        };
+        return await this.postsRepository.createPost(createdPostDto);
     }
 
     async updatePost(
@@ -68,7 +54,6 @@ export class PostsService {
     async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
         // Find the post with the given ID
         const post = await this.postsQueryRepository.getPostByIdForLikeOperation(id);
-
         // If the post does not exist, return false
         if (!post) {
             return false;
@@ -80,6 +65,13 @@ export class PostsService {
         // Declare an update object that will be used to update the post
         let update: any = {};
 
+        // Declare a createdNewestLikesDto object that will be used for newestLikes entry
+        const createdNewestLikesDto = {
+            addedAt: new Date(),
+            login: login,
+            userId: userId,
+        };
+
         // If the user wants to like the post and has not already liked or disliked it,
         // change users status to Like,
         // increase the likes count and add the user to the list of users who liked the post
@@ -88,7 +80,7 @@ export class PostsService {
                 "extendedLikesInfo.likesCount": post.extendedLikesInfo.likesCount + 1,
                 "extendedLikesInfo.myStatus": likeStatus,
                 $push: {
-                    "extendedLikesInfo.newestLikes": new NewestLikesClass(new Date(), userId, login),
+                    "extendedLikesInfo.newestLikes": new this.newestLikesModelClass(createdNewestLikesDto),
                     "usersLikesInfo.usersWhoPutLike": userId,
                 },
             };
@@ -163,7 +155,7 @@ export class PostsService {
                     "usersLikesInfo.usersWhoPutDislike": userId,
                 },
                 $push: {
-                    "extendedLikesInfo.newestLikes": new NewestLikesClass(new Date(), userId, login),
+                    "extendedLikesInfo.newestLikes": new this.newestLikesModelClass(createdNewestLikesDto),
                     "usersLikesInfo.usersWhoPutLike": userId,
                 },
             };

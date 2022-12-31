@@ -1,11 +1,11 @@
 import { Controller, Response, Get, Delete, Param, UseGuards, HttpCode, Res, HttpException } from "@nestjs/common";
 import { SecurityService } from "./security.service";
-import { userDevicesDataClass } from "../users/entities/users.entity";
 import { JwtRefreshTokenAuthGuard } from "../auth/guards/jwtRefreshToken-auth.guard";
 import { CurrentUser } from "../auth/auth.cutsom.decorators";
 import { CurrentUserWithDevicesDataModel } from "../auth/dto/auth.dto";
 import { SkipThrottle } from "@nestjs/throttler";
 import { deviceIdValidationModel } from "./dto/security.dto";
+import { UserDevicesDataClass } from "../users/users.schema";
 
 @SkipThrottle()
 @Controller("security")
@@ -18,7 +18,7 @@ export class SecurityController {
     async devices(
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
         @Res({ passthrough: true }) response: Response,
-    ): Promise<userDevicesDataClass[]> {
+    ): Promise<UserDevicesDataClass[]> {
         return await this.securityService.returnAllDevices(userWithDeviceData);
     }
 

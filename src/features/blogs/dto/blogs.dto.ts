@@ -64,3 +64,11 @@ export class InputModelForUpdatingBlog {
     @Matches(pattern)
     public websiteUrl: string;
 }
+
+export class CreatedBlogDto {
+    public id: string;
+    public name: string;
+    public description: string;
+    public websiteUrl: string;
+    public createdAt: Date;
+}

@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { userDevicesDataClass } from "../users/entities/users.entity";
 import { UsersQueryRepository } from "../users/users.query.repository";
 import { CurrentUserWithDevicesDataModel } from "../auth/dto/auth.dto";
 import { UsersRepository } from "../users/users.repository";
+import { UserDevicesDataClass } from "../users/users.schema";
 
 @Injectable()
 export class SecurityService {
@@ -10,7 +10,7 @@ export class SecurityService {
 
     async returnAllDevices(
         userWithDeviceData: CurrentUserWithDevicesDataModel,
-    ): Promise<userDevicesDataClass[] | null> {
+    ): Promise<UserDevicesDataClass[] | null> {
         const user = await this.usersQueryRepository.findUserById(userWithDeviceData.id);
         if (user) {
             return user.userDevicesData;

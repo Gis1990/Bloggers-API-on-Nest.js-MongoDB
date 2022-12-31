@@ -1,10 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { BlogsModelClass } from "../../db";
-import { BlogDBClass, BlogDBClassPagination } from "./entities/blogs.entity";
+import { BlogDBClassPagination } from "./entities/blogs.entity";
 import { ModelForGettingAllBlogs } from "./dto/blogs.dto";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { BlogDBClass, BlogDocument } from "./blogs.schema";
 
 @Injectable()
 export class BlogsQueryRepository {
+    constructor(@InjectModel(BlogDBClass.name) private blogsModelClass: Model<BlogDocument>) {}
+
     async getAllBlogs(dto: ModelForGettingAllBlogs) {
         const {
             searchNameTerm = null,
@@ -29,15 +33,20 @@ export class BlogsQueryRepository {
         }
 
         // Execute the query using the BlogsModelClass model, applying the sort, skip, limit, and lean options, and assign the result to the cursor variable
-        const cursor = await BlogsModelClass.find(query, { _id: 0 }).sort(sortObj).skip(skips).limit(pageSize).lean();
+        const cursor = await this.blogsModelClass
+            .find(query, { _id: 0 })
+            .sort(sortObj)
+            .skip(skips)
+            .limit(pageSize)
+            .lean();
         // Get the total count of documents that match the query and assign it to the totalCount variable
-        const totalCount = await BlogsModelClass.count(query);
+        const totalCount = await this.blogsModelClass.count(query);
 
         // Return a new instance of the BlogDBClassPagination class with the calculated total number of pages, the current page number and size, the total number of documents, and the cursor as arguments
         return new BlogDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
 
     async getBlogById(id: string): Promise<BlogDBClass | null> {
-        return BlogsModelClass.findOne({ id: id }, { _id: 0 });
+        return this.blogsModelClass.findOne({ id: id }, { _id: 0 });
     }
 }

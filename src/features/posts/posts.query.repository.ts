@@ -1,27 +1,32 @@
-import { PostsModelClass } from "../../db";
 import { Injectable } from "@nestjs/common";
-import { PostDBClass, PostDBClassPagination } from "./entities/posts.entity";
+import { PostDBClassPagination } from "./entities/posts.entity";
 import { ModelForGettingAllPosts } from "./dto/posts.dto";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { PostDBClass, PostDocument } from "./posts.schema";
 
 @Injectable()
 export class PostsQueryRepository {
+    constructor(@InjectModel(PostDBClass.name) private postsModelClass: Model<PostDocument>) {}
+
     async getAllPosts(dto: ModelForGettingAllPosts): Promise<PostDBClassPagination> {
         const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
         const skips = pageSize * (pageNumber - 1);
-        const totalCount = await PostsModelClass.count({});
+        const totalCount = await this.postsModelClass.count({});
         const sortObj: any = {};
         if (sortDirection === "desc") {
             sortObj[sortBy] = -1;
         } else {
             sortObj[sortBy] = 1;
         }
-        const cursor = await PostsModelClass.find(
-            {},
-            {
-                _id: 0,
-                usersLikesInfo: 0,
-            },
-        )
+        const cursor = await this.postsModelClass
+            .find(
+                {},
+                {
+                    _id: 0,
+                    usersLikesInfo: 0,
+                },
+            )
             .sort(sortObj)
             .skip(skips)
             .limit(pageSize)
@@ -34,17 +39,19 @@ export class PostsQueryRepository {
         let cursor;
         const skips = pageSize * (pageNumber - 1);
         const sortObj: any = {};
-        const totalCount = await PostsModelClass.count({ blogId: blogId });
+        const totalCount = await this.postsModelClass.count({ blogId: blogId });
         if (sortDirection === "desc") {
             sortObj[sortBy] = -1;
-            cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
+            cursor = await this.postsModelClass
+                .find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
                 .sort(sortObj)
                 .skip(skips)
                 .limit(pageSize)
                 .lean();
         } else {
             sortObj[sortBy] = 1;
-            cursor = await PostsModelClass.find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
+            cursor = await this.postsModelClass
+                .find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
                 .sort(sortObj)
                 .skip(skips)
                 .limit(pageSize)
@@ -55,15 +62,15 @@ export class PostsQueryRepository {
     }
 
     async getPostById(id: string): Promise<PostDBClass | null> {
-        return PostsModelClass.findOne({ id: id }, { _id: 0, usersLikesInfo: 0 });
+        return this.postsModelClass.findOne({ id: id }, { _id: 0, usersLikesInfo: 0 });
     }
 
     async getPostByIdForLikeOperation(id: string): Promise<PostDBClass | null> {
-        return PostsModelClass.findOne({ id: id });
+        return this.postsModelClass.findOne({ id: id });
     }
 
     async returnUsersLikeStatus(id: string, userId: string): Promise<string> {
-        const post = await PostsModelClass.findOne({ id: id });
+        const post = await this.postsModelClass.findOne({ id: id });
         if (post?.usersLikesInfo.usersWhoPutLike.includes(userId)) {
             return "Like";
         } else if (post?.usersLikesInfo.usersWhoPutDislike.includes(userId)) {

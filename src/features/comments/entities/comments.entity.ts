@@ -1,19 +1,4 @@
-import { ObjectId } from "mongodb";
-import { LikesInfoClass, UsersLikesInfoClass } from "../../posts/entities/posts.entity";
-
-export class CommentDBClass {
-    constructor(
-        public _id: ObjectId,
-        public id: string,
-        public content: string,
-        public userId: string,
-        public userLogin: string,
-        public postId: string,
-        public createdAt: string,
-        public likesInfo: LikesInfoClass,
-        public usersLikesInfo: UsersLikesInfoClass,
-    ) {}
-}
+import { CommentDBClass, LikesInfoClass } from "../comments.schema";
 
 export class CommentDBClassPagination {
     constructor(
@@ -31,7 +16,7 @@ export class NewCommentClassResponseModel {
         public content: string,
         public userId: string,
         public userLogin: string,
-        public createdAt: string,
+        public createdAt: Date,
         public likesInfo: LikesInfoClass,
     ) {}
 }

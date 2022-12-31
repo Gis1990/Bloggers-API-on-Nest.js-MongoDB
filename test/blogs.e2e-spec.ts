@@ -5,11 +5,14 @@ import * as request from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { AppModule } from "../src/app.module";
 import mongoose from "mongoose";
-import { BlogsModelClass } from "../src/db";
 import { HttpExceptionFilter } from "../src/exception.filter";
 import * as cookieParser from "cookie-parser";
 import { useContainer } from "class-validator";
+import { MongooseModule } from "@nestjs/mongoose";
+import { BlogDBClass, BlogsSchema } from "../src/features/blogs/blogs.schema";
+import { BlogsQueryRepository } from "../src/features/blogs/blogs.query.repository";
 
+export const BlogsModelClass = mongoose.connection.collection("blogdbclasses");
 const testValidationPipeSettings = {
     transform: true,
     stopAtFirstError: true,
@@ -100,9 +103,18 @@ describe("blogs endpoint (e2e)", () => {
         await mongoose.connect(mongoUri);
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [
+                MongooseModule.forRoot(mongoUri, { useNewUrlParser: true }),
+                AppModule,
+                MongooseModule.forFeature([
+                    {
+                        name: BlogDBClass.name,
+                        schema: BlogsSchema,
+                    },
+                ]),
+            ],
+            providers: [BlogsQueryRepository],
         }).compile();
-
         app = moduleFixture.createNestApplication();
         app.enableCors();
         app.useGlobalPipes(new ValidationPipe(testValidationPipeSettings));
@@ -195,7 +207,6 @@ describe("blogs endpoint (e2e)", () => {
             .set("authorization", "Basic YWRtaW46cXdlcnR5")
             .send(correctBlog1)
             .expect(201);
-
         expect(response.body).toEqual({
             id: expect.any(String),
             description: correctBlog1.description,
@@ -361,7 +372,7 @@ describe("blogs endpoint (e2e)", () => {
         });
         // Should return status 400 and array with errors (/post)
         const blog7 = await BlogsModelClass.findOne({ name: updatedCorrectBlog.name });
-        const newIncorrectPost1 = createPostForTestingInBlogs(0, 50, 900, blog7!.id);
+        const newIncorrectPost1 = createPostForTestingInBlogs(0, 50, 900, blog7?.id);
         const response12 = await request(app.getHttpServer())
             .post(`/blogs/${blog7?.id}/posts`)
             .set("authorization", "Basic YWRtaW46cXdlcnR5")

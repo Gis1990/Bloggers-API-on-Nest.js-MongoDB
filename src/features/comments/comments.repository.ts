@@ -1,24 +1,31 @@
-import { CommentDBClass } from "./entities/comments.entity";
-import { CommentsModelClass } from "../../db";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { CommentDBClass, CommentDocument } from "./comments.schema";
+import { CreatedCommentDto } from "./dto/comments.dto";
+import { NewCommentClassResponseModel } from "./entities/comments.entity";
 
 export class CommentsRepository {
-    async createComment(comment: CommentDBClass): Promise<CommentDBClass> {
-        await CommentsModelClass.insertMany([comment]);
-        return comment;
+    constructor(@InjectModel(CommentDBClass.name) private commentsModelClass: Model<CommentDocument>) {}
+
+    async createComment(newComment: CreatedCommentDto): Promise<NewCommentClassResponseModel> {
+        const comment = new this.commentsModelClass(newComment);
+        await comment.save();
+        const { _id, postId, usersLikesInfo, ...commentRest } = comment.toObject();
+        return commentRest;
     }
 
     async deleteCommentById(id: string): Promise<boolean> {
-        const result = await CommentsModelClass.deleteOne({ id: id });
+        const result = await this.commentsModelClass.deleteOne({ id: id });
         return result.deletedCount === 1;
     }
 
     async updateCommentById(id: string, content: string): Promise<boolean> {
-        const result = await CommentsModelClass.updateOne({ id: id }, { $set: { content } });
+        const result = await this.commentsModelClass.updateOne({ id: id }, { $set: { content } });
         return result.matchedCount === 1;
     }
 
     async likeOperation(id: string, update: any): Promise<boolean> {
-        const result = await CommentsModelClass.updateOne({ id: id }, update);
+        const result = await this.commentsModelClass.updateOne({ id: id }, update);
         return result.matchedCount === 1;
     }
 }

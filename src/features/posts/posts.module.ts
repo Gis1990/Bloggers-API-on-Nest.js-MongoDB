@@ -12,9 +12,33 @@ import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
 import { PostsQueryRepository } from "./posts.query.repository";
 import { PostsQueryService } from "./posts.query.service";
 import { CommentsQueryRepository } from "../comments/comments.query.repository";
+import { MongooseModule } from "@nestjs/mongoose";
+import { BlogDBClass, BlogsSchema } from "../blogs/blogs.schema";
+import { NewestLikesClass, NewestLikesSchema, PostDBClass, PostsSchema } from "./posts.schema";
+import { CommentDBClass, CommentsSchema } from "../comments/comments.schema";
 
 @Module({
-    imports: [forwardRef(() => BlogsModule)],
+    imports: [
+        forwardRef(() => BlogsModule),
+        MongooseModule.forFeature([
+            {
+                name: BlogDBClass.name,
+                schema: BlogsSchema,
+            },
+            {
+                name: PostDBClass.name,
+                schema: PostsSchema,
+            },
+            {
+                name: CommentDBClass.name,
+                schema: CommentsSchema,
+            },
+            {
+                name: NewestLikesClass.name,
+                schema: NewestLikesSchema,
+            },
+        ]),
+    ],
     controllers: [PostsController],
     providers: [
         PostsService,

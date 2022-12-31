@@ -1,10 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { UserAccountDBClass, UserDBClassPagination } from "./entities/users.entity";
-import { UsersAccountModelClass } from "../../db";
+import { UserDBClassPagination } from "./entities/users.entity";
 import { ModelForGettingAllUsers } from "./dto/users.dto";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { UserAccountDBClass, UserAccountDocument } from "./users.schema";
 
 @Injectable()
 export class UsersQueryRepository {
+    constructor(@InjectModel(UserAccountDBClass.name) private usersAccountModelClass: Model<UserAccountDocument>) {}
+
     async getAllUsers(dto: ModelForGettingAllUsers): Promise<UserDBClassPagination> {
         const {
             searchLoginTerm = null,
@@ -37,21 +41,22 @@ export class UsersQueryRepository {
         }
 
         // Retrieve the documents from the UsersAccountModelClass collection, applying the query, sort, skip, and limit options
-        const cursor = await UsersAccountModelClass.find(query, { _id: 0, id: 1, login: 1, email: 1, createdAt: 1 })
+        const cursor = await this.usersAccountModelClass
+            .find(query, { _id: 0, id: 1, login: 1, email: 1, createdAt: 1 })
             .sort(sortObj)
             .skip(skips)
             .limit(pageSize)
             .lean();
 
         // Count the total number of documents that match the query
-        const totalCount = await UsersAccountModelClass.count(query);
+        const totalCount = await this.usersAccountModelClass.count(query);
 
         // Return a new UserDBClassPagination object with the calculated pagination information and the retrieved documents
         return new UserDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
 
     async findUserById(id: string): Promise<UserAccountDBClass | null> {
-        const user = await UsersAccountModelClass.findOne(
+        const user = await this.usersAccountModelClass.findOne(
             { id: id },
             {
                 _id: 0,
@@ -70,7 +75,7 @@ export class UsersQueryRepository {
     }
 
     async findUserByDeviceId(deviceId: string): Promise<UserAccountDBClass | null> {
-        const user = await UsersAccountModelClass.findOne(
+        const user = await this.usersAccountModelClass.findOne(
             { userDevicesData: { $elemMatch: { deviceId: deviceId } } },
             {
                 _id: 0,
@@ -89,14 +94,14 @@ export class UsersQueryRepository {
     }
 
     async findByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDBClass | null> {
-        return UsersAccountModelClass.findOne({ $or: [{ email: loginOrEmail }, { login: loginOrEmail }] });
+        return this.usersAccountModelClass.findOne({ $or: [{ email: loginOrEmail }, { login: loginOrEmail }] });
     }
 
     async findUserByConfirmationCode(emailConfirmationCode: string): Promise<UserAccountDBClass | null> {
-        return UsersAccountModelClass.findOne({ "emailConfirmation.confirmationCode": emailConfirmationCode });
+        return this.usersAccountModelClass.findOne({ "emailConfirmation.confirmationCode": emailConfirmationCode });
     }
 
     async findUserByRecoveryCode(recoveryCode: string): Promise<UserAccountDBClass | null> {
-        return UsersAccountModelClass.findOne({ "emailRecoveryCode.recoveryCode": recoveryCode });
+        return this.usersAccountModelClass.findOne({ "emailRecoveryCode.recoveryCode": recoveryCode });
     }
 }

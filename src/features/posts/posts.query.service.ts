@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { PostDBClass, PostDBClassPagination } from "./entities/posts.entity";
+import { PostDBClassPagination } from "./entities/posts.entity";
 import { ModelForGettingAllPosts } from "./dto/posts.dto";
 import { PostsQueryRepository } from "./posts.query.repository";
+import { PostDBClass } from "./posts.schema";
 
 @Injectable()
 export class PostsQueryService {

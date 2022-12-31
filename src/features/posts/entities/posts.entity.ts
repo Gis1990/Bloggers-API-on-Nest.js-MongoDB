@@ -1,19 +1,4 @@
-import { ObjectId } from "mongodb";
-
-export class PostDBClass {
-    constructor(
-        public _id: ObjectId,
-        public id: string,
-        public title: string,
-        public shortDescription: string,
-        public content: string,
-        public blogId: string,
-        public blogName: string,
-        public createdAt: Date,
-        public extendedLikesInfo: ExtendedLikesInfoClass,
-        public usersLikesInfo: UsersLikesInfoClass,
-    ) {}
-}
+import { ExtendedLikesInfoClass, PostDBClass } from "../posts.schema";
 
 export class PostDBClassPagination {
     constructor(
@@ -36,25 +21,4 @@ export class NewPostClassResponseModel {
         public createdAt: Date,
         public extendedLikesInfo: ExtendedLikesInfoClass,
     ) {}
-}
-
-export class ExtendedLikesInfoClass {
-    constructor(
-        public likesCount: number,
-        public dislikesCount: number,
-        public myStatus: string,
-        public newestLikes: NewestLikesClass[],
-    ) {}
-}
-
-export class UsersLikesInfoClass {
-    constructor(public usersWhoPutLike: string[], public usersWhoPutDislike: string[]) {}
-}
-
-export class NewestLikesClass {
-    constructor(public addedAt: Date, public userId: string, public login: string) {}
-}
-
-export class LikesInfoClass {
-    constructor(public likesCount: number, public dislikesCount: number, public myStatus: string) {}
 }

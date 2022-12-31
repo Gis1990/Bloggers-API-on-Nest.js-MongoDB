@@ -1,11 +1,11 @@
 import { HttpException, Injectable, NotFoundException } from "@nestjs/common";
 import { CommentsRepository } from "./comments.repository";
-import { CommentDBClass, CommentDBClassPagination, NewCommentClassResponseModel } from "./entities/comments.entity";
-import { LikesInfoClass, UsersLikesInfoClass } from "../posts/entities/posts.entity";
-import { ObjectId } from "mongodb";
+import { CommentDBClassPagination, NewCommentClassResponseModel } from "./entities/comments.entity";
 import { ModelForCreatingNewComment, ModelForGettingAllComments } from "./dto/comments.dto";
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { CommentsQueryRepository } from "./comments.query.repository";
+import { CommentDBClass, LikesInfoClass } from "./comments.schema";
+import { UsersLikesInfoClass } from "../posts/posts.schema";
 
 @Injectable()
 export class CommentsService {
@@ -47,32 +47,23 @@ export class CommentsService {
     }
 
     async createComment(
-        model: ModelForCreatingNewComment,
+        dto: ModelForCreatingNewComment,
         postId: string,
         user: CurrentUserModel,
     ): Promise<NewCommentClassResponseModel> {
-        const likes: LikesInfoClass = new LikesInfoClass(0, 0, "None");
-        const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass([], []);
-        const comment: CommentDBClass = new CommentDBClass(
-            new ObjectId(),
-            Number(new Date()).toString(),
-            model.content,
-            user.id,
-            user.login,
-            postId,
-            new Date().toISOString(),
-            likes,
-            usersLikesInfo,
-        );
-        const newComment = await this.commentsRepository.createComment(comment);
-        return (({ id, content, userId, userLogin, createdAt, likesInfo }) => ({
-            id,
-            content,
-            userId,
-            userLogin,
-            createdAt,
-            likesInfo,
-        }))(newComment);
+        const likes: LikesInfoClass = new LikesInfoClass();
+        const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass();
+        const createdCommentDto = {
+            id: Number(new Date()).toString(),
+            content: dto.content,
+            userId: user.id,
+            userLogin: user.login,
+            postId: postId,
+            createdAt: new Date(),
+            likesInfo: likes,
+            usersLikesInfo: usersLikesInfo,
+        };
+        return await this.commentsRepository.createComment(createdCommentDto);
     }
 
     async deleteCommentById(id: string, userId: string | undefined): Promise<boolean> {

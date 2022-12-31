@@ -5,12 +5,24 @@ import * as request from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { AppModule } from "../src/app.module";
 import mongoose from "mongoose";
-import { BlogsModelClass } from "../src/db";
 import { HttpExceptionFilter } from "../src/exception.filter";
 import * as cookieParser from "cookie-parser";
 import { useContainer } from "class-validator";
-import { creatingBlogForTests, randomString } from "./blogs.e2e-spec";
-import { createUserForTesting } from "./users.e2e-spec";
+import { BlogsModelClass, creatingBlogForTests, randomString } from "./blogs.e2e-spec";
+import { NewestLikesClass, NewestLikesSchema, PostDBClass, PostsSchema } from "../src/features/posts/posts.schema";
+import { MongooseModule } from "@nestjs/mongoose";
+import { BlogDBClass, BlogsSchema } from "../src/features/blogs/blogs.schema";
+import { CommentDBClass, CommentsSchema } from "../src/features/comments/comments.schema";
+import { BlogsQueryRepository } from "../src/features/blogs/blogs.query.repository";
+import { PostsQueryRepository } from "../src/features/posts/posts.query.repository";
+
+export const createUserForTesting = (loginLen: number, emailLen: number, passwordLen: number) => {
+    return {
+        login: randomString(loginLen),
+        email: randomString(emailLen) + "test@email.test",
+        password: randomString(passwordLen),
+    };
+};
 
 const testValidationPipeSettings = {
     transform: true,
@@ -116,7 +128,29 @@ describe("posts endpoint (e2e)", () => {
         await mongoose.connect(mongoUri);
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [
+                MongooseModule.forRoot(mongoUri, { useNewUrlParser: true }),
+                AppModule,
+                MongooseModule.forFeature([
+                    {
+                        name: BlogDBClass.name,
+                        schema: BlogsSchema,
+                    },
+                    {
+                        name: PostDBClass.name,
+                        schema: PostsSchema,
+                    },
+                    {
+                        name: CommentDBClass.name,
+                        schema: CommentsSchema,
+                    },
+                    {
+                        name: NewestLikesClass.name,
+                        schema: NewestLikesSchema,
+                    },
+                ]),
+            ],
+            providers: [BlogsQueryRepository, PostsQueryRepository],
         }).compile();
 
         app = moduleFixture.createNestApplication();

@@ -24,13 +24,13 @@ export class UsersController {
         return await this.usersQueryRepository.getAllUsers(dto);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Post()
     async createUser(@Body() dto: InputModelForCreatingNewUser): Promise<NewUserClassResponseModel> {
         return await this.authService.createUserWithoutConfirmationEmail(dto);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deleteUser(@Param() param: UsersIdValidationModel): Promise<boolean> {

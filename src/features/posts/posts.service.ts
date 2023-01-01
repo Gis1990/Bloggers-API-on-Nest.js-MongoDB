@@ -34,6 +34,7 @@ export class PostsService {
             extendedLikesInfo: extendedLikesInfo,
             usersLikesInfo: usersLikes,
         };
+
         return await this.postsRepository.createPost(createdPostDto);
     }
 

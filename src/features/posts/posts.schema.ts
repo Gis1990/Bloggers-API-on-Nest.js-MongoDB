@@ -40,6 +40,7 @@ export class ExtendedLikesInfoClass {
         type: [NewestLikesSchema],
         required: true,
         default: [],
+        _id: false,
     })
     newestLikes: NewestLikesClass[];
 }

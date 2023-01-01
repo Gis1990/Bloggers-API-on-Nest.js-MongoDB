@@ -24,10 +24,10 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
             inject: [ConfigService],
         }),
         ConfigModule.forRoot({ isGlobal: true, load: [config] }),
-        // ThrottlerModule.forRoot({
-        //     ttl: 10,
-        //     limit: 5,
-        // }),
+        ThrottlerModule.forRoot({
+            ttl: 10,
+            limit: 5,
+        }),
         BlogsModule,
         PostsModule,
         UsersModule,
@@ -39,10 +39,10 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
     controllers: [AppController],
     providers: [
         AppService,
-        // {
-        //     provide: APP_GUARD,
-        //     useClass: ThrottlerGuard,
-        // },
+        {
+            provide: APP_GUARD,
+            useClass: ThrottlerGuard,
+        },
     ],
 })
 export class AppModule {}

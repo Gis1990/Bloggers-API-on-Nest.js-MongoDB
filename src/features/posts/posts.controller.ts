@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGu
 import { PostsService } from "./posts.service";
 import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts, PostsIdValidationModel } from "./dto/posts.dto";
 import { CurrentUser, CurrentUserId } from "../auth/auth.cutsom.decorators";
-import { NewPostClassResponseModel, PostDBClassPagination } from "./entities/posts.entity";
+import { PostDBPaginationClass, PostViewModelClass } from "./entities/posts.entity";
 import { CommentsService } from "../comments/comments.service";
 import {
     ModelForCreatingNewComment,
@@ -11,44 +11,45 @@ import {
 } from "../comments/dto/comments.dto";
 import { CommentDBClassPagination, NewCommentClassResponseModel } from "../comments/entities/comments.entity";
 import { CurrentUserModel } from "../auth/dto/auth.dto";
-import { PostsQueryService } from "./posts.query.service";
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
 import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard";
 import { SkipThrottle } from "@nestjs/throttler";
-import { PostDBClass } from "./posts.schema";
+import { PostsQueryRepository } from "./posts.query.repository";
 
 @SkipThrottle()
 @Controller("posts")
 export class PostsController {
     constructor(
         protected postsService: PostsService,
-        protected postsQueryService: PostsQueryService,
+        protected postsQueryRepository: PostsQueryRepository,
         protected commentsService: CommentsService,
     ) {}
 
-    @UseGuards(strategyForUnauthorizedUser)
+    // @UseGuards(strategyForUnauthorizedUser)
     @Get()
     async getAllPosts(
         @Query() dto: ModelForGettingAllPosts,
-        @CurrentUserId() userId: string,
-    ): Promise<PostDBClassPagination> {
-        return await this.postsQueryService.getAllPosts(dto, userId);
+        // @CurrentUserId() userId: string,
+    ): Promise<PostDBPaginationClass> {
+        const userId = undefined;
+        return await this.postsQueryRepository.getAllPosts(dto, userId);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Post()
-    async createPost(@Body() dto: InputModelForCreatingAndUpdatingPost): Promise<NewPostClassResponseModel> {
+    async createPost(@Body() dto: InputModelForCreatingAndUpdatingPost): Promise<PostViewModelClass> {
         return await this.postsService.createPost(dto);
     }
 
-    @UseGuards(strategyForUnauthorizedUser)
+    // @UseGuards(strategyForUnauthorizedUser)
     @Get("/:id/comments")
     async getAllCommentsForSpecificPost(
         @Param() params: PostsIdValidationModel,
         @Query() model: ModelForGettingAllComments,
-        @CurrentUserId() userId: string,
+        // @CurrentUserId() userId: string,
     ): Promise<CommentDBClassPagination> {
+        const userId = undefined;
         return await this.commentsService.getAllCommentsForSpecificPost(model, params.id, userId);
     }
 
@@ -62,16 +63,17 @@ export class PostsController {
         return await this.commentsService.createComment(model, params.id, user);
     }
 
-    @UseGuards(strategyForUnauthorizedUser)
+    // @UseGuards(strategyForUnauthorizedUser)
     @Get(":id")
     async getPost(
         @Param() params: PostsIdValidationModel,
-        @CurrentUserId() userId: string,
-    ): Promise<PostDBClass | null> {
-        return await this.postsQueryService.getPostById(params.id, userId);
+        // @CurrentUserId() userId: string,
+    ): Promise<PostViewModelClass | null> {
+        const userId = undefined;
+        return await this.postsQueryRepository.getPostById(params.id, userId);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Put(":id")
     @HttpCode(204)
     async updatePost(
@@ -87,7 +89,7 @@ export class PostsController {
         );
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deletePost(@Param() params: PostsIdValidationModel): Promise<boolean> {

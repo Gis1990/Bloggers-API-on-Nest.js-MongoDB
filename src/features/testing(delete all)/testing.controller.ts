@@ -3,7 +3,7 @@ import { SkipThrottle } from "@nestjs/throttler";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { BlogDBClass } from "../blogs/blogs.schema";
-import { PostDBClass } from "../posts/posts.schema";
+import { PostDBClass } from "../posts/postsSchema";
 import { CommentDBClass } from "../comments/comments.schema";
 import { UserAccountDBClass } from "../users/users.schema";
 

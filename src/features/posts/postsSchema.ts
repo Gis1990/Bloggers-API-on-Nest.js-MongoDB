@@ -107,7 +107,33 @@ export class PostDBClass {
         _id: false,
     })
     usersLikesInfo: UsersLikesInfoClass;
+
+    returnUsersLikeStatus(id: string, userId: string): string {
+        if (this.usersLikesInfo.usersWhoPutLike.includes(userId)) {
+            return "Like";
+        } else if (this.usersLikesInfo.usersWhoPutDislike.includes(userId)) {
+            return "Dislike";
+        } else {
+            return "None";
+        }
+    }
+
+    getLikesDataInfoForPost(id: string, userId: string | undefined): PostDBClass {
+        this.extendedLikesInfo.newestLikes = this.extendedLikesInfo.newestLikes
+            .slice(-3)
+            .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
+        if (userId) {
+            this.extendedLikesInfo.myStatus = this.returnUsersLikeStatus(id, userId);
+        } else {
+            this.extendedLikesInfo.myStatus = "None";
+        }
+        return this;
+    }
 }
 
 export const PostsSchema = SchemaFactory.createForClass(PostDBClass);
+PostsSchema.methods = {
+    getLikesDataInfoForPost: PostDBClass.prototype.getLikesDataInfoForPost,
+    returnUsersLikeStatus: PostDBClass.prototype.returnUsersLikeStatus,
+};
 export type PostDocument = HydratedDocument<PostDBClass>;

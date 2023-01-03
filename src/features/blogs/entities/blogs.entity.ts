@@ -10,7 +10,7 @@ export class BlogResponseModelClass {
     ) {}
 }
 
-export class BlogDBClassPagination {
+export class BlogDBPaginationClaa {
     constructor(
         public pagesCount: number,
         public page: number,

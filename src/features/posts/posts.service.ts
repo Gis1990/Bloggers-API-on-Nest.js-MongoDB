@@ -1,12 +1,12 @@
 import { PostsRepository } from "./posts.repository";
 import { Injectable } from "@nestjs/common";
-import { NewPostClassResponseModel } from "./entities/posts.entity";
 import { InputModelForCreatingAndUpdatingPost } from "./dto/posts.dto";
 import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
 import { PostsQueryRepository } from "./posts.query.repository";
-import { ExtendedLikesInfoClass, NewestLikesClass, UsersLikesInfoClass } from "./posts.schema";
+import { ExtendedLikesInfoClass, NewestLikesClass, UsersLikesInfoClass } from "./postsSchema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { PostViewModelClass } from "./entities/posts.entity";
 
 @Injectable()
 export class PostsService {
@@ -17,7 +17,7 @@ export class PostsService {
         @InjectModel(NewestLikesClass.name) private newestLikesModelClass: Model<NewestLikesClass>,
     ) {}
 
-    async createPost(dto: InputModelForCreatingAndUpdatingPost): Promise<NewPostClassResponseModel> {
+    async createPost(dto: InputModelForCreatingAndUpdatingPost): Promise<PostViewModelClass> {
         const blog = await this.blogsQueryRepository.getBlogById(dto.blogId);
         let blogName;
         blog ? (blogName = blog.name) : (blogName = "");
@@ -54,7 +54,7 @@ export class PostsService {
 
     async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
         // Find the post with the given ID
-        const post = await this.postsQueryRepository.getPostByIdForLikeOperation(id);
+        const post = await this.postsQueryRepository.getPostByIdForOperationWithLikes(id);
         // If the post does not exist, return false
         if (!post) {
             return false;

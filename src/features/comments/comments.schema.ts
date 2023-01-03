@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
-import { UsersLikesInfoClass, UsersLikesInfoSchema } from "../posts/posts.schema";
+import { UsersLikesInfoClass, UsersLikesInfoSchema } from "../posts/postsSchema";
 
 @Schema({ versionKey: false })
 export class LikesInfoClass {

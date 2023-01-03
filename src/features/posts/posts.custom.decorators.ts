@@ -10,11 +10,12 @@ import { PostsQueryRepository } from "./posts.query.repository";
 
 @ValidatorConstraint({ name: "IsPostIdExist", async: true })
 @Injectable()
-export class IsPostIdExistExistConstraint implements ValidatorConstraintInterface {
+export class IsPostIdExistConstraint implements ValidatorConstraintInterface {
     constructor(protected postsQueryRepository: PostsQueryRepository) {}
 
-    async validate(postId: string) {
-        const post = await this.postsQueryRepository.getPostById(postId);
+    async validate(postId: string): Promise<boolean> {
+        const userId = undefined;
+        const post = await this.postsQueryRepository.getPostById(postId, userId);
         if (!post) {
             throw new HttpException("Post not found", 404);
         } else {
@@ -30,7 +31,7 @@ export function IsPostIdExist(validationOptions?: ValidationOptions) {
             propertyName: propertyName,
             options: validationOptions,
             constraints: [],
-            validator: IsPostIdExistExistConstraint,
+            validator: IsPostIdExistConstraint,
         });
     };
 }

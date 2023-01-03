@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { PostDBClassPagination } from "./entities/posts.entity";
+import { PostDBPaginationClass, PostViewModelClass } from "./entities/posts.entity";
 import { ModelForGettingAllPosts } from "./dto/posts.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { PostDBClass, PostDocument } from "./posts.schema";
+import { PostDBClass, PostDocument } from "./postsSchema";
 
 @Injectable()
 export class PostsQueryRepository {
     constructor(@InjectModel(PostDBClass.name) private postsModelClass: Model<PostDocument>) {}
 
-    async getAllPosts(dto: ModelForGettingAllPosts): Promise<PostDBClassPagination> {
+    async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostDBPaginationClass> {
         const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
         const skips = pageSize * (pageNumber - 1);
         const totalCount = await this.postsModelClass.count({});
@@ -31,10 +31,22 @@ export class PostsQueryRepository {
             .skip(skips)
             .limit(pageSize)
             .lean();
-        return new PostDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
+        const posts = new PostDBPaginationClass(
+            Math.ceil(totalCount / pageSize),
+            pageNumber,
+            pageSize,
+            totalCount,
+            cursor,
+        );
+        await posts.getLikesDataForPostsWithPagination(userId);
+        return posts;
     }
 
-    async getAllPostsForSpecificBlog(dto: ModelForGettingAllPosts, blogId: string): Promise<PostDBClassPagination> {
+    async getAllPostsForSpecificBlog(
+        dto: ModelForGettingAllPosts,
+        blogId: string,
+        userId: string | undefined,
+    ): Promise<PostDBPaginationClass> {
         const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
         let cursor;
         const skips = pageSize * (pageNumber - 1);
@@ -57,26 +69,28 @@ export class PostsQueryRepository {
                 .limit(pageSize)
                 .lean();
         }
-
-        return new PostDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
+        const posts = new PostDBPaginationClass(
+            Math.ceil(totalCount / pageSize),
+            pageNumber,
+            pageSize,
+            totalCount,
+            cursor,
+        );
+        await posts.getLikesDataForPostsWithPagination(userId);
+        return posts;
     }
 
-    async getPostById(id: string): Promise<PostDBClass | null> {
-        return this.postsModelClass.findOne({ id: id }, { _id: 0, usersLikesInfo: 0 });
-    }
-
-    async getPostByIdForLikeOperation(id: string): Promise<PostDBClass | null> {
-        return this.postsModelClass.findOne({ id: id });
-    }
-
-    async returnUsersLikeStatus(id: string, userId: string): Promise<string> {
+    async getPostById(id: string, userId: string | undefined): Promise<PostViewModelClass | null> {
         const post = await this.postsModelClass.findOne({ id: id });
-        if (post?.usersLikesInfo.usersWhoPutLike.includes(userId)) {
-            return "Like";
-        } else if (post?.usersLikesInfo.usersWhoPutDislike.includes(userId)) {
-            return "Dislike";
-        } else {
-            return "None";
+        if (!post) {
+            return null;
         }
+        post.getLikesDataInfoForPost(id, userId);
+        const { _id, usersLikesInfo, ...rest } = post.toObject();
+        return rest;
+    }
+
+    async getPostByIdForOperationWithLikes(id: string): Promise<PostDBClass | null> {
+        return this.postsModelClass.findOne({ id: id });
     }
 }

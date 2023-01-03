@@ -6,7 +6,7 @@ import { IsCommentsIdExistConstraint } from "./comments.custom.decorators";
 import { CommentsQueryRepository } from "./comments.query.repository";
 import { PostsModule } from "../posts/posts.module";
 import { MongooseModule } from "@nestjs/mongoose";
-import { PostDBClass, PostsSchema } from "../posts/posts.schema";
+import { PostDBClass, PostsSchema } from "../posts/postsSchema";
 import { CommentDBClass, CommentsSchema } from "./comments.schema";
 
 @Module({

@@ -5,7 +5,7 @@ import { ModelForCreatingNewComment, ModelForGettingAllComments } from "./dto/co
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { CommentsQueryRepository } from "./comments.query.repository";
 import { CommentDBClass, LikesInfoClass } from "./comments.schema";
-import { UsersLikesInfoClass } from "../posts/posts.schema";
+import { UsersLikesInfoClass } from "../posts/postsSchema";
 
 @Injectable()
 export class CommentsService {

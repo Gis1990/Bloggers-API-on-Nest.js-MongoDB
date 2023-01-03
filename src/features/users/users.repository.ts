@@ -102,6 +102,7 @@ export class UsersRepository {
     async terminateSpecificDevice(id: string, deviceId: string): Promise<boolean> {
         const result = await this.usersAccountModelClass.updateOne(
             { id: id },
+
             { $pull: { userDevicesData: { deviceId: deviceId } } },
         );
         return result.modifiedCount === 1;

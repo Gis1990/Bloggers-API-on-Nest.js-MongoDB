@@ -67,6 +67,7 @@ export class UsersQueryRepository {
                 currentSession: 1,
             },
         );
+
         if (user) {
             return user;
         } else {

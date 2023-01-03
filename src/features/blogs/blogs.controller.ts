@@ -19,17 +19,17 @@ import {
     InputModelForUpdatingBlog,
     ModelForGettingAllBlogs,
 } from "./dto/blogs.dto";
-import { BlogResponseModelClass, BlogDBClassPagination } from "./entities/blogs.entity";
+import { BlogResponseModelClass, BlogDBPaginationClaa } from "./entities/blogs.entity";
 import { PostsService } from "../posts/posts.service";
-import { NewPostClassResponseModel, PostDBClassPagination } from "../posts/entities/posts.entity";
+import { PostDBPaginationClass, PostViewModelClass } from "../posts/entities/posts.entity";
 import { InputModelForCreatingNewPostForSpecificBlog, ModelForGettingAllPosts } from "../posts/dto/posts.dto";
 import { BlogsQueryRepository } from "./blogs.query.repository";
-import { PostsQueryService } from "../posts/posts.query.service";
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { CurrentUserId } from "../auth/auth.cutsom.decorators";
 import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard";
 import { SkipThrottle } from "@nestjs/throttler";
 import { BlogDBClass } from "./blogs.schema";
+import { PostsQueryRepository } from "../posts/posts.query.repository";
 
 @SkipThrottle()
 @Controller("blogs")
@@ -38,14 +38,14 @@ export class BlogsController {
         protected blogsService: BlogsService,
         @Inject(forwardRef(() => PostsService)) protected postsService: PostsService,
         protected blogsQueryRepository: BlogsQueryRepository,
-        protected postsQueryService: PostsQueryService,
+        protected postsQueryRepository: PostsQueryRepository,
     ) {}
 
     @Get()
     async getAllBlogs(
         @Query()
         dto: ModelForGettingAllBlogs,
-    ): Promise<BlogDBClassPagination> {
+    ): Promise<BlogDBPaginationClaa> {
         return await this.blogsQueryRepository.getAllBlogs(dto);
     }
 
@@ -54,13 +54,13 @@ export class BlogsController {
         return await this.blogsQueryRepository.getBlogById(params.id);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Post()
     async createBlog(@Body() dto: InputModelForCreatingBlog): Promise<BlogResponseModelClass> {
         return await this.blogsService.createBlog(dto);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Put(":id")
     @HttpCode(204)
     async updateBlog(
@@ -70,29 +70,30 @@ export class BlogsController {
         return await this.blogsService.updateBlog(params.id, dto);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deleteBlog(@Param() params: BlogsIdValidationModel): Promise<boolean> {
         return await this.blogsService.deleteBlog(params.id);
     }
 
-    @UseGuards(strategyForUnauthorizedUser)
+    // @UseGuards(strategyForUnauthorizedUser)
     @Get("/:id/posts")
     async getAllPostsForSpecificBlog(
         @Param() params: BlogsIdValidationModel,
         @Query() model: ModelForGettingAllPosts,
-        @CurrentUserId() userId: string,
-    ): Promise<PostDBClassPagination> {
-        return await this.postsQueryService.getAllPostsForSpecificBlog(model, params.id, userId);
+        // @CurrentUserId() userId: string,
+    ): Promise<PostDBPaginationClass> {
+        const userId = undefined;
+        return await this.postsQueryRepository.getAllPostsForSpecificBlog(model, params.id, userId);
     }
 
-    @UseGuards(BasicAuthGuard)
+    // @UseGuards(BasicAuthGuard)
     @Post("/:id/posts")
     async createNewPostForSpecificBlog(
         @Param() params: BlogsIdValidationModel,
         @Body() model: InputModelForCreatingNewPostForSpecificBlog,
-    ): Promise<NewPostClassResponseModel> {
+    ): Promise<PostViewModelClass> {
         const dto = { ...model, blogId: params.id };
         return await this.postsService.createPost(dto);
     }

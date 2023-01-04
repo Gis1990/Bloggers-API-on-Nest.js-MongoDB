@@ -19,27 +19,21 @@ export class PostsQueryRepository {
         } else {
             sortObj[sortBy] = 1;
         }
-        const cursor = await this.postsModelClass
-            .find(
-                {},
-                {
-                    _id: 0,
-                    usersLikesInfo: 0,
-                },
-            )
-            .sort(sortObj)
-            .skip(skips)
-            .limit(pageSize)
-            .lean();
-        const posts = new PostDBPaginationClass(
+        const cursor = await this.postsModelClass.find({}).sort(sortObj).skip(skips).limit(pageSize);
+        cursor.forEach((elem) => {
+            elem.getLikesDataInfoForPost(elem.id, userId);
+        });
+        const cursorWithCorrectViewModel = cursor.map((elem) => {
+            const { _id, usersLikesInfo, ...rest } = elem.toObject();
+            return rest;
+        });
+        return new PostDBPaginationClass(
             Math.ceil(totalCount / pageSize),
             pageNumber,
             pageSize,
             totalCount,
-            cursor,
+            cursorWithCorrectViewModel,
         );
-        await posts.getLikesDataForPostsWithPagination(userId);
-        return posts;
     }
 
     async getAllPostsForSpecificBlog(
@@ -48,36 +42,29 @@ export class PostsQueryRepository {
         userId: string | undefined,
     ): Promise<PostDBPaginationClass> {
         const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
-        let cursor;
         const skips = pageSize * (pageNumber - 1);
         const sortObj: any = {};
         const totalCount = await this.postsModelClass.count({ blogId: blogId });
         if (sortDirection === "desc") {
             sortObj[sortBy] = -1;
-            cursor = await this.postsModelClass
-                .find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
-                .sort(sortObj)
-                .skip(skips)
-                .limit(pageSize)
-                .lean();
         } else {
             sortObj[sortBy] = 1;
-            cursor = await this.postsModelClass
-                .find({ blogId: blogId }, { _id: 0, usersLikesInfo: 0 })
-                .sort(sortObj)
-                .skip(skips)
-                .limit(pageSize)
-                .lean();
         }
-        const posts = new PostDBPaginationClass(
+        const cursor = await this.postsModelClass.find({ blogId: blogId }).sort(sortObj).skip(skips).limit(pageSize);
+        cursor.forEach((elem) => {
+            elem.getLikesDataInfoForPost(elem.id, userId);
+        });
+        const cursorWithCorrectViewModel = cursor.map((elem) => {
+            const { _id, usersLikesInfo, ...rest } = elem.toObject();
+            return rest;
+        });
+        return new PostDBPaginationClass(
             Math.ceil(totalCount / pageSize),
             pageNumber,
             pageSize,
             totalCount,
-            cursor,
+            cursorWithCorrectViewModel,
         );
-        await posts.getLikesDataForPostsWithPagination(userId);
-        return posts;
     }
 
     async getPostById(id: string, userId: string | undefined): Promise<PostViewModelClass | null> {

@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 import { UsersController } from "./users.controller";
-import { UsersService } from "./users.service";
 import { IsEmailExistConstraint, IsLoginExistConstraint, IsUsersIdExistConstraint } from "./users.custom.decorators";
 import { UsersRepository } from "./users.repository";
 import { JwtModule } from "@nestjs/jwt";
@@ -22,21 +21,24 @@ import {
 } from "./users.schema";
 import { AuthService } from "../auth/auth.service";
 import { AuthModule } from "../auth/auth.module";
-import { MailService } from "../../utils/email/mail.service";
+import { DeleteUserUseCase } from "./use-cases/delete-user-use-case";
+import { CreateUserUseCase } from "./use-cases/create-user-use-case";
+import { CreateUserWithoutConfirmationEmailUseCase } from "../auth/use-cases/create-user-without-confirmation-email-use-case";
+
+const useCases = [DeleteUserUseCase, CreateUserUseCase, CreateUserWithoutConfirmationEmailUseCase];
 
 @Module({
     exports: [UsersModule],
     controllers: [UsersController],
     providers: [
         BcryptService,
-        UsersService,
-        MailService,
         AuthService,
         UsersRepository,
         UsersQueryRepository,
         IsUsersIdExistConstraint,
         IsLoginExistConstraint,
         IsEmailExistConstraint,
+        ...useCases,
     ],
     imports: [
         AuthModule,

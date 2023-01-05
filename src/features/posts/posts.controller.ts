@@ -1,29 +1,37 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
-import { PostsService } from "./posts.service";
 import { InputModelForCreatingAndUpdatingPost, ModelForGettingAllPosts, PostsIdValidationModel } from "./dto/posts.dto";
 import { CurrentUser, CurrentUserId } from "../auth/auth.cutsom.decorators";
 import { PostDBPaginationClass, PostViewModelClass } from "./entities/posts.entity";
-import { CommentsService } from "../comments/comments.service";
 import {
     ModelForCreatingNewComment,
     ModelForGettingAllComments,
     ModelForLikeStatus,
 } from "../comments/dto/comments.dto";
-import { CommentDBClassPagination, NewCommentClassResponseModel } from "../comments/entities/comments.entity";
+import { CommentDBClassPagination, CommentViewModelClass } from "../comments/entities/comments.entity";
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
 import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard";
 import { SkipThrottle } from "@nestjs/throttler";
 import { PostsQueryRepository } from "./posts.query.repository";
+import { CreatePostUseCase } from "./use-cases/create-post-use-case";
+import { UpdatePostUseCase } from "./use-cases/update-post-use-case";
+import { LikeOperationForPostUseCase } from "./use-cases/like-operation-for-post-use-case";
+import { DeletePostUseCase } from "./use-cases/delete-post-use-case";
+import { CreateCommentUseCase } from "../comments/use-cases/create-comment-use-case";
+import { CommentsQueryRepository } from "../comments/comments.query.repository";
 
 @SkipThrottle()
 @Controller("posts")
 export class PostsController {
     constructor(
-        protected postsService: PostsService,
-        protected postsQueryRepository: PostsQueryRepository,
-        protected commentsService: CommentsService,
+        private createPostUseCase: CreatePostUseCase,
+        private updatePostUseCase: UpdatePostUseCase,
+        private deletePostUseCase: DeletePostUseCase,
+        private likeOperationForPostUseCase: LikeOperationForPostUseCase,
+        private postsQueryRepository: PostsQueryRepository,
+        private createCommentUseCase: CreateCommentUseCase,
+        private commentsQueryRepository: CommentsQueryRepository,
     ) {}
 
     @UseGuards(strategyForUnauthorizedUser)
@@ -38,7 +46,7 @@ export class PostsController {
     @UseGuards(BasicAuthGuard)
     @Post()
     async createPost(@Body() dto: InputModelForCreatingAndUpdatingPost): Promise<PostViewModelClass> {
-        return await this.postsService.createPost(dto);
+        return await this.createPostUseCase.execute(dto);
     }
 
     @UseGuards(strategyForUnauthorizedUser)
@@ -48,7 +56,7 @@ export class PostsController {
         @Query() model: ModelForGettingAllComments,
         @CurrentUserId() userId: string,
     ): Promise<CommentDBClassPagination> {
-        return await this.commentsService.getAllCommentsForSpecificPost(model, params.id, userId);
+        return await this.commentsQueryRepository.getAllCommentsForSpecificPost(model, params.id, userId);
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
@@ -57,8 +65,8 @@ export class PostsController {
         @Param() params: PostsIdValidationModel,
         @Body() model: ModelForCreatingNewComment,
         @CurrentUser() user: CurrentUserModel,
-    ): Promise<NewCommentClassResponseModel> {
-        return await this.commentsService.createComment(model, params.id, user);
+    ): Promise<CommentViewModelClass> {
+        return await this.createCommentUseCase.execute(model, params.id, user);
     }
 
     @UseGuards(strategyForUnauthorizedUser)
@@ -77,7 +85,7 @@ export class PostsController {
         @Param() params: PostsIdValidationModel,
         @Body() body: InputModelForCreatingAndUpdatingPost,
     ): Promise<boolean> {
-        return await this.postsService.updatePost(
+        return await this.updatePostUseCase.execute(
             params.id,
             body.title,
             body.shortDescription,
@@ -90,7 +98,7 @@ export class PostsController {
     @Delete(":id")
     @HttpCode(204)
     async deletePost(@Param() params: PostsIdValidationModel): Promise<boolean> {
-        return await this.postsService.deletePost(params.id);
+        return await this.deletePostUseCase.execute(params.id);
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
@@ -101,6 +109,6 @@ export class PostsController {
         @Body() body: ModelForLikeStatus,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<boolean> {
-        return await this.postsService.likeOperation(params.id, user.id, user.login, body.likeStatus);
+        return await this.likeOperationForPostUseCase.execute(params.id, user.id, user.login, body.likeStatus);
     }
 }

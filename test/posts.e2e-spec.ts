@@ -9,12 +9,12 @@ import { HttpExceptionFilter } from "../src/exception.filter";
 import * as cookieParser from "cookie-parser";
 import { useContainer } from "class-validator";
 import { BlogsModelClass, creatingBlogForTests, randomString } from "./blogs.e2e-spec";
-import { NewestLikesClass, NewestLikesSchema, PostDBClass, PostsSchema } from "../src/features/posts/postsSchema";
 import { MongooseModule } from "@nestjs/mongoose";
 import { BlogDBClass, BlogsSchema } from "../src/features/blogs/blogs.schema";
 import { CommentDBClass, CommentsSchema } from "../src/features/comments/comments.schema";
 import { BlogsQueryRepository } from "../src/features/blogs/blogs.query.repository";
 import { PostsQueryRepository } from "../src/features/posts/posts.query.repository";
+import { NewestLikesClass, NewestLikesSchema, PostDBClass, PostsSchema } from "../src/features/posts/posts.schema";
 
 export const createUserForTesting = (loginLen: number, emailLen: number, passwordLen: number) => {
     return {

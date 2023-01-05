@@ -1,58 +1,19 @@
-import { PostsRepository } from "./posts.repository";
 import { Injectable } from "@nestjs/common";
-import { InputModelForCreatingAndUpdatingPost } from "./dto/posts.dto";
-import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
-import { PostsQueryRepository } from "./posts.query.repository";
-import { ExtendedLikesInfoClass, NewestLikesClass, UsersLikesInfoClass } from "./postsSchema";
+import { PostsQueryRepository } from "../posts.query.repository";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { PostViewModelClass } from "./entities/posts.entity";
+import { PostsRepository } from "../posts.repository";
+import { NewestLikesClass } from "../posts.schema";
 
 @Injectable()
-export class PostsService {
+export class LikeOperationForPostUseCase {
     constructor(
-        protected postsRepository: PostsRepository,
-        protected blogsQueryRepository: BlogsQueryRepository,
-        protected postsQueryRepository: PostsQueryRepository,
+        private postsRepository: PostsRepository,
+        private postsQueryRepository: PostsQueryRepository,
         @InjectModel(NewestLikesClass.name) private newestLikesModelClass: Model<NewestLikesClass>,
     ) {}
 
-    async createPost(dto: InputModelForCreatingAndUpdatingPost): Promise<PostViewModelClass> {
-        const blog = await this.blogsQueryRepository.getBlogById(dto.blogId);
-        let blogName;
-        blog ? (blogName = blog.name) : (blogName = "");
-        const extendedLikesInfo: ExtendedLikesInfoClass = new ExtendedLikesInfoClass();
-        const usersLikes: UsersLikesInfoClass = new UsersLikesInfoClass();
-        const createdPostDto = {
-            id: Number(new Date()).toString(),
-            title: dto.title,
-            shortDescription: dto.shortDescription,
-            content: dto.content,
-            blogId: dto.blogId,
-            blogName: blogName,
-            createdAt: new Date(),
-            extendedLikesInfo: extendedLikesInfo,
-            usersLikesInfo: usersLikes,
-        };
-
-        return await this.postsRepository.createPost(createdPostDto);
-    }
-
-    async updatePost(
-        id: string,
-        title: string,
-        shortDescription: string,
-        content: string,
-        blogId: string,
-    ): Promise<boolean> {
-        return this.postsRepository.updatePost(id, title, shortDescription, content, blogId);
-    }
-
-    async deletePost(id: string): Promise<boolean> {
-        return this.postsRepository.deletePostById(id);
-    }
-
-    async likeOperation(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
+    async execute(id: string, userId: string, login: string, likeStatus: string): Promise<boolean> {
         // Find the post with the given ID
         const post = await this.postsQueryRepository.getPostByIdForOperationWithLikes(id);
         // If the post does not exist, return false

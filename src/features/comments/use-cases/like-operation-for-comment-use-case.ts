@@ -1,90 +1,15 @@
-import { HttpException, Injectable, NotFoundException } from "@nestjs/common";
-import { CommentsRepository } from "./comments.repository";
-import { CommentDBClassPagination, NewCommentClassResponseModel } from "./entities/comments.entity";
-import { ModelForCreatingNewComment, ModelForGettingAllComments } from "./dto/comments.dto";
-import { CurrentUserModel } from "../auth/dto/auth.dto";
-import { CommentsQueryRepository } from "./comments.query.repository";
-import { CommentDBClass, LikesInfoClass } from "./comments.schema";
-import { UsersLikesInfoClass } from "../posts/postsSchema";
+import { Injectable } from "@nestjs/common";
+import { CommentsQueryRepository } from "../comments.query.repository";
+import { CommentsRepository } from "../comments.repository";
 
 @Injectable()
-export class CommentsService {
+export class LikeOperationForCommentUseCase {
     constructor(
-        protected commentsRepository: CommentsRepository,
-        protected commentsQueryRepository: CommentsQueryRepository,
+        private commentsQueryRepository: CommentsQueryRepository,
+        private commentsRepository: CommentsRepository,
     ) {}
 
-    async getCommentById(id: string, userId: string | undefined): Promise<CommentDBClass | null> {
-        const comment = await this.commentsQueryRepository.getCommentById(id);
-        if (!comment) {
-            throw new NotFoundException();
-        }
-        if (userId) {
-            comment.likesInfo.myStatus = await this.commentsQueryRepository.returnUsersLikeStatus(id, userId);
-        } else {
-            comment.likesInfo.myStatus = "None";
-        }
-        return comment;
-    }
-
-    async getAllCommentsForSpecificPost(
-        model: ModelForGettingAllComments,
-        postId: string,
-        userId: string | undefined,
-    ): Promise<CommentDBClassPagination> {
-        const comments = await this.commentsQueryRepository.getAllCommentsForSpecificPost(model, postId);
-        if (userId) {
-            for (let i = 0; i < comments.items.length; i++) {
-                comments.items[i].likesInfo.myStatus = await this.commentsQueryRepository.returnUsersLikeStatus(
-                    comments.items[i].id,
-                    userId,
-                );
-            }
-        } else {
-            comments.items.forEach((elem) => (elem.likesInfo.myStatus = "None"));
-        }
-        return comments;
-    }
-
-    async createComment(
-        dto: ModelForCreatingNewComment,
-        postId: string,
-        user: CurrentUserModel,
-    ): Promise<NewCommentClassResponseModel> {
-        const likes: LikesInfoClass = new LikesInfoClass();
-        const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass();
-        const createdCommentDto = {
-            id: Number(new Date()).toString(),
-            content: dto.content,
-            userId: user.id,
-            userLogin: user.login,
-            postId: postId,
-            createdAt: new Date(),
-            likesInfo: likes,
-            usersLikesInfo: usersLikesInfo,
-        };
-        return await this.commentsRepository.createComment(createdCommentDto);
-    }
-
-    async deleteCommentById(id: string, userId: string | undefined): Promise<boolean> {
-        const comment = await this.commentsQueryRepository.getCommentById(id);
-        if (!comment) {
-            return false;
-        }
-        if (userId !== comment.userId) throw new HttpException("Incorrect id", 403);
-        return this.commentsRepository.deleteCommentById(id);
-    }
-
-    async updateCommentById(id: string, content: string, userId: string | undefined): Promise<boolean> {
-        const comment = await this.commentsQueryRepository.getCommentById(id);
-        if (!comment) {
-            return false;
-        }
-        if (userId !== comment.userId) throw new HttpException("Incorrect id", 403);
-        return this.commentsRepository.updateCommentById(id, content);
-    }
-
-    async likeOperation(id: string, userId: string, likeStatus: string): Promise<boolean> {
+    async execute(id: string, userId: string, likeStatus: string): Promise<boolean> {
         // Find the comment with the given id
         const comment = await this.commentsQueryRepository.getCommentByIdForLikeOperation(id);
         if (!comment) {

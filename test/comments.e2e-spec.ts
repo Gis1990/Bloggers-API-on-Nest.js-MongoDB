@@ -17,7 +17,7 @@ import {
 } from "./posts.e2e-spec";
 import { MongooseModule } from "@nestjs/mongoose";
 import { CommentDBClass, CommentsSchema } from "../src/features/comments/comments.schema";
-import { PostDBClass, PostsSchema } from "../src/features/posts/postsSchema";
+import { PostDBClass, PostsSchema } from "../src/features/posts/posts.schema";
 import { CommentsQueryRepository } from "../src/features/comments/comments.query.repository";
 
 const testValidationPipeSettings = {

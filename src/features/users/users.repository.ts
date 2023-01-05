@@ -20,7 +20,7 @@ export class UsersRepository {
         @InjectModel(LoginAttemptsClass.name) private loginAttemptsModelClass: Model<LoginAttemptsClass>,
     ) {}
 
-    async updateConfirmation(id: string): Promise<boolean> {
+    async userConfirmedEmail(id: string): Promise<boolean> {
         const result = await this.usersAccountModelClass.updateOne(
             { id: id },
             { $set: { "emailConfirmation.isConfirmed": true } },

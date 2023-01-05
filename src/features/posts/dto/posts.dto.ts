@@ -2,7 +2,7 @@ import { IsBlogsIdExistInTheRequestBody } from "../../blogs/blogs.custom.decorat
 import { IsString, Length, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { IsPostIdExist } from "../posts.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
-import { ExtendedLikesInfoClass, UsersLikesInfoClass } from "../postsSchema";
+import { UsersLikesInfoClass } from "../posts.schema";
 import { LikesInfoClass } from "../../comments/comments.schema";
 
 export class ModelForGettingAllPosts {

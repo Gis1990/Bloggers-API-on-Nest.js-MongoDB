@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
-import { UsersLikesInfoClass, UsersLikesInfoSchema } from "../posts/postsSchema";
+import { NotFoundException } from "@nestjs/common";
+import { UsersLikesInfoClass, UsersLikesInfoSchema } from "../posts/posts.schema";
 
 @Schema({ versionKey: false })
 export class LikesInfoClass {
@@ -63,7 +64,38 @@ export class CommentDBClass {
         _id: false,
     })
     usersLikesInfo: UsersLikesInfoClass;
+
+    returnUsersLikeStatusForComments(id: string, userId: string): string {
+        const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
+        const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
+
+        if (isLiked) {
+            return "Like";
+        }
+
+        if (isDisliked) {
+            return "Dislike";
+        }
+
+        return "None";
+    }
+
+    getLikesDataInfoForComment(id: string, userId: string | undefined): CommentDBClass {
+        if (!this) {
+            throw new NotFoundException();
+        }
+        if (userId) {
+            this.likesInfo.myStatus = this.returnUsersLikeStatusForComments(id, userId);
+        } else {
+            this.likesInfo.myStatus = "None";
+        }
+        return this;
+    }
 }
 
 export const CommentsSchema = SchemaFactory.createForClass(CommentDBClass);
+CommentsSchema.methods = {
+    getLikesDataInfoForComment: CommentDBClass.prototype.getLikesDataInfoForComment,
+    returnUsersLikeStatusForComments: CommentDBClass.prototype.returnUsersLikeStatusForComments,
+};
 export type CommentDocument = HydratedDocument<CommentDBClass>;

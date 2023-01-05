@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
-import { MailService } from "./mail.service";
+import { SendEmailForRegistrationUseCase } from "./use-cases/send-email-for-registration-use-case";
+import { SendEmailForPasswordRecoveryUseCase } from "./use-cases/send-email-for-password-recovery-use-case";
 
 @Module({
     controllers: [],
-    providers: [MailService],
-    exports: [MailService],
+    providers: [SendEmailForRegistrationUseCase, SendEmailForPasswordRecoveryUseCase],
 })
 export class MailModule {}

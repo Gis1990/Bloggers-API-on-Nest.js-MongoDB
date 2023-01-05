@@ -3,7 +3,7 @@ import { PostDBPaginationClass, PostViewModelClass } from "./entities/posts.enti
 import { ModelForGettingAllPosts } from "./dto/posts.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { PostDBClass, PostDocument } from "./postsSchema";
+import { PostDBClass, PostDocument } from "./posts.schema";
 
 @Injectable()
 export class PostsQueryRepository {

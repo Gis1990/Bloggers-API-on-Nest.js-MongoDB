@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { PostDBClass, PostDocument } from "./postsSchema";
 import { CreatedPostDto } from "./dto/posts.dto";
 import { PostViewModelClass } from "./entities/posts.entity";
+import { PostDBClass, PostDocument } from "./posts.schema";
 
 @Injectable()
 export class PostsRepository {

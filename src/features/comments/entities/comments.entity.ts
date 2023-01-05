@@ -1,4 +1,4 @@
-import { CommentDBClass, LikesInfoClass } from "../comments.schema";
+import { LikesInfoClass } from "../comments.schema";
 
 export class CommentDBClassPagination {
     constructor(
@@ -6,11 +6,11 @@ export class CommentDBClassPagination {
         public page: number,
         public pageSize: number,
         public totalCount: number,
-        public items: CommentDBClass[],
+        public items: CommentViewModelClass[],
     ) {}
 }
 
-export class NewCommentClassResponseModel {
+export class CommentViewModelClass {
     constructor(
         public id: string,
         public content: string,

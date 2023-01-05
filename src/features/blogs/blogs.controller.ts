@@ -1,18 +1,4 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    forwardRef,
-    Get,
-    HttpCode,
-    Inject,
-    Param,
-    Post,
-    Put,
-    Query,
-    UseGuards,
-} from "@nestjs/common";
-import { BlogsService } from "./blogs.service";
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import {
     BlogsIdValidationModel,
     InputModelForCreatingBlog,
@@ -20,7 +6,6 @@ import {
     ModelForGettingAllBlogs,
 } from "./dto/blogs.dto";
 import { BlogResponseModelClass, BlogDBPaginationClaa } from "./entities/blogs.entity";
-import { PostsService } from "../posts/posts.service";
 import { PostDBPaginationClass, PostViewModelClass } from "../posts/entities/posts.entity";
 import { InputModelForCreatingNewPostForSpecificBlog, ModelForGettingAllPosts } from "../posts/dto/posts.dto";
 import { BlogsQueryRepository } from "./blogs.query.repository";
@@ -30,15 +15,21 @@ import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unautho
 import { SkipThrottle } from "@nestjs/throttler";
 import { BlogDBClass } from "./blogs.schema";
 import { PostsQueryRepository } from "../posts/posts.query.repository";
+import { UpdateBlogUseCase } from "./use-cases/update-blog-use-case";
+import { CreateBlogUseCase } from "./use-cases/create-blog-use-case";
+import { DeleteBlogUseCase } from "./use-cases/delete-blog-use-case";
+import { CreatePostUseCase } from "../posts/use-cases/create-post-use-case";
 
 @SkipThrottle()
 @Controller("blogs")
 export class BlogsController {
     constructor(
-        protected blogsService: BlogsService,
-        @Inject(forwardRef(() => PostsService)) protected postsService: PostsService,
-        protected blogsQueryRepository: BlogsQueryRepository,
-        protected postsQueryRepository: PostsQueryRepository,
+        private blogsQueryRepository: BlogsQueryRepository,
+        private postsQueryRepository: PostsQueryRepository,
+        private createBlogUseCase: CreateBlogUseCase,
+        private updateBlogUseCase: UpdateBlogUseCase,
+        private deleteBlogUseCase: DeleteBlogUseCase,
+        private createPostUseCase: CreatePostUseCase,
     ) {}
 
     @Get()
@@ -57,7 +48,7 @@ export class BlogsController {
     @UseGuards(BasicAuthGuard)
     @Post()
     async createBlog(@Body() dto: InputModelForCreatingBlog): Promise<BlogResponseModelClass> {
-        return await this.blogsService.createBlog(dto);
+        return await this.createBlogUseCase.execute(dto);
     }
 
     @UseGuards(BasicAuthGuard)
@@ -67,14 +58,14 @@ export class BlogsController {
         @Param() params: BlogsIdValidationModel,
         @Body() dto: InputModelForUpdatingBlog,
     ): Promise<boolean> {
-        return await this.blogsService.updateBlog(params.id, dto);
+        return await this.updateBlogUseCase.execute(params.id, dto);
     }
 
     @UseGuards(BasicAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deleteBlog(@Param() params: BlogsIdValidationModel): Promise<boolean> {
-        return await this.blogsService.deleteBlog(params.id);
+        return await this.deleteBlogUseCase.execute(params.id);
     }
 
     @UseGuards(strategyForUnauthorizedUser)
@@ -94,6 +85,6 @@ export class BlogsController {
         @Body() model: InputModelForCreatingNewPostForSpecificBlog,
     ): Promise<PostViewModelClass> {
         const dto = { ...model, blogId: params.id };
-        return await this.postsService.createPost(dto);
+        return await this.createPostUseCase.execute(dto);
     }
 }

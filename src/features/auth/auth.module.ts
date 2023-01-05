@@ -7,8 +7,6 @@ import { MailModule } from "../../utils/email/mail.module";
 import { LocalStrategy } from "./strategies/local.strategy";
 import { JwtAccessTokenStrategy } from "./strategies/jwt.access.token.strategy";
 import { BasicStrategy } from "./strategies/basic.strategy";
-import { MailService } from "../../utils/email/mail.service";
-import { UsersService } from "../users/users.service";
 import { UsersRepository } from "../users/users.repository";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import { BcryptModule } from "../../utils/bcrypt/bcrypt.module";
@@ -29,22 +27,50 @@ import {
     EmailRecoveryCodeSchema,
     UsersAccountSchema,
 } from "../users/users.schema";
+import { AcceptNewPasswordUseCase } from "./use-cases/accept-new-password-use-case";
+import { CheckCredentialsUseCase } from "./use-cases/check-credentials-use-case";
+import { ConfirmEmailUseCase } from "./use-cases/confirm-email-use-case";
+import { CreateUserWithoutConfirmationEmailUseCase } from "./use-cases/create-user-without-confirmation-email-use-case";
+import { PasswordRecoveryUseCase } from "./use-cases/password-recovery-use-case";
+import { RefreshAllTokensUseCase } from "./use-cases/refresh-all-tokens-use-case";
+import { RefreshOnlyRefreshTokenUseCase } from "./use-cases/refresh-only-refresh-token-use-case";
+import { RegistrationEmailResendingUseCase } from "./use-cases/registration-email-resending-use-case";
+import { CreateUserWithConfirmationEmailUseCase } from "./use-cases/create-user-with-confirmation-email-use-case";
+import { CreateUserUseCase } from "../users/use-cases/create-user-use-case";
+import { SendEmailForRegistrationUseCase } from "../../utils/email/use-cases/send-email-for-registration-use-case";
+import { SendEmailForPasswordRecoveryUseCase } from "../../utils/email/use-cases/send-email-for-password-recovery-use-case";
+import { TerminateSpecificDeviceUseCase } from "../security/use-cases/terminate-specific-device-use-case";
+
+const useCases = [
+    AcceptNewPasswordUseCase,
+    CheckCredentialsUseCase,
+    ConfirmEmailUseCase,
+    CreateUserWithConfirmationEmailUseCase,
+    CreateUserWithoutConfirmationEmailUseCase,
+    PasswordRecoveryUseCase,
+    RefreshAllTokensUseCase,
+    RefreshOnlyRefreshTokenUseCase,
+    RegistrationEmailResendingUseCase,
+    CreateUserUseCase,
+    SendEmailForRegistrationUseCase,
+    SendEmailForPasswordRecoveryUseCase,
+    TerminateSpecificDeviceUseCase,
+];
 
 @Module({
     controllers: [AuthController],
     providers: [
-        UsersService,
         AuthService,
         LocalStrategy,
         JwtRefreshTokenStrategy,
         JwtAccessTokenStrategy,
         BasicStrategy,
         strategyForUnauthorizedUser,
-        MailService,
         UsersRepository,
         UsersQueryRepository,
         BcryptService,
         IsEmailExistOrConfirmedConstraint,
+        ...useCases,
     ],
     imports: [
         PassportModule,

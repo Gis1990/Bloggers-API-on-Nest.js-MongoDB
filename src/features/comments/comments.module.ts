@@ -1,13 +1,18 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { CommentsRepository } from "./comments.repository";
 import { CommentsController } from "./comments.controller";
-import { CommentsService } from "./comments.service";
 import { IsCommentsIdExistConstraint } from "./comments.custom.decorators";
 import { CommentsQueryRepository } from "./comments.query.repository";
 import { PostsModule } from "../posts/posts.module";
 import { MongooseModule } from "@nestjs/mongoose";
-import { PostDBClass, PostsSchema } from "../posts/postsSchema";
 import { CommentDBClass, CommentsSchema } from "./comments.schema";
+import { PostDBClass, PostsSchema } from "../posts/posts.schema";
+import { CreateCommentUseCase } from "./use-cases/create-comment-use-case";
+import { UpdateCommentUseCase } from "./use-cases/update-comment-use-case";
+import { DeleteCommentUseCase } from "./use-cases/delete-comment-use-case";
+import { LikeOperationForCommentUseCase } from "./use-cases/like-operation-for-comment-use-case";
+
+const useCases = [CreateCommentUseCase, UpdateCommentUseCase, DeleteCommentUseCase, LikeOperationForCommentUseCase];
 
 @Module({
     imports: [
@@ -24,6 +29,6 @@ import { CommentDBClass, CommentsSchema } from "./comments.schema";
         ]),
     ],
     controllers: [CommentsController],
-    providers: [CommentsService, CommentsRepository, CommentsQueryRepository, IsCommentsIdExistConstraint],
+    providers: [CommentsRepository, CommentsQueryRepository, IsCommentsIdExistConstraint, ...useCases],
 })
 export class CommentsModule {}

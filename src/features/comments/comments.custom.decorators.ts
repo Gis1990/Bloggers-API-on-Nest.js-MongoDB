@@ -14,8 +14,7 @@ export class IsCommentsIdExistConstraint implements ValidatorConstraintInterface
     constructor(protected commentsQueryRepository: CommentsQueryRepository) {}
 
     async validate(commentId: string) {
-        const userId = undefined;
-        const comment = await this.commentsQueryRepository.getCommentById(commentId, userId);
+        const comment = await this.commentsQueryRepository.getCommentForIdValidation(commentId);
         if (!comment) {
             throw new HttpException("Comment  not found", 404);
         } else {

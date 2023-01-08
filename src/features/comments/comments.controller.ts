@@ -6,20 +6,17 @@ import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unautho
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { SkipThrottle } from "@nestjs/throttler";
 import { CommentsQueryRepository } from "./comments.query.repository";
-import { LikeOperationForCommentUseCase } from "./use-cases/like-operation-for-comment-use-case";
-import { UpdateCommentUseCase } from "./use-cases/update-comment-use-case";
-import { DeleteCommentUseCase } from "./use-cases/delete-comment-use-case";
+import { LikeOperationForCommentCommand } from "./use-cases/like-operation-for-comment-use-case";
+
 import { CommentViewModelClass } from "./entities/comments.entity";
+import { CommandBus } from "@nestjs/cqrs";
+import { UpdateCommentCommand } from "./use-cases/update-comment-use-case";
+import { DeleteCommentCommand } from "./use-cases/delete-comment-use-case";
 
 @SkipThrottle()
 @Controller("comments")
 export class CommentsController {
-    constructor(
-        private commentsQueryRepository: CommentsQueryRepository,
-        private likeOperationForCommentUseCase: LikeOperationForCommentUseCase,
-        private updateCommentUseCase: UpdateCommentUseCase,
-        private deleteCommentUseCase: DeleteCommentUseCase,
-    ) {}
+    constructor(private commandBus: CommandBus, private commentsQueryRepository: CommentsQueryRepository) {}
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Put(":id")
@@ -29,14 +26,14 @@ export class CommentsController {
         @Body() body: ModelForUpdatingComment,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<boolean> {
-        return await this.updateCommentUseCase.execute(params.id, body.content, user.id);
+        return await this.commandBus.execute(new UpdateCommentCommand(params.id, body.content, user.id));
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deleteBlog(@Param() params: CommentsIdValidationModel, @CurrentUserId() userId: string): Promise<boolean> {
-        return await this.deleteCommentUseCase.execute(params.id, userId);
+        return await this.commandBus.execute(new DeleteCommentCommand(params.id, userId));
     }
 
     @UseGuards(strategyForUnauthorizedUser)
@@ -56,6 +53,6 @@ export class CommentsController {
         @Body() body: ModelForLikeStatus,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<boolean> {
-        return await this.likeOperationForCommentUseCase.execute(params.id, user.id, body.likeStatus);
+        return await this.commandBus.execute(new LikeOperationForCommentCommand(params.id, user.id, body.likeStatus));
     }
 }

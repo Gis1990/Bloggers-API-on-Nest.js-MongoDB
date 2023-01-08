@@ -1,6 +1,6 @@
 import { BlogDBClass } from "../blogs.schema";
 
-export class BlogResponseModelClass {
+export class BlogViewModelClass {
     constructor(
         public id: string,
         public name: string,
@@ -10,7 +10,7 @@ export class BlogResponseModelClass {
     ) {}
 }
 
-export class BlogDBPaginationClaa {
+export class BlogDBPaginationClass {
     constructor(
         public pagesCount: number,
         public page: number,

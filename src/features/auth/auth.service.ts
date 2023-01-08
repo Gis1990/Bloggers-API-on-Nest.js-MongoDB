@@ -7,12 +7,13 @@ import { EmailRecoveryCodeClass, UserAccountEmailClass } from "../users/users.sc
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { NewUserClassResponseModel } from "../users/entities/users.entity";
-import { CreateUserUseCase } from "../users/use-cases/create-user-use-case";
+import { CreateUserCommand } from "../users/use-cases/create-user-use-case";
+import { CommandBus } from "@nestjs/cqrs";
 
 @Injectable()
 export class AuthService {
     constructor(
-        private createUserUseCase: CreateUserUseCase,
+        private commandBus: CommandBus,
         private bcryptService: BcryptService,
         @InjectModel(UserAccountEmailClass.name) private userAccountEmailModelClass: Model<UserAccountEmailClass>,
         @InjectModel(EmailRecoveryCodeClass.name) private userRecoveryCodeModelClass: Model<EmailRecoveryCodeClass>,
@@ -30,6 +31,8 @@ export class AuthService {
         const emailConfirmation: UserAccountEmailClass = new this.userAccountEmailModelClass(
             createdEmailConfirmationDto,
         );
-        return await this.createUserUseCase.execute(dto, passwordHash, emailConfirmation, emailRecoveryCodeData);
+        return await this.commandBus.execute(
+            new CreateUserCommand(dto, passwordHash, emailConfirmation, emailRecoveryCodeData),
+        );
     }
 }

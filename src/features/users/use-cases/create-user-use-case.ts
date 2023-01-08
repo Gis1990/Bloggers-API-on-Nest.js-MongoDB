@@ -1,28 +1,32 @@
-import { Injectable } from "@nestjs/common";
 import { InputModelForCreatingNewUser } from "../dto/users.dto";
 import { EmailRecoveryCodeClass, UserAccountEmailClass } from "../users.schema";
 import { NewUserClassResponseModel } from "../entities/users.entity";
 import { UsersRepository } from "../users.repository";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-@Injectable()
-export class CreateUserUseCase {
+export class CreateUserCommand {
+    constructor(
+        public readonly dto: InputModelForCreatingNewUser,
+        public readonly passwordHash: string,
+        public readonly emailConfirmation: UserAccountEmailClass,
+        public readonly emailRecoveryCodeData: EmailRecoveryCodeClass,
+    ) {}
+}
+
+@CommandHandler(CreateUserCommand)
+export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     constructor(private usersRepository: UsersRepository) {}
 
-    async execute(
-        dto: InputModelForCreatingNewUser,
-        passwordHash: string,
-        emailConfirmation: UserAccountEmailClass,
-        emailRecoveryCodeData: EmailRecoveryCodeClass,
-    ): Promise<NewUserClassResponseModel> {
+    async execute(command: CreateUserCommand): Promise<NewUserClassResponseModel> {
         const createdNewUserDto = {
             id: Number(new Date()).toString(),
-            login: dto.login,
-            email: dto.email,
-            passwordHash: passwordHash,
+            login: command.dto.login,
+            email: command.dto.email,
+            passwordHash: command.passwordHash,
             createdAt: new Date().toISOString(),
-            emailRecoveryCode: emailRecoveryCodeData,
+            emailRecoveryCode: command.emailRecoveryCodeData,
             loginAttempts: [],
-            emailConfirmation: emailConfirmation,
+            emailConfirmation: command.emailConfirmation,
             userDevicesData: [],
             currentSession: {
                 ip: "ip",

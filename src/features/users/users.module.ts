@@ -24,6 +24,7 @@ import { AuthModule } from "../auth/auth.module";
 import { DeleteUserUseCase } from "./use-cases/delete-user-use-case";
 import { CreateUserUseCase } from "./use-cases/create-user-use-case";
 import { CreateUserWithoutConfirmationEmailUseCase } from "../auth/use-cases/create-user-without-confirmation-email-use-case";
+import { CqrsModule } from "@nestjs/cqrs";
 
 const useCases = [DeleteUserUseCase, CreateUserUseCase, CreateUserWithoutConfirmationEmailUseCase];
 
@@ -41,6 +42,7 @@ const useCases = [DeleteUserUseCase, CreateUserUseCase, CreateUserWithoutConfirm
         ...useCases,
     ],
     imports: [
+        CqrsModule,
         AuthModule,
         BcryptModule,
         JwtModule,

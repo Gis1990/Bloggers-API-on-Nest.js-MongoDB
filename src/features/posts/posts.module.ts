@@ -17,6 +17,7 @@ import { UpdatePostUseCase } from "./use-cases/update-post-use-case";
 import { LikeOperationForPostUseCase } from "./use-cases/like-operation-for-post-use-case";
 import { NewestLikesClass, NewestLikesSchema, PostDBClass, PostsSchema } from "./posts.schema";
 import { CreateCommentUseCase } from "../comments/use-cases/create-comment-use-case";
+import { CqrsModule } from "@nestjs/cqrs";
 
 const useCases = [
     CreatePostUseCase,
@@ -28,6 +29,7 @@ const useCases = [
 
 @Module({
     imports: [
+        CqrsModule,
         forwardRef(() => BlogsModule),
         MongooseModule.forFeature([
             {

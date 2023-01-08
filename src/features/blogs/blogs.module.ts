@@ -12,11 +12,13 @@ import { DeleteBlogUseCase } from "./use-cases/delete-blog-use-case";
 import { CreatePostUseCase } from "../posts/use-cases/create-post-use-case";
 import { PostsRepository } from "../posts/posts.repository";
 import { PostDBClass, PostsSchema } from "../posts/posts.schema";
+import { CqrsModule } from "@nestjs/cqrs";
 
 const useCases = [CreateBlogUseCase, UpdateBlogUseCase, DeleteBlogUseCase, CreatePostUseCase];
 
 @Module({
     imports: [
+        CqrsModule,
         MongooseModule.forFeature([
             {
                 name: BlogDBClass.name,

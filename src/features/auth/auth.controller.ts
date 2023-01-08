@@ -16,60 +16,53 @@ import { JwtRefreshTokenAuthGuard } from "./guards/jwtRefreshToken-auth.guard";
 import { CurrentUser } from "./auth.cutsom.decorators";
 import { SkipThrottle } from "@nestjs/throttler";
 import { JwtAccessTokenAuthGuard } from "./guards/jwtAccessToken-auth.guard";
-import { PasswordRecoveryUseCase } from "./use-cases/password-recovery-use-case";
-import { AcceptNewPasswordUseCase } from "./use-cases/accept-new-password-use-case";
-import { ConfirmEmailUseCase } from "./use-cases/confirm-email-use-case";
-import { CreateUserWithConfirmationEmailUseCase } from "./use-cases/create-user-with-confirmation-email-use-case";
-import { RegistrationEmailResendingUseCase } from "./use-cases/registration-email-resending-use-case";
-import { RefreshAllTokensUseCase } from "./use-cases/refresh-all-tokens-use-case";
-import { RefreshOnlyRefreshTokenUseCase } from "./use-cases/refresh-only-refresh-token-use-case";
+import { CommandBus } from "@nestjs/cqrs";
+import { PasswordRecoveryCommand } from "./use-cases/password-recovery-use-case";
+import { AcceptNewPasswordCommand } from "./use-cases/accept-new-password-use-case";
+import { ConfirmEmailCommand } from "./use-cases/confirm-email-use-case";
+import { CreateUserWithConfirmationEmailCommand } from "./use-cases/create-user-with-confirmation-email-use-case";
+import { RegistrationEmailResendingCommand } from "./use-cases/registration-email-resending-use-case";
+import { RefreshAllTokensCommand } from "./use-cases/refresh-all-tokens-use-case";
+import { RefreshOnlyRefreshTokenCommand } from "./use-cases/refresh-only-refresh-token-use-case";
 
 @SkipThrottle()
 @Controller("auth")
 export class AuthController {
-    constructor(
-        private passwordRecoveryUseCase: PasswordRecoveryUseCase,
-        private acceptNewPasswordUseCase: AcceptNewPasswordUseCase,
-        private confirmEmailUseCase: ConfirmEmailUseCase,
-        private createUserWithConfirmationEmailUseCase: CreateUserWithConfirmationEmailUseCase,
-        private registrationEmailResendingUseCase: RegistrationEmailResendingUseCase,
-        private refreshAllTokensUseCase: RefreshAllTokensUseCase,
-        private refreshOnlyRefreshTokenUseCase: RefreshOnlyRefreshTokenUseCase,
-    ) {}
+    constructor(private commandBus: CommandBus) {}
 
     @SkipThrottle(false)
     @Post("password-recovery")
     @HttpCode(204)
     async passwordRecovery(@Body() dto: InputModelForPasswordRecovery): Promise<boolean> {
-        return await this.passwordRecoveryUseCase.execute(dto);
+        return await this.commandBus.execute(new PasswordRecoveryCommand(dto));
     }
 
     @SkipThrottle(false)
     @Post("new-Password")
     @HttpCode(204)
     async newPassword(@Body() dto: InputModelForNewPassword): Promise<boolean> {
-        return await this.acceptNewPasswordUseCase.execute(dto);
+        return await this.commandBus.execute(new AcceptNewPasswordCommand(dto));
     }
 
     @SkipThrottle(false)
     @Post("registration-confirmation")
     @HttpCode(204)
     async confirmRegistration(@Body() body: InputModelForCode): Promise<boolean> {
-        return await this.confirmEmailUseCase.execute(body.code);
+        return await this.commandBus.execute(new ConfirmEmailCommand(body.code));
     }
 
     @SkipThrottle(false)
     @Post("registration")
     @HttpCode(204)
     async createBlog(@Body() dto: InputModelForCreatingNewUser): Promise<boolean> {
-        return await this.createUserWithConfirmationEmailUseCase.execute(dto);
+        return await this.commandBus.execute(new CreateUserWithConfirmationEmailCommand(dto));
     }
 
     @SkipThrottle(false)
     @Post("registration-email-resending")
     @HttpCode(204)
     async registrationEmailResending(@Body() dto: InputModelForResendingEmail): Promise<boolean> {
-        return await this.registrationEmailResendingUseCase.execute(dto);
+        return await this.commandBus.execute(new RegistrationEmailResendingCommand(dto));
     }
 
     @SkipThrottle(false)
@@ -80,7 +73,7 @@ export class AuthController {
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
         @Res({ passthrough: true }) response: Response,
     ): Promise<AccessTokenClass> {
-        const result = await this.refreshAllTokensUseCase.execute(userWithDeviceData);
+        const result = await this.commandBus.execute(new RefreshAllTokensCommand(userWithDeviceData));
         const accessToken = result[0];
         const refreshToken = result[1];
         response.cookie("refreshToken", refreshToken, {
@@ -98,7 +91,7 @@ export class AuthController {
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
         @Res({ passthrough: true }) response: Response,
     ): Promise<AccessTokenClass> {
-        const result = await this.refreshAllTokensUseCase.execute(userWithDeviceData);
+        const result = await this.commandBus.execute(new RefreshAllTokensCommand(userWithDeviceData));
         const accessToken = result[0];
         const refreshToken = result[1];
         response.cookie("refreshToken", refreshToken, {
@@ -116,7 +109,7 @@ export class AuthController {
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
         @Res({ passthrough: true }) response: Response,
     ): Promise<void> {
-        const newRefreshToken = await this.refreshOnlyRefreshTokenUseCase.execute(userWithDeviceData);
+        const newRefreshToken = await this.commandBus.execute(new RefreshOnlyRefreshTokenCommand(userWithDeviceData));
         response.cookie("refreshToken", newRefreshToken, {
             httpOnly: true,
             secure: true,

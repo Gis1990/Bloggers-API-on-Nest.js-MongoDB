@@ -11,6 +11,7 @@ import { useContainer } from "class-validator";
 import { MongooseModule } from "@nestjs/mongoose";
 import { BlogDBClass, BlogsSchema } from "../src/features/blogs/blogs.schema";
 import { BlogsQueryRepository } from "../src/features/blogs/blogs.query.repository";
+import { CqrsModule } from "@nestjs/cqrs";
 
 export const BlogsModelClass = mongoose.connection.collection("blogdbclasses");
 const testValidationPipeSettings = {
@@ -104,6 +105,7 @@ describe("blogs endpoint (e2e)", () => {
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
+                CqrsModule,
                 MongooseModule.forRoot(mongoUri, { useNewUrlParser: true }),
                 AppModule,
                 MongooseModule.forFeature([

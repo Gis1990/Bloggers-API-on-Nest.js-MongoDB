@@ -1,30 +1,34 @@
-import { Injectable } from "@nestjs/common";
 import { CommentsQueryRepository } from "../comments.query.repository";
 import { CommentsRepository } from "../comments.repository";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-@Injectable()
-export class LikeOperationForCommentUseCase {
+export class LikeOperationForCommentCommand {
+    constructor(public readonly id: string, public readonly userId: string, public readonly likeStatus: string) {}
+}
+
+@CommandHandler(LikeOperationForCommentCommand)
+export class LikeOperationForCommentUseCase implements ICommandHandler<LikeOperationForCommentCommand> {
     constructor(
         private commentsQueryRepository: CommentsQueryRepository,
         private commentsRepository: CommentsRepository,
     ) {}
 
-    async execute(id: string, userId: string, likeStatus: string): Promise<boolean> {
+    async execute(command: LikeOperationForCommentCommand): Promise<boolean> {
         // Find the comment with the given id
-        const comment = await this.commentsQueryRepository.getCommentByIdForLikeOperation(id);
+        const comment = await this.commentsQueryRepository.getCommentByIdForLikeOperation(command.id);
         if (!comment) {
             // Return false if the comment is not found
             return false;
         }
 
         // Check if the user is liking, disliking, or removing their like/dislike
-        const isLike = likeStatus === "Like";
-        const isDislike = likeStatus === "Dislike";
-        const isNone = likeStatus === "None";
+        const isLike = command.likeStatus === "Like";
+        const isDislike = command.likeStatus === "Dislike";
+        const isNone = command.likeStatus === "None";
 
         // Check if the user has already liked or disliked the comment
-        const isLiked = comment.usersLikesInfo.usersWhoPutLike.includes(userId);
-        const isDisliked = comment.usersLikesInfo.usersWhoPutDislike.includes(userId);
+        const isLiked = comment.usersLikesInfo.usersWhoPutLike.includes(command.userId);
+        const isDisliked = comment.usersLikesInfo.usersWhoPutDislike.includes(command.userId);
         // Declare an update object that will be used to update the comment
 
         let update: any = {};
@@ -34,18 +38,18 @@ export class LikeOperationForCommentUseCase {
             // Increment the like count and add the user to the list of users who liked the comment
             update = {
                 "likesInfo.likesCount": comment.likesInfo.likesCount + 1,
-                "likesInfo.myStatus": likeStatus,
+                "likesInfo.myStatus": command.likeStatus,
                 $push: {
-                    "usersLikesInfo.usersWhoPutLike": userId,
+                    "usersLikesInfo.usersWhoPutLike": command.userId,
                 },
             };
         } else if (isDislike && !isDisliked && !isLiked) {
             // Increment the dislike count and add the user to the list of users who disliked the comment
             update = {
                 "likesInfo.dislikesCount": comment.likesInfo.dislikesCount + 1,
-                "likesInfo.myStatus": likeStatus,
+                "likesInfo.myStatus": command.likeStatus,
                 $push: {
-                    "usersLikesInfo.usersWhoPutDislike": userId,
+                    "usersLikesInfo.usersWhoPutDislike": command.userId,
                 },
             };
         } else if (isLiked && isDislike) {
@@ -53,12 +57,12 @@ export class LikeOperationForCommentUseCase {
             update = {
                 "likesInfo.likesCount": comment.likesInfo.likesCount - 1,
                 "likesInfo.dislikesCount": comment.likesInfo.dislikesCount + 1,
-                "likesInfo.myStatus": likeStatus,
+                "likesInfo.myStatus": command.likeStatus,
                 $pull: {
-                    "usersLikesInfo.usersWhoPutLike": userId,
+                    "usersLikesInfo.usersWhoPutLike": command.userId,
                 },
                 $push: {
-                    "usersLikesInfo.usersWhoPutDislike": userId,
+                    "usersLikesInfo.usersWhoPutDislike": command.userId,
                 },
             };
         } else if (isDisliked && isLike) {
@@ -66,34 +70,34 @@ export class LikeOperationForCommentUseCase {
             update = {
                 "likesInfo.likesCount": comment.likesInfo.likesCount + 1,
                 "likesInfo.dislikesCount": comment.likesInfo.dislikesCount - 1,
-                "likesInfo.myStatus": likeStatus,
+                "likesInfo.myStatus": command.likeStatus,
                 $pull: {
-                    "usersLikesInfo.usersWhoPutDislike": userId,
+                    "usersLikesInfo.usersWhoPutDislike": command.userId,
                 },
                 $push: {
-                    "usersLikesInfo.usersWhoPutLike": userId,
+                    "usersLikesInfo.usersWhoPutLike": command.userId,
                 },
             };
         } else if (isLiked && isNone) {
             // Decrement the like count, and update the lists of users who liked the comment
             update = {
                 "likesInfo.likesCount": comment.likesInfo.likesCount - 1,
-                "likesInfo.myStatus": likeStatus,
+                "likesInfo.myStatus": command.likeStatus,
                 $pull: {
-                    "usersLikesInfo.usersWhoPutLike": userId,
+                    "usersLikesInfo.usersWhoPutLike": command.userId,
                 },
             };
         } else if (isDisliked && isNone) {
             // Decrement the dislike count, and update the lists of users who disliked the comment
             update = {
                 "likesInfo.dislikesCount": comment.likesInfo.dislikesCount - 1,
-                "likesInfo.myStatus": likeStatus,
+                "likesInfo.myStatus": command.likeStatus,
                 $pull: {
-                    "usersLikesInfo.usersWhoPutDislike": userId,
+                    "usersLikesInfo.usersWhoPutDislike": command.userId,
                 },
             };
         }
 
-        return this.commentsRepository.likeOperation(id, update);
+        return this.commentsRepository.likeOperation(command.id, update);
     }
 }

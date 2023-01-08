@@ -4,17 +4,14 @@ import { NewUserClassResponseModel, UserDBClassPagination } from "./entities/use
 import { BasicAuthGuard } from "../auth/guards/basic-auth.guard";
 import { UsersQueryRepository } from "./users.query.repository";
 import { SkipThrottle } from "@nestjs/throttler";
-import { DeleteUserUseCase } from "./use-cases/delete-user-use-case";
-import { CreateUserWithoutConfirmationEmailUseCase } from "../auth/use-cases/create-user-without-confirmation-email-use-case";
+import { CreateUserWithoutConfirmationEmailCommand } from "../auth/use-cases/create-user-without-confirmation-email-use-case";
+import { CommandBus } from "@nestjs/cqrs";
+import { DeleteUserCommand } from "./use-cases/delete-user-use-case";
 
 @SkipThrottle()
 @Controller("users")
 export class UsersController {
-    constructor(
-        private deleteUserUseCase: DeleteUserUseCase,
-        private usersQueryRepository: UsersQueryRepository,
-        private createUserWithoutConfirmationEmailUseCase: CreateUserWithoutConfirmationEmailUseCase,
-    ) {}
+    constructor(private commandsBus: CommandBus, private usersQueryRepository: UsersQueryRepository) {}
 
     @Get()
     async getAllUsers(
@@ -27,13 +24,13 @@ export class UsersController {
     @UseGuards(BasicAuthGuard)
     @Post()
     async createUser(@Body() dto: InputModelForCreatingNewUser): Promise<NewUserClassResponseModel> {
-        return await this.createUserWithoutConfirmationEmailUseCase.execute(dto);
+        return await this.commandsBus.execute(new CreateUserWithoutConfirmationEmailCommand(dto));
     }
 
     @UseGuards(BasicAuthGuard)
     @Delete(":id")
     @HttpCode(204)
     async deleteUser(@Param() param: UsersIdValidationModel): Promise<boolean> {
-        return await this.deleteUserUseCase.execute(param.id);
+        return await this.commandsBus.execute(new DeleteUserCommand(param.id));
     }
 }

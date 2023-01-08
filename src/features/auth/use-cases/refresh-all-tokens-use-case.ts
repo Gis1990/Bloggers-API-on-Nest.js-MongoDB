@@ -1,24 +1,28 @@
-import { Injectable } from "@nestjs/common";
 import { CurrentUserWithDevicesDataModel } from "../dto/auth.dto";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { UsersRepository } from "../../users/users.repository";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-@Injectable()
-export class RefreshAllTokensUseCase {
+export class RefreshAllTokensCommand {
+    constructor(public readonly user: CurrentUserWithDevicesDataModel) {}
+}
+
+@CommandHandler(RefreshAllTokensCommand)
+export class RefreshAllTokensUseCase implements ICommandHandler<RefreshAllTokensCommand> {
     constructor(
         private jwtService: JwtService,
         private configService: ConfigService,
         private usersRepository: UsersRepository,
     ) {}
 
-    async execute(user: CurrentUserWithDevicesDataModel): Promise<string[]> {
+    async execute(command: RefreshAllTokensCommand): Promise<string[]> {
         const newLastActiveDate = new Date();
-        await this.usersRepository.updateLastActiveDate(user.currentSession.deviceId, newLastActiveDate);
+        await this.usersRepository.updateLastActiveDate(command.user.currentSession.deviceId, newLastActiveDate);
         const [newAccessToken, newRefreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
-                    id: user.id,
+                    id: command.user.id,
                 },
                 {
                     secret: this.configService.get<string>("jwtAccessTokenSecret"),
@@ -27,11 +31,11 @@ export class RefreshAllTokensUseCase {
             ),
             this.jwtService.signAsync(
                 {
-                    id: user.id,
-                    ip: user.currentSession.ip,
-                    title: user.currentSession.title,
+                    id: command.user.id,
+                    ip: command.user.currentSession.ip,
+                    title: command.user.currentSession.title,
                     lastActiveDate: newLastActiveDate,
-                    deviceId: user.currentSession.deviceId,
+                    deviceId: command.user.currentSession.deviceId,
                 },
                 {
                     secret: this.configService.get<string>("jwtRefreshTokenSecret"),

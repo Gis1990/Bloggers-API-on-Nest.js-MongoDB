@@ -1,11 +1,15 @@
-import { Injectable } from "@nestjs/common";
 import { UsersRepository } from "../users.repository";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-@Injectable()
-export class DeleteUserUseCase {
+export class DeleteUserCommand {
+    constructor(public readonly id: string) {}
+}
+
+@CommandHandler(DeleteUserCommand)
+export class DeleteUserUseCase implements ICommandHandler<DeleteUserCommand> {
     constructor(private usersRepository: UsersRepository) {}
 
-    async execute(userId: string): Promise<boolean> {
-        return this.usersRepository.deleteUserById(userId);
+    async execute(command: DeleteUserCommand): Promise<boolean> {
+        return this.usersRepository.deleteUserById(command.id);
     }
 }

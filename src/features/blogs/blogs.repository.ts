@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BlogResponseModelClass } from "./entities/blogs.entity";
+import { BlogViewModelClass } from "./entities/blogs.entity";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { BlogDBClass, BlogDocument } from "./blogs.schema";
@@ -9,11 +9,10 @@ import { CreatedBlogDto, InputModelForUpdatingBlog } from "./dto/blogs.dto";
 export class BlogsRepository {
     constructor(@InjectModel(BlogDBClass.name) private blogsModelClass: Model<BlogDocument>) {}
 
-    async createBlog(newBlog: CreatedBlogDto): Promise<BlogResponseModelClass> {
+    async createBlog(newBlog: CreatedBlogDto): Promise<BlogViewModelClass> {
         const blog = new this.blogsModelClass(newBlog);
         await blog.save();
-        const { _id, ...blogRest } = blog.toObject();
-        return blogRest;
+        return this.blogsModelClass.findOne({ id: blog.id }, { _id: 0 });
     }
 
     async updateBlog(blogId: string, dto: InputModelForUpdatingBlog): Promise<boolean> {

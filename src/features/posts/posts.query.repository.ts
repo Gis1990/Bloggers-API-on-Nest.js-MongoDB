@@ -21,10 +21,10 @@ export class PostsQueryRepository {
         }
         const cursor = await this.postsModelClass.find({}).sort(sortObj).skip(skips).limit(pageSize);
         cursor.forEach((elem) => {
-            elem.getLikesDataInfoForPost(elem.id, userId);
+            elem.getLikesDataInfoForPost(userId);
         });
         const cursorWithCorrectViewModel = cursor.map((elem) => {
-            const { _id, usersLikesInfo, ...rest } = elem.toObject();
+            const { _id, usersLikesInfo, ...rest } = elem;
             return rest;
         });
         return new PostDBPaginationClass(
@@ -52,7 +52,7 @@ export class PostsQueryRepository {
         }
         const cursor = await this.postsModelClass.find({ blogId: blogId }).sort(sortObj).skip(skips).limit(pageSize);
         cursor.forEach((elem) => {
-            elem.getLikesDataInfoForPost(elem.id, userId);
+            elem.getLikesDataInfoForPost(userId);
         });
         const cursorWithCorrectViewModel = cursor.map((elem) => {
             const { _id, usersLikesInfo, ...rest } = elem.toObject();
@@ -72,7 +72,7 @@ export class PostsQueryRepository {
         if (!post) {
             return null;
         }
-        post.getLikesDataInfoForPost(id, userId);
+        post.getLikesDataInfoForPost(userId);
         const { _id, usersLikesInfo, ...rest } = post.toObject();
         return rest;
     }

@@ -11,11 +11,13 @@ import { CreateCommentUseCase } from "./use-cases/create-comment-use-case";
 import { UpdateCommentUseCase } from "./use-cases/update-comment-use-case";
 import { DeleteCommentUseCase } from "./use-cases/delete-comment-use-case";
 import { LikeOperationForCommentUseCase } from "./use-cases/like-operation-for-comment-use-case";
+import { CqrsModule } from "@nestjs/cqrs";
 
 const useCases = [CreateCommentUseCase, UpdateCommentUseCase, DeleteCommentUseCase, LikeOperationForCommentUseCase];
 
 @Module({
     imports: [
+        CqrsModule,
         forwardRef(() => PostsModule),
         MongooseModule.forFeature([
             {

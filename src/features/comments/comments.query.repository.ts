@@ -9,7 +9,7 @@ export class CommentsQueryRepository {
 
     async getCommentById(id: string, userId: string | undefined): Promise<CommentViewModelClass | null> {
         const comment = await this.commentsModelClass.findOne({ id: id });
-        comment.getLikesDataInfoForComment(id, userId);
+        comment.getLikesDataInfoForComment(userId);
         const { _id, postId, usersLikesInfo, ...rest } = comment.toObject();
         return rest;
     }
@@ -43,7 +43,7 @@ export class CommentsQueryRepository {
             .skip(skips)
             .limit(PageSize);
         cursor.forEach((elem) => {
-            elem.getLikesDataInfoForComment(elem.id, userId);
+            elem.getLikesDataInfoForComment(userId);
         });
         const cursorWithCorrectViewModel = cursor.map((elem) => {
             const { _id, postId, usersLikesInfo, ...rest } = elem.toObject();
@@ -59,6 +59,10 @@ export class CommentsQueryRepository {
             totalCount,
             cursorWithCorrectViewModel,
         );
+    }
+
+    async getCommentForIdValidation(id: string): Promise<CommentViewModelClass | null> {
+        return this.commentsModelClass.findOne({ id: id }, { _id: 1 });
     }
 
     async getCommentByIdForLikeOperation(id: string): Promise<CommentDBClass | null> {

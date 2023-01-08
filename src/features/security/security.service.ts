@@ -1,17 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { UsersQueryRepository } from "../users/users.query.repository";
-import { CurrentUserWithDevicesDataModel } from "../auth/dto/auth.dto";
+import { UsersRepository } from "../users/users.repository";
 
 @Injectable()
 export class SecurityService {
-    constructor(protected usersQueryRepository: UsersQueryRepository) {}
+    constructor(protected usersRepository: UsersRepository) {}
 
-    async checkAccessRights(userWithDeviceData: CurrentUserWithDevicesDataModel, deviceId: string): Promise<boolean> {
-        const userByDeviceId = await this.usersQueryRepository.findUserByDeviceId(deviceId);
-        if (userByDeviceId) {
-            return userWithDeviceData.id === userByDeviceId.id;
-        } else {
-            return false;
-        }
+    async terminateSpecificDevice(id: string, deviceId: string): Promise<boolean> {
+        return await this.usersRepository.terminateSpecificDevice(id, deviceId);
     }
 }

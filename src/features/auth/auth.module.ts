@@ -39,7 +39,8 @@ import { CreateUserWithConfirmationEmailUseCase } from "./use-cases/create-user-
 import { CreateUserUseCase } from "../users/use-cases/create-user-use-case";
 import { SendEmailForRegistrationUseCase } from "../../utils/email/use-cases/send-email-for-registration-use-case";
 import { SendEmailForPasswordRecoveryUseCase } from "../../utils/email/use-cases/send-email-for-password-recovery-use-case";
-import { TerminateSpecificDeviceUseCase } from "../security/use-cases/terminate-specific-device-use-case";
+import { CqrsModule } from "@nestjs/cqrs";
+import { SecurityService } from "../security/security.service";
 
 const useCases = [
     AcceptNewPasswordUseCase,
@@ -54,13 +55,13 @@ const useCases = [
     CreateUserUseCase,
     SendEmailForRegistrationUseCase,
     SendEmailForPasswordRecoveryUseCase,
-    TerminateSpecificDeviceUseCase,
 ];
 
 @Module({
     controllers: [AuthController],
     providers: [
         AuthService,
+        SecurityService,
         LocalStrategy,
         JwtRefreshTokenStrategy,
         JwtAccessTokenStrategy,
@@ -73,6 +74,7 @@ const useCases = [
         ...useCases,
     ],
     imports: [
+        CqrsModule,
         PassportModule,
         JwtModule.register({}),
         MailModule,

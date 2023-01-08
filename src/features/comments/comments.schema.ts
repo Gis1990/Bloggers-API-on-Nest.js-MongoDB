@@ -65,7 +65,7 @@ export class CommentDBClass {
     })
     usersLikesInfo: UsersLikesInfoClass;
 
-    returnUsersLikeStatusForComments(id: string, userId: string): string {
+    returnUsersLikeStatusForComments(userId: string): string {
         const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
         const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
 
@@ -80,12 +80,12 @@ export class CommentDBClass {
         return "None";
     }
 
-    getLikesDataInfoForComment(id: string, userId: string | undefined): CommentDBClass {
+    getLikesDataInfoForComment(userId: string | undefined): CommentDBClass {
         if (!this) {
             throw new NotFoundException();
         }
         if (userId) {
-            this.likesInfo.myStatus = this.returnUsersLikeStatusForComments(id, userId);
+            this.likesInfo.myStatus = this.returnUsersLikeStatusForComments(userId);
         } else {
             this.likesInfo.myStatus = "None";
         }

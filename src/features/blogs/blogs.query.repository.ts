@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BlogDBPaginationClaa } from "./entities/blogs.entity";
+import { BlogDBPaginationClass } from "./entities/blogs.entity";
 import { ModelForGettingAllBlogs } from "./dto/blogs.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
@@ -43,7 +43,7 @@ export class BlogsQueryRepository {
         const totalCount = await this.blogsModelClass.count(query);
 
         // Return a new instance of the BlogDBClassPagination class with the calculated total number of pages, the current page number and size, the total number of documents, and the cursor as arguments
-        return new BlogDBPaginationClaa(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
+        return new BlogDBPaginationClass(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
 
     async getBlogById(id: string): Promise<BlogDBClass | null> {

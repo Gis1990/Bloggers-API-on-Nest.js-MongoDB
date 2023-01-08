@@ -1,14 +1,18 @@
-import { Injectable } from "@nestjs/common";
 import { UserDevicesDataClass } from "../../users/users.schema";
 import { CurrentUserWithDevicesDataModel } from "../../auth/dto/auth.dto";
 import { UsersQueryRepository } from "../../users/users.query.repository";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-@Injectable()
-export class ReturnAllDevicesUseCase {
+export class ReturnAllDevicesCommand {
+    constructor(public readonly userWithDeviceData: CurrentUserWithDevicesDataModel) {}
+}
+
+@CommandHandler(ReturnAllDevicesCommand)
+export class ReturnAllDevicesUseCase implements ICommandHandler<ReturnAllDevicesCommand> {
     constructor(private usersQueryRepository: UsersQueryRepository) {}
 
-    async execute(userWithDeviceData: CurrentUserWithDevicesDataModel): Promise<UserDevicesDataClass[] | null> {
-        const user = await this.usersQueryRepository.findUserById(userWithDeviceData.id);
+    async execute(command: ReturnAllDevicesCommand): Promise<UserDevicesDataClass[] | null> {
+        const user = await this.usersQueryRepository.findUserById(command.userWithDeviceData.id);
         if (user) {
             return user.userDevicesData;
         } else {

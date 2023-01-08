@@ -1,20 +1,25 @@
-import { HttpException, Injectable } from "@nestjs/common";
+import { HttpException } from "@nestjs/common";
 import { CommentsRepository } from "../comments.repository";
 import { CommentsQueryRepository } from "../comments.query.repository";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-@Injectable()
-export class DeleteCommentUseCase {
+export class DeleteCommentCommand {
+    constructor(public readonly id: string, public readonly userId: string | undefined) {}
+}
+
+@CommandHandler(DeleteCommentCommand)
+export class DeleteCommentUseCase implements ICommandHandler<DeleteCommentCommand> {
     constructor(
         private commentsRepository: CommentsRepository,
         private commentsQueryRepository: CommentsQueryRepository,
     ) {}
 
-    async execute(id: string, userId: string | undefined): Promise<boolean> {
-        const comment = await this.commentsQueryRepository.getCommentById(id, userId);
+    async execute(command: DeleteCommentCommand): Promise<boolean> {
+        const comment = await this.commentsQueryRepository.getCommentById(command.id, command.userId);
         if (!comment) {
             return false;
         }
-        if (userId !== comment.userId) throw new HttpException("Incorrect id", 403);
-        return this.commentsRepository.deleteCommentById(id);
+        if (command.userId !== comment.userId) throw new HttpException("Incorrect id", 403);
+        return this.commentsRepository.deleteCommentById(command.id);
     }
 }

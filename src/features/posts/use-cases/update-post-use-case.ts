@@ -1,17 +1,27 @@
-import { Injectable } from "@nestjs/common";
 import { PostsRepository } from "../posts.repository";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-@Injectable()
-export class UpdatePostUseCase {
+export class UpdatePostCommand {
+    constructor(
+        public readonly id: string,
+        public readonly title: string,
+        public readonly shortDescription: string,
+        public readonly content: string,
+        public readonly blogId: string,
+    ) {}
+}
+
+@CommandHandler(UpdatePostCommand)
+export class UpdatePostUseCase implements ICommandHandler<UpdatePostCommand> {
     constructor(private postsRepository: PostsRepository) {}
 
-    async execute(
-        id: string,
-        title: string,
-        shortDescription: string,
-        content: string,
-        blogId: string,
-    ): Promise<boolean> {
-        return this.postsRepository.updatePost(id, title, shortDescription, content, blogId);
+    async execute(command: UpdatePostCommand): Promise<boolean> {
+        return this.postsRepository.updatePost(
+            command.id,
+            command.title,
+            command.shortDescription,
+            command.content,
+            command.blogId,
+        );
     }
 }

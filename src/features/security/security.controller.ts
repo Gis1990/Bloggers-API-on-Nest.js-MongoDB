@@ -5,20 +5,16 @@ import { CurrentUserWithDevicesDataModel } from "../auth/dto/auth.dto";
 import { SkipThrottle } from "@nestjs/throttler";
 import { deviceIdValidationModel } from "./dto/security.dto";
 import { UserDevicesDataClass } from "../users/users.schema";
-import { ReturnAllDevicesUseCase } from "./use-cases/return-all-devices-use-case";
-import { TerminateAllDevicesUseCase } from "./use-cases/terminate-all-devices-use-case";
-import { TerminateSpecificDeviceUseCase } from "./use-cases/terminate-specific-device-use-case";
-import { CheckAccessRightsUseCase } from "./use-cases/check-access-rights-use-case";
+import { CommandBus } from "@nestjs/cqrs";
+import { ReturnAllDevicesCommand } from "./use-cases/return-all-devices-use-case";
+import { TerminateAllDevicesCommand } from "./use-cases/terminate-all-devices-use-case";
+import { CheckAccessRightsCommand } from "./use-cases/check-access-rights-use-case";
+import { SecurityService } from "./security.service";
 
 @SkipThrottle()
 @Controller("security")
 export class SecurityController {
-    constructor(
-        private returnAllDevicesUseCase: ReturnAllDevicesUseCase,
-        private terminateAllDevicesUseCase: TerminateAllDevicesUseCase,
-        private terminateSpecificDeviceUseCase: TerminateSpecificDeviceUseCase,
-        private checkAccessRightsUseCase: CheckAccessRightsUseCase,
-    ) {}
+    constructor(private commandBus: CommandBus, private securityService: SecurityService) {}
 
     @UseGuards(JwtRefreshTokenAuthGuard)
     @Get("/devices")
@@ -27,7 +23,7 @@ export class SecurityController {
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
         @Res({ passthrough: true }) response: Response,
     ): Promise<UserDevicesDataClass[]> {
-        return await this.returnAllDevicesUseCase.execute(userWithDeviceData);
+        return await this.commandBus.execute(new ReturnAllDevicesCommand(userWithDeviceData));
     }
 
     @UseGuards(JwtRefreshTokenAuthGuard)
@@ -37,7 +33,7 @@ export class SecurityController {
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
         @Res({ passthrough: true }) response: Response,
     ): Promise<boolean> {
-        return await this.terminateAllDevicesUseCase.execute(userWithDeviceData);
+        return await this.commandBus.execute(new TerminateAllDevicesCommand(userWithDeviceData));
     }
 
     @UseGuards(JwtRefreshTokenAuthGuard)
@@ -48,9 +44,11 @@ export class SecurityController {
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
         @Res({ passthrough: true }) response: Response,
     ): Promise<boolean> {
-        const correct = await this.checkAccessRightsUseCase.execute(userWithDeviceData, params.deviceId);
+        const correct = await this.commandBus.execute(
+            new CheckAccessRightsCommand(userWithDeviceData, params.deviceId),
+        );
         if (!correct) throw new HttpException("Access denied", 403);
-        const deviceTerminated = await this.terminateSpecificDeviceUseCase.execute(
+        const deviceTerminated = await this.securityService.terminateSpecificDevice(
             userWithDeviceData.id,
             params.deviceId,
         );

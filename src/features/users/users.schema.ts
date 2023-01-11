@@ -170,7 +170,7 @@ export class UserAccountClass {
 }
 
 export const UsersAccountSchema = SchemaFactory.createForClass(UserAccountClass);
-BlogsSchema.methods = {
+UsersAccountSchema.methods = {
     transformToUserViewModelClass: UserAccountClass.prototype.transformToUserViewModelClass,
 };
 

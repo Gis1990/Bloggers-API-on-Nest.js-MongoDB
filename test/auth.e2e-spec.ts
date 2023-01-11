@@ -1,65 +1,13 @@
 import "reflect-metadata";
-import { BadRequestException, INestApplication, ValidationPipe } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { AppModule } from "../src/app.module";
-import mongoose from "mongoose";
-import { HttpExceptionFilter } from "../src/exception.filter";
-import * as cookieParser from "cookie-parser";
-import { useContainer } from "class-validator";
-import { randomString } from "./blogs.e2e-spec";
-
-const createUserForTesting = (loginLen: number, emailLen: number, passwordLen: number) => {
-    return {
-        login: randomString(loginLen),
-        email: randomString(emailLen) + "test@email.test",
-        password: randomString(passwordLen),
-    };
-};
-
-const testValidationPipeSettings = {
-    transform: true,
-    stopAtFirstError: true,
-    exceptionFactory: (errors) => {
-        const errorsForResponse = [];
-        errors.forEach((e) => {
-            const constraintsKeys = Object.keys(e.constraints);
-            constraintsKeys.forEach((ckey) => {
-                errorsForResponse.push({
-                    message: e.constraints[ckey],
-                    field: e.property,
-                });
-            });
-        });
-        throw new BadRequestException(errorsForResponse);
-    },
-};
+import { app, createUserForTesting, setupTestApp, teardownTestApp } from "./test.functions";
 
 describe("auth endpoint (e2e)", () => {
-    let app: INestApplication;
-
     beforeAll(async () => {
-        mongoose.set("strictQuery", false);
-        const mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
-
-        const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
-        }).compile();
-
-        app = moduleFixture.createNestApplication();
-        app.enableCors();
-        app.useGlobalPipes(new ValidationPipe(testValidationPipeSettings));
-        app.useGlobalFilters(new HttpExceptionFilter());
-        app.use(cookieParser());
-        useContainer(app.select(AppModule), { fallbackOnErrors: true });
-        await app.init();
+        await setupTestApp();
     });
     afterAll(async () => {
-        await mongoose.disconnect();
-        await app.close();
+        await teardownTestApp();
     });
     // Test deleting all data from the testing endpoint and expecting a status code of 204
     it("1.Should return status 204 (/delete)", async () => {

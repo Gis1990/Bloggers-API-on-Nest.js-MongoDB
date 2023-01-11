@@ -1,81 +1,22 @@
 import "reflect-metadata";
-import { BadRequestException, INestApplication, ValidationPipe } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { AppModule } from "../src/app.module";
-import mongoose from "mongoose";
-import { HttpExceptionFilter } from "../src/exception.filter";
-import * as cookieParser from "cookie-parser";
-import { useContainer } from "class-validator";
-import { creatingBlogForTests } from "./blogs.e2e-spec";
 import {
+    app,
+    createBlogForTests,
     createContentCommentForTesting,
     createOutputCommentForTesting,
     createPostForTesting,
     createUserForTesting,
-} from "./posts.e2e-spec";
-import { MongooseModule } from "@nestjs/mongoose";
-import { CommentDBClass, CommentsSchema } from "../src/features/comments/comments.schema";
-import { PostDBClass, PostsSchema } from "../src/features/posts/posts.schema";
-import { CommentsQueryRepository } from "../src/features/comments/comments.query.repository";
-
-const testValidationPipeSettings = {
-    transform: true,
-    stopAtFirstError: true,
-    exceptionFactory: (errors) => {
-        const errorsForResponse = [];
-        errors.forEach((e) => {
-            const constraintsKeys = Object.keys(e.constraints);
-            constraintsKeys.forEach((ckey) => {
-                errorsForResponse.push({
-                    message: e.constraints[ckey],
-                    field: e.property,
-                });
-            });
-        });
-        throw new BadRequestException(errorsForResponse);
-    },
-};
+    setupTestApp,
+    teardownTestApp,
+} from "./test.functions";
 
 describe("comments endpoint (e2e)", () => {
-    let app: INestApplication;
-
     beforeAll(async () => {
-        mongoose.set("strictQuery", false);
-        const mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
-
-        const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [
-                AppModule,
-                MongooseModule.forRoot(mongoUri, { useNewUrlParser: true }),
-                MongooseModule.forFeature([
-                    {
-                        name: CommentDBClass.name,
-                        schema: CommentsSchema,
-                    },
-                    {
-                        name: PostDBClass.name,
-                        schema: PostsSchema,
-                    },
-                ]),
-            ],
-            providers: [CommentsQueryRepository],
-        }).compile();
-
-        app = moduleFixture.createNestApplication();
-        app.enableCors();
-        app.useGlobalPipes(new ValidationPipe(testValidationPipeSettings));
-        app.useGlobalFilters(new HttpExceptionFilter());
-        app.use(cookieParser());
-        useContainer(app.select(AppModule), { fallbackOnErrors: true });
-        await app.init();
+        await setupTestApp();
     });
     afterAll(async () => {
-        await mongoose.disconnect();
-        await app.close();
+        await teardownTestApp();
     });
     it("1.Should return status 204 (/delete)", async () => {
         await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
@@ -98,7 +39,7 @@ describe("comments endpoint (e2e)", () => {
             .send({ loginOrEmail: correctUser1.login, password: correctUser1.password })
             .expect(200);
         const accessToken1 = response1.body.accessToken;
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         const response2 = await request(app.getHttpServer())
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { PostViewModelClass } from "./entities/posts.entity";
 
 @Schema({ versionKey: false })
 export class NewestLikesClass {
@@ -64,7 +64,7 @@ export class UsersLikesInfoClass {
 export const UsersLikesInfoSchema = SchemaFactory.createForClass(UsersLikesInfoClass);
 
 @Schema({ versionKey: false })
-export class PostDBClass {
+export class PostClass {
     @Prop({
         required: true,
     })
@@ -108,7 +108,7 @@ export class PostDBClass {
     })
     usersLikesInfo: UsersLikesInfoClass;
 
-    returnUsersLikeStatusForPosts(userId: string): string {
+    async returnUsersLikeStatusForPosts(userId: string): Promise<string> {
         const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
         const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
 
@@ -123,22 +123,44 @@ export class PostDBClass {
         return "None";
     }
 
-    getLikesDataInfoForPost(userId: string | undefined): PostDBClass {
-        this.extendedLikesInfo.newestLikes = this.extendedLikesInfo.newestLikes
+    async getLikesDataInfoForPost(userId: string | undefined, bannedUsers: string[]): Promise<PostClass> {
+        const likesWithoutBannedUsers = this.extendedLikesInfo.newestLikes.filter(
+            (elem) => !bannedUsers.includes(elem.userId),
+        );
+        this.extendedLikesInfo.newestLikes = likesWithoutBannedUsers
             .slice(-3)
             .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
+        this.extendedLikesInfo.likesCount = this.usersLikesInfo.usersWhoPutLike.filter(
+            (elem) => !bannedUsers.includes(elem),
+        ).length;
+        this.extendedLikesInfo.dislikesCount = this.usersLikesInfo.usersWhoPutDislike.filter(
+            (elem) => !bannedUsers.includes(elem),
+        ).length;
         if (userId) {
-            this.extendedLikesInfo.myStatus = this.returnUsersLikeStatusForPosts(userId);
+            this.extendedLikesInfo.myStatus = await this.returnUsersLikeStatusForPosts(userId);
         } else {
             this.extendedLikesInfo.myStatus = "None";
         }
         return this;
     }
+
+    async transformToPostViewModelClass(): Promise<PostViewModelClass> {
+        return new PostViewModelClass(
+            this.id,
+            this.title,
+            this.shortDescription,
+            this.content,
+            this.blogId,
+            this.blogName,
+            this.createdAt,
+            this.extendedLikesInfo,
+        );
+    }
 }
 
-export const PostsSchema = SchemaFactory.createForClass(PostDBClass);
+export const PostsSchema = SchemaFactory.createForClass(PostClass);
 PostsSchema.methods = {
-    getLikesDataInfoForPost: PostDBClass.prototype.getLikesDataInfoForPost,
-    returnUsersLikeStatusForPosts: PostDBClass.prototype.returnUsersLikeStatusForPosts,
+    getLikesDataInfoForPost: PostClass.prototype.getLikesDataInfoForPost,
+    returnUsersLikeStatusForPosts: PostClass.prototype.returnUsersLikeStatusForPosts,
+    transformToPostViewModelClass: PostClass.prototype.transformToPostViewModelClass,
 };
-export type PostDocument = HydratedDocument<PostDBClass>;

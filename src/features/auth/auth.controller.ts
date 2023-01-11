@@ -9,13 +9,13 @@ import {
     InputModelForPasswordRecovery,
     InputModelForResendingEmail,
 } from "./dto/auth.dto";
-import { LocalAuthGuard } from "./guards/local-auth.guard";
+import { LocalAuthGuard } from "../../guards/local-auth.guard";
 import { Response } from "express";
 import { AccessTokenClass } from "./entities/auth.entity";
-import { JwtRefreshTokenAuthGuard } from "./guards/jwtRefreshToken-auth.guard";
-import { CurrentUser } from "./auth.cutsom.decorators";
+import { JwtRefreshTokenAuthGuard } from "../../guards/jwtRefreshToken-auth.guard";
+import { CurrentUser } from "./decorators/auth.custom.decorators";
 import { SkipThrottle } from "@nestjs/throttler";
-import { JwtAccessTokenAuthGuard } from "./guards/jwtAccessToken-auth.guard";
+import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
 import { CommandBus } from "@nestjs/cqrs";
 import { PasswordRecoveryCommand } from "./use-cases/password-recovery-use-case";
 import { AcceptNewPasswordCommand } from "./use-cases/accept-new-password-use-case";

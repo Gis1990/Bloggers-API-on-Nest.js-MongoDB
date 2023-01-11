@@ -1,6 +1,6 @@
-import { CommentsQueryRepository } from "../comments.query.repository";
 import { CommentsRepository } from "../comments.repository";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { GetCommentByIdForLikeOperationCommand } from "./queries/get-comment-by-id-for-like-operation-query";
 
 export class LikeOperationForCommentCommand {
     constructor(public readonly id: string, public readonly userId: string, public readonly likeStatus: string) {}
@@ -8,14 +8,11 @@ export class LikeOperationForCommentCommand {
 
 @CommandHandler(LikeOperationForCommentCommand)
 export class LikeOperationForCommentUseCase implements ICommandHandler<LikeOperationForCommentCommand> {
-    constructor(
-        private commentsQueryRepository: CommentsQueryRepository,
-        private commentsRepository: CommentsRepository,
-    ) {}
+    constructor(private commentsRepository: CommentsRepository, private queryBus: QueryBus) {}
 
     async execute(command: LikeOperationForCommentCommand): Promise<boolean> {
         // Find the comment with the given id
-        const comment = await this.commentsQueryRepository.getCommentByIdForLikeOperation(command.id);
+        const comment = await this.queryBus.execute(new GetCommentByIdForLikeOperationCommand(command.id));
         if (!comment) {
             // Return false if the comment is not found
             return false;

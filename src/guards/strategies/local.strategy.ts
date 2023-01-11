@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
 import { Request } from "express";
-import { CheckCredentialsCommand } from "../use-cases/check-credentials-use-case";
+import { CheckCredentialsCommand } from "../../features/auth/use-cases/check-credentials-use-case";
 import { CommandBus } from "@nestjs/cqrs";
 
 @Injectable()
@@ -18,7 +18,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         const user = await this.commandBus.execute(
             new CheckCredentialsCommand(loginOrEmail, password, request.ip, request.headers["user-agent"]),
         );
-        if (user) {
+        console.log("LocalStrategy: user: ", user);
+        if (user && !user.banInfo.isBanned) {
             return user;
         } else {
             throw new UnauthorizedException();

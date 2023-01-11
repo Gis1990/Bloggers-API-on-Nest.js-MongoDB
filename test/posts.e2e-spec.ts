@@ -1,169 +1,25 @@
 import "reflect-metadata";
-import { BadRequestException, INestApplication, ValidationPipe } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { AppModule } from "../src/app.module";
-import mongoose from "mongoose";
-import { HttpExceptionFilter } from "../src/exception.filter";
-import * as cookieParser from "cookie-parser";
-import { useContainer } from "class-validator";
-import { BlogsModelClass, creatingBlogForTests, randomString } from "./blogs.e2e-spec";
-import { MongooseModule } from "@nestjs/mongoose";
-import { BlogDBClass, BlogsSchema } from "../src/features/blogs/blogs.schema";
-import { CommentDBClass, CommentsSchema } from "../src/features/comments/comments.schema";
-import { BlogsQueryRepository } from "../src/features/blogs/blogs.query.repository";
-import { PostsQueryRepository } from "../src/features/posts/posts.query.repository";
-import { NewestLikesClass, NewestLikesSchema, PostDBClass, PostsSchema } from "../src/features/posts/posts.schema";
-
-export const createUserForTesting = (loginLen: number, emailLen: number, passwordLen: number) => {
-    return {
-        login: randomString(loginLen),
-        email: randomString(emailLen) + "test@email.test",
-        password: randomString(passwordLen),
-    };
-};
-
-const testValidationPipeSettings = {
-    transform: true,
-    stopAtFirstError: true,
-    exceptionFactory: (errors) => {
-        const errorsForResponse = [];
-        errors.forEach((e) => {
-            const constraintsKeys = Object.keys(e.constraints);
-            constraintsKeys.forEach((ckey) => {
-                errorsForResponse.push({
-                    message: e.constraints[ckey],
-                    field: e.property,
-                });
-            });
-        });
-        throw new BadRequestException(errorsForResponse);
-    },
-};
-
-export const createPostForTesting = (
-    titleLen: number,
-    shortDescriptionLen: number,
-    contentLen: number,
-    blogId: string,
-) => {
-    return {
-        title: randomString(titleLen),
-        shortDescription: randomString(shortDescriptionLen),
-        content: randomString(contentLen),
-        blogId: blogId,
-    };
-};
-
-export const createContentCommentForTesting = (contentLen: number) => {
-    return {
-        content: randomString(contentLen),
-    };
-};
-
-export const createOutputCommentForTesting = (
-    contentLen: number,
-    userId: string,
-    userLogin: string,
-    likesCount: number,
-    dislikesCount: number,
-    myStatus: string,
-) => {
-    return {
-        id: expect.any(String),
-        content: randomString(contentLen),
-        userId: userId,
-        userLogin: userLogin,
-        createdAt: expect.any(String),
-        likesInfo: {
-            likesCount: 0,
-            dislikesCount: 0,
-            myStatus: myStatus,
-        },
-    };
-};
+import {
+    app,
+    BlogsModelClass,
+    createBlogForTests,
+    createContentCommentForTesting,
+    createOutputCommentForTesting,
+    createOutputPostForTesting,
+    createPostForTesting,
+    createUserForTesting,
+    emptyAllPostsDbReturnData,
+    setupTestApp,
+    teardownTestApp,
+} from "./test.functions";
 
 describe("posts endpoint (e2e)", () => {
-    let app: INestApplication;
-    const emptyAllPostsDbReturnData = {
-        pagesCount: 0,
-        page: 1,
-        pageSize: 10,
-        totalCount: 0,
-        items: [],
-    };
-    const createOutputPostForTesting = (
-        title: string,
-        shortDescription: string,
-        content: string,
-        blogId: string,
-        blogName: string,
-        likesCount: number,
-        dislikesCount: number,
-        newestLikes: [],
-    ) => {
-        return {
-            id: expect.any(String),
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: blogId,
-            blogName: blogName,
-            createdAt: expect.any(String),
-            extendedLikesInfo: {
-                likesCount: likesCount,
-                dislikesCount: dislikesCount,
-                myStatus: expect.any(String),
-                newestLikes: newestLikes,
-            },
-        };
-    };
-    // This block sets up a MongoDB in-memory server and starts a connection to it before running the tests
-    // and cleans up after all tests are finished
     beforeAll(async () => {
-        mongoose.set("strictQuery", false);
-        const mongoServer = await MongoMemoryServer.create();
-        const mongoUri = mongoServer.getUri();
-        await mongoose.connect(mongoUri);
-
-        const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [
-                MongooseModule.forRoot(mongoUri, { useNewUrlParser: true }),
-                AppModule,
-                MongooseModule.forFeature([
-                    {
-                        name: BlogDBClass.name,
-                        schema: BlogsSchema,
-                    },
-                    {
-                        name: PostDBClass.name,
-                        schema: PostsSchema,
-                    },
-                    {
-                        name: CommentDBClass.name,
-                        schema: CommentsSchema,
-                    },
-                    {
-                        name: NewestLikesClass.name,
-                        schema: NewestLikesSchema,
-                    },
-                ]),
-            ],
-            providers: [BlogsQueryRepository, PostsQueryRepository],
-        }).compile();
-
-        app = moduleFixture.createNestApplication();
-        app.enableCors();
-        app.useGlobalPipes(new ValidationPipe(testValidationPipeSettings));
-        app.useGlobalFilters(new HttpExceptionFilter());
-        app.use(cookieParser());
-        useContainer(app.select(AppModule), { fallbackOnErrors: true });
-        await app.init();
+        await setupTestApp();
     });
     afterAll(async () => {
-        await mongoose.disconnect();
-        await app.close();
+        await teardownTestApp();
     });
     // Test deleting all data from the testing endpoint and expecting a status code of 204
     it("1.Should return status 204 (/delete)", async () => {
@@ -176,7 +32,7 @@ describe("posts endpoint (e2e)", () => {
     });
     it("3.Should return status 201 and correct new post (/post) ", async () => {
         // Create  a new blog and expecting a status code of 201
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         await request(app.getHttpServer())
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")
@@ -295,7 +151,7 @@ describe("posts endpoint (e2e)", () => {
             .expect(200);
         const accessToken = response2.body.accessToken;
         // Create  a new blog and expecting a status code of 201
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         const response3 = await request(app.getHttpServer())
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")
@@ -363,7 +219,7 @@ describe("posts endpoint (e2e)", () => {
     });
     it("6.Should return status 201 and correct new post (/get) ", async () => {
         // Test creating a new blog and expecting a status code of 201
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         await request(app.getHttpServer())
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")
@@ -461,7 +317,7 @@ describe("posts endpoint (e2e)", () => {
             .expect(200);
         const accessToken2 = response2.body.accessToken;
         // Create  a new blog and expecting a status code of 201
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         const response3 = await request(app.getHttpServer())
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")
@@ -590,7 +446,7 @@ describe("posts endpoint (e2e)", () => {
             accessTokens.push(response2.body.accessToken);
         }
         // Create  a new blog and expecting a status code of 201
-        const correctBlog = creatingBlogForTests(10, 5, true);
+        const correctBlog = createBlogForTests(10, 5, true);
         const response1 = await request(app.getHttpServer())
             .post("/blogs")
             .set("authorization", "Basic YWRtaW46cXdlcnR5")

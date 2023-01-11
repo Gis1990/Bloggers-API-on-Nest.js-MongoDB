@@ -17,7 +17,7 @@ export class AcceptNewPasswordUseCase implements ICommandHandler<AcceptNewPasswo
     ) {}
 
     async execute(command: AcceptNewPasswordCommand): Promise<boolean> {
-        const user = await this.usersQueryRepository.findUserByRecoveryCode(command.dto.recoveryCode);
+        const user = await this.usersQueryRepository.getUserByRecoveryCode(command.dto.recoveryCode);
         if (!user) return false;
         if (user.emailRecoveryCode.expirationDate < new Date()) return false;
         const passwordHash = await this.bcryptService._generateHash(command.dto.newPassword);

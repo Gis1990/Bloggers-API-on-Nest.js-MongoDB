@@ -1,20 +1,23 @@
 import { InputModelForCreatingAndUpdatingPost } from "../dto/posts.dto";
 import { PostViewModelClass } from "../entities/posts.entity";
 import { ExtendedLikesInfoClass, UsersLikesInfoClass } from "../posts.schema";
-import { BlogsQueryRepository } from "../../blogs/blogs.query.repository";
 import { PostsRepository } from "../posts.repository";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { HttpException } from "@nestjs/common";
+import { CurrentUserModel } from "../../auth/dto/auth.dto";
+import { GetBlogByIdCommand } from "../../blogs/use-cases/queries/get-blog-by-id-query";
 
 export class CreatePostCommand {
-    constructor(public readonly dto: InputModelForCreatingAndUpdatingPost) {}
+    constructor(public dto: InputModelForCreatingAndUpdatingPost, public user: CurrentUserModel) {}
 }
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
-    constructor(private blogsQueryRepository: BlogsQueryRepository, private postsRepository: PostsRepository) {}
+    constructor(private queryBus: QueryBus, private postsRepository: PostsRepository) {}
 
     async execute(command: CreatePostCommand): Promise<PostViewModelClass> {
-        const blog = await this.blogsQueryRepository.getBlogById(command.dto.blogId);
+        const blog = await this.queryBus.execute(new GetBlogByIdCommand(command.dto.blogId));
+        if (blog.blogOwnerInfo.userId !== command.user.id) throw new HttpException("Access denied", 403);
         let blogName;
         blog ? (blogName = blog.name) : (blogName = "");
         const extendedLikesInfo: ExtendedLikesInfoClass = new ExtendedLikesInfoClass();
@@ -30,7 +33,6 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
             extendedLikesInfo: extendedLikesInfo,
             usersLikesInfo: usersLikes,
         };
-
         return await this.postsRepository.createPost(createdPostDto);
     }
 }

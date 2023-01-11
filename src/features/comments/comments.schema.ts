@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
 import { NotFoundException } from "@nestjs/common";
 import { UsersLikesInfoClass, UsersLikesInfoSchema } from "../posts/posts.schema";
+import { CommentViewModelClass } from "./entities/comments.entity";
 
 @Schema({ versionKey: false })
 export class LikesInfoClass {
@@ -25,7 +25,7 @@ export class LikesInfoClass {
 export const LikesInfoSchema = SchemaFactory.createForClass(LikesInfoClass);
 
 @Schema({ versionKey: false })
-export class CommentDBClass {
+export class CommentClass {
     @Prop({
         required: true,
     })
@@ -65,7 +65,7 @@ export class CommentDBClass {
     })
     usersLikesInfo: UsersLikesInfoClass;
 
-    returnUsersLikeStatusForComments(userId: string): string {
+    async returnUsersLikeStatusForComments(userId: string): Promise<string> {
         const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
         const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
 
@@ -80,22 +80,39 @@ export class CommentDBClass {
         return "None";
     }
 
-    getLikesDataInfoForComment(userId: string | undefined): CommentDBClass {
+    async getLikesDataInfoForComment(userId: string | undefined, bannedUsers: string[]): Promise<CommentClass> {
         if (!this) {
             throw new NotFoundException();
         }
+        this.likesInfo.likesCount = this.usersLikesInfo.usersWhoPutLike.filter(
+            (elem) => !bannedUsers.includes(elem),
+        ).length;
+        this.likesInfo.dislikesCount = this.usersLikesInfo.usersWhoPutDislike.filter(
+            (elem) => !bannedUsers.includes(elem),
+        ).length;
         if (userId) {
-            this.likesInfo.myStatus = this.returnUsersLikeStatusForComments(userId);
+            this.likesInfo.myStatus = await this.returnUsersLikeStatusForComments(userId);
         } else {
             this.likesInfo.myStatus = "None";
         }
         return this;
     }
+
+    async transformToCommentViewModelClass(): Promise<CommentViewModelClass> {
+        return new CommentViewModelClass(
+            this.id,
+            this.content,
+            this.userId,
+            this.userLogin,
+            this.createdAt,
+            this.likesInfo,
+        );
+    }
 }
 
-export const CommentsSchema = SchemaFactory.createForClass(CommentDBClass);
+export const CommentsSchema = SchemaFactory.createForClass(CommentClass);
 CommentsSchema.methods = {
-    getLikesDataInfoForComment: CommentDBClass.prototype.getLikesDataInfoForComment,
-    returnUsersLikeStatusForComments: CommentDBClass.prototype.returnUsersLikeStatusForComments,
+    getLikesDataInfoForComment: CommentClass.prototype.getLikesDataInfoForComment,
+    returnUsersLikeStatusForComments: CommentClass.prototype.returnUsersLikeStatusForComments,
+    transformToCommentViewModelClass: CommentClass.prototype.transformToCommentViewModelClass,
 };
-export type CommentDocument = HydratedDocument<CommentDBClass>;

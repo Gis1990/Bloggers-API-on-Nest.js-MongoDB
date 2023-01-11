@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { UserViewModelClass } from "./entities/users.entity";
+import { BlogsSchema } from "../blogs/blogs.schema";
 
 @Schema({ versionKey: false, _id: false })
 export class LoginAttemptsClass {
@@ -88,8 +89,26 @@ export class UserDevicesDataClass {
 
 export const UserDevicesDataSchema = SchemaFactory.createForClass(UserDevicesDataClass);
 
+@Schema({ versionKey: false, _id: false })
+export class BanInfoClass {
+    @Prop({
+        required: true,
+    })
+    isBanned: boolean;
+    @Prop({
+        required: true,
+    })
+    banDate: Date;
+    @Prop({
+        required: true,
+    })
+    banReason: string;
+}
+
+export const BanInfoSchema = SchemaFactory.createForClass(BanInfoClass);
+
 @Schema({ versionKey: false })
-export class UserAccountDBClass {
+export class UserAccountClass {
     @Prop({
         required: true,
     })
@@ -109,7 +128,7 @@ export class UserAccountDBClass {
     @Prop({
         required: true,
     })
-    createdAt: string;
+    createdAt: Date;
     @Prop({
         type: EmailRecoveryCodeSchema,
         required: true,
@@ -139,7 +158,26 @@ export class UserAccountDBClass {
         required: true,
     })
     currentSession: UserDevicesDataClass;
+    @Prop({
+        type: BanInfoSchema,
+        required: true,
+    })
+    banInfo: BanInfoClass;
+
+    async transformToUserViewModelClass(): Promise<UserViewModelClass> {
+        return new UserViewModelClass(this.id, this.login, this.email, this.createdAt, this.banInfo);
+    }
 }
 
-export const UsersAccountSchema = SchemaFactory.createForClass(UserAccountDBClass);
-export type UserAccountDocument = HydratedDocument<UserAccountDBClass>;
+export const UsersAccountSchema = SchemaFactory.createForClass(UserAccountClass);
+BlogsSchema.methods = {
+    transformToUserViewModelClass: UserAccountClass.prototype.transformToUserViewModelClass,
+};
+
+@Schema({ versionKey: false })
+export class BannedUsersClass {
+    @Prop()
+    bannedUsers: string[];
+}
+
+export const BannedUsersSchema = SchemaFactory.createForClass(BannedUsersClass);

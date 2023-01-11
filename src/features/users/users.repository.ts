@@ -5,19 +5,20 @@ import { Model } from "mongoose";
 import {
     LoginAttemptsClass,
     SentEmailsClass,
-    UserAccountDBClass,
-    UserAccountDocument,
+    UserAccountClass,
     UserDevicesDataClass,
     EmailRecoveryCodeClass,
+    BannedUsersClass,
 } from "./users.schema";
 import { CreatedNewUserDto } from "./dto/users.dto";
-import { NewUserClassResponseModel } from "./entities/users.entity";
+import { UserViewModelClass } from "./entities/users.entity";
 
 @Injectable()
 export class UsersRepository {
     constructor(
-        @InjectModel(UserAccountDBClass.name) private usersAccountModelClass: Model<UserAccountDocument>,
+        @InjectModel(UserAccountClass.name) private usersAccountModelClass: Model<UserAccountClass>,
         @InjectModel(LoginAttemptsClass.name) private loginAttemptsModelClass: Model<LoginAttemptsClass>,
+        @InjectModel(BannedUsersClass.name) private bannedUsersListClass: Model<BannedUsersClass>,
     ) {}
 
     async userConfirmedEmail(id: string): Promise<boolean> {
@@ -56,6 +57,18 @@ export class UsersRepository {
             { $set: { emailRecoveryCode: passwordRecoveryData } },
         );
         return result.modifiedCount === 1;
+    }
+
+    async addUserToBannedList(id: string): Promise<boolean> {
+        const bannedUsers = await this.bannedUsersListClass.findOne({});
+        if (!bannedUsers) {
+            const newBannedUsers = new this.bannedUsersListClass({ bannedUsers: id });
+            await newBannedUsers.save();
+            return true;
+        } else {
+            const result = await this.bannedUsersListClass.updateOne({}, { $push: { bannedUsers: id } });
+            return result.modifiedCount === 1;
+        }
     }
 
     async updatePasswordHash(id: string, passwordHash: string): Promise<boolean> {
@@ -117,24 +130,26 @@ export class UsersRepository {
         return result.modifiedCount === 1;
     }
 
-    async createUser(newUser: CreatedNewUserDto): Promise<NewUserClassResponseModel> {
+    async createUser(newUser: CreatedNewUserDto): Promise<UserViewModelClass> {
         const user = new this.usersAccountModelClass(newUser);
         await user.save();
-        const {
-            _id,
-            passwordHash,
-            emailRecoveryCode,
-            loginAttempts,
-            emailConfirmation,
-            userDevicesData,
-            currentSession,
-            ...restUser
-        } = user.toObject();
-        return restUser;
+        return await user.transformToUserViewModelClass();
     }
 
     async deleteUserById(id: string): Promise<boolean> {
         const result = await this.usersAccountModelClass.deleteOne({ id: id });
         return result.deletedCount === 1;
+    }
+
+    async banUnbanUser(isBanned: boolean, banReason: string, id: string): Promise<boolean> {
+        const banData = { isBanned: isBanned, banDate: new Date(), banReason: banReason };
+        if (isBanned) {
+            await this.bannedUsersListClass.updateOne({ $push: { bannedUsers: id } });
+        } else {
+            await this.bannedUsersListClass.updateOne({ $pull: { bannedUsers: id } });
+        }
+        await this.usersAccountModelClass.updateOne({ id: id }, { $set: { userDevicesData: [] } });
+        const result = await this.usersAccountModelClass.updateOne({ id: id }, { $set: { banInfo: banData } });
+        return result.modifiedCount === 1;
     }
 }

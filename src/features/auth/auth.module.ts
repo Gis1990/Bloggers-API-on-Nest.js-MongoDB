@@ -4,21 +4,21 @@ import { AuthController } from "./auth.controller";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { MailModule } from "../../utils/email/mail.module";
-import { LocalStrategy } from "./strategies/local.strategy";
-import { JwtAccessTokenStrategy } from "./strategies/jwt.access.token.strategy";
-import { BasicStrategy } from "./strategies/basic.strategy";
+import { LocalStrategy } from "../../guards/strategies/local.strategy";
+import { JwtAccessTokenStrategy } from "../../guards/strategies/jwt.access.token.strategy";
+import { BasicStrategy } from "../../guards/strategies/basic.strategy";
 import { UsersRepository } from "../users/users.repository";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
 import { BcryptModule } from "../../utils/bcrypt/bcrypt.module";
-import { JwtRefreshTokenStrategy } from "./strategies/jwt.refresh.token.strategy";
+import { JwtRefreshTokenStrategy } from "../../guards/strategies/jwt.refresh.token.strategy";
 import { UsersQueryRepository } from "../users/users.query.repository";
-import { strategyForUnauthorizedUser } from "./strategies/strategy.for.unauthorized.user";
-import { IsEmailExistOrConfirmedConstraint } from "../users/users.custom.decorators";
+import { strategyForUnauthorizedUser } from "../../guards/strategies/strategy.for.unauthorized.user";
+import { IsEmailExistOrConfirmedConstraint } from "../users/decorators/users.custom.decorators";
 import { MongooseModule } from "@nestjs/mongoose";
 import {
     LoginAttemptsClass,
     LoginAttemptsSchema,
-    UserAccountDBClass,
+    UserAccountClass,
     UserAccountEmailClass,
     UserAccountEmailSchema,
     UserDevicesDataClass,
@@ -26,6 +26,10 @@ import {
     EmailRecoveryCodeClass,
     EmailRecoveryCodeSchema,
     UsersAccountSchema,
+    BanInfoClass,
+    BanInfoSchema,
+    BannedUsersSchema,
+    BannedUsersClass,
 } from "../users/users.schema";
 import { AcceptNewPasswordUseCase } from "./use-cases/accept-new-password-use-case";
 import { CheckCredentialsUseCase } from "./use-cases/check-credentials-use-case";
@@ -81,7 +85,7 @@ const useCases = [
         BcryptModule,
         MongooseModule.forFeature([
             {
-                name: UserAccountDBClass.name,
+                name: UserAccountClass.name,
                 schema: UsersAccountSchema,
             },
             {
@@ -99,6 +103,14 @@ const useCases = [
             {
                 name: LoginAttemptsClass.name,
                 schema: LoginAttemptsSchema,
+            },
+            {
+                name: BanInfoClass.name,
+                schema: BanInfoSchema,
+            },
+            {
+                name: BannedUsersClass.name,
+                schema: BannedUsersSchema,
             },
         ]),
     ],

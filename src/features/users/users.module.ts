@@ -1,6 +1,10 @@
 import { Module } from "@nestjs/common";
 import { UsersController } from "./users.controller";
-import { IsEmailExistConstraint, IsLoginExistConstraint, IsUsersIdExistConstraint } from "./users.custom.decorators";
+import {
+    IsEmailExistConstraint,
+    IsLoginExistConstraint,
+    IsUsersIdExistConstraint,
+} from "./decorators/users.custom.decorators";
 import { UsersRepository } from "./users.repository";
 import { JwtModule } from "@nestjs/jwt";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
@@ -10,7 +14,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import {
     LoginAttemptsClass,
     LoginAttemptsSchema,
-    UserAccountDBClass,
+    UserAccountClass,
     UserAccountEmailClass,
     UserAccountEmailSchema,
     UserDevicesDataClass,
@@ -48,7 +52,7 @@ const useCases = [DeleteUserUseCase, CreateUserUseCase, CreateUserWithoutConfirm
         JwtModule,
         MongooseModule.forFeature([
             {
-                name: UserAccountDBClass.name,
+                name: UserAccountClass.name,
                 schema: UsersAccountSchema,
             },
             {

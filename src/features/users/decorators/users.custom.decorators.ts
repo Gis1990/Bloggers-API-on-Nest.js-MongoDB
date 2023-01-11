@@ -6,7 +6,7 @@ import {
 } from "class-validator";
 
 import { HttpException, Injectable } from "@nestjs/common";
-import { UsersQueryRepository } from "./users.query.repository";
+import { UsersQueryRepository } from "../users.query.repository";
 
 @ValidatorConstraint({ name: "IsUsersIdExist", async: true })
 @Injectable()
@@ -14,7 +14,7 @@ export class IsUsersIdExistConstraint implements ValidatorConstraintInterface {
     constructor(protected usersQueryRepository: UsersQueryRepository) {}
 
     async validate(userId: string) {
-        const user = await this.usersQueryRepository.findUserById(userId);
+        const user = await this.usersQueryRepository.getUserById(userId);
         if (!user) {
             throw new HttpException("User not found", 404);
         } else {
@@ -41,7 +41,7 @@ export class IsEmailExistConstraint implements ValidatorConstraintInterface {
     constructor(private usersQueryRepository: UsersQueryRepository) {}
 
     async validate(value: string) {
-        const user = await this.usersQueryRepository.findByLoginOrEmail(value);
+        const user = await this.usersQueryRepository.getUserByLoginOrEmail(value);
         return !user;
     }
 }
@@ -64,7 +64,7 @@ export class IsLoginExistConstraint implements ValidatorConstraintInterface {
     constructor(protected usersQueryRepository: UsersQueryRepository) {}
 
     async validate(value: string) {
-        const user = await this.usersQueryRepository.findByLoginOrEmail(value);
+        const user = await this.usersQueryRepository.getUserByLoginOrEmail(value);
         return !user;
     }
 }
@@ -87,7 +87,7 @@ export class IsEmailExistOrConfirmedConstraint implements ValidatorConstraintInt
     constructor(private usersQueryRepository: UsersQueryRepository) {}
 
     async validate(value: string) {
-        const user = await this.usersQueryRepository.findByLoginOrEmail(value);
+        const user = await this.usersQueryRepository.getUserByLoginOrEmail(value);
         if (!user) {
             return false;
         } else {

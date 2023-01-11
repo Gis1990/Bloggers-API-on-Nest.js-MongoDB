@@ -1,18 +1,18 @@
 import { Injectable } from "@nestjs/common";
-import { BlogViewModelClass } from "./entities/blogs.entity";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { BlogDBClass, BlogDocument } from "./blogs.schema";
+import { BlogClass } from "./blogs.schema";
 import { CreatedBlogDto, InputModelForUpdatingBlog } from "./dto/blogs.dto";
+import { BlogViewModelClass } from "./entities/blogs.entity";
 
 @Injectable()
 export class BlogsRepository {
-    constructor(@InjectModel(BlogDBClass.name) private blogsModelClass: Model<BlogDocument>) {}
+    constructor(@InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>) {}
 
     async createBlog(newBlog: CreatedBlogDto): Promise<BlogViewModelClass> {
         const blog = new this.blogsModelClass(newBlog);
         await blog.save();
-        return this.blogsModelClass.findOne({ id: blog.id }, { _id: 0 });
+        return await blog.transformToBlogViewModelClass();
     }
 
     async updateBlog(blogId: string, dto: InputModelForUpdatingBlog): Promise<boolean> {
@@ -29,5 +29,13 @@ export class BlogsRepository {
     async deleteBlogById(id: string): Promise<boolean> {
         const result = await this.blogsModelClass.deleteOne({ id: id });
         return result.deletedCount === 1;
+    }
+
+    async bindUserWithBlog(blogId: string, userId: string, login: string): Promise<boolean> {
+        const result = await this.blogsModelClass.updateOne(
+            { id: blogId },
+            { blogOwnerInfo: { userId: userId, userLogin: login } },
+        );
+        return result.matchedCount === 1;
     }
 }

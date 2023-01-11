@@ -12,11 +12,11 @@ export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand>
     constructor(private usersQueryRepository: UsersQueryRepository, private usersRepository: UsersRepository) {}
 
     async execute(command: ConfirmEmailCommand): Promise<boolean> {
-        const user = await this.usersQueryRepository.findUserByConfirmationCode(command.code);
+        const user = await this.usersQueryRepository.getUserByConfirmationCode(command.code);
         if (!user) throw new HttpException("Code is incorrect", 406);
         if (user.emailConfirmation.isConfirmed) throw new HttpException("Code is incorrect", 406);
         if (user.emailConfirmation.confirmationCode !== command.code) throw new HttpException("Code is incorrect", 406);
         if (user.emailConfirmation.expirationDate < new Date()) throw new HttpException("Code is incorrect", 406);
-        return await this.usersRepository.updateConfirmationCode(user.id);
+        return await this.usersRepository.userConfirmedEmail(user.id);
     }
 }

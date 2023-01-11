@@ -1,5 +1,5 @@
 import { IsString } from "class-validator";
-import { IsDeviceIdExist } from "../security.devices.custom.decorators";
+import { IsDeviceIdExist } from "../decorators/security.devices.custom.decorators";
 
 export class deviceIdValidationModel {
     @IsString()

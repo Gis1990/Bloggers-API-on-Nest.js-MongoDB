@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { ConfigService } from "@nestjs/config";
-import { UsersQueryRepository } from "../../users/users.query.repository";
+import { UsersQueryRepository } from "../../features/users/users.query.repository";
 
 @Injectable()
 export class JwtAccessTokenStrategy extends PassportStrategy(Strategy, "jwt") {
@@ -18,7 +18,7 @@ export class JwtAccessTokenStrategy extends PassportStrategy(Strategy, "jwt") {
         const userId = payload.id;
         let userData;
         if (userId) {
-            userData = await this.usersQueryRepository.findUserById(userId);
+            userData = await this.usersQueryRepository.getUserById(userId);
         } else {
             throw new UnauthorizedException();
         }

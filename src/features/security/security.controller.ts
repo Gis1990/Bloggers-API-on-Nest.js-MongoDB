@@ -1,6 +1,6 @@
 import { Controller, Response, Get, Delete, Param, UseGuards, HttpCode, Res, HttpException } from "@nestjs/common";
-import { JwtRefreshTokenAuthGuard } from "../auth/guards/jwtRefreshToken-auth.guard";
-import { CurrentUser } from "../auth/auth.cutsom.decorators";
+import { JwtRefreshTokenAuthGuard } from "../../guards/jwtRefreshToken-auth.guard";
+import { CurrentUser } from "../auth/decorators/auth.custom.decorators";
 import { CurrentUserWithDevicesDataModel } from "../auth/dto/auth.dto";
 import { SkipThrottle } from "@nestjs/throttler";
 import { deviceIdValidationModel } from "./dto/security.dto";

@@ -1,11 +1,12 @@
-import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
-import { IsEmailExist, IsLoginExist, IsUsersIdExist } from "../users.custom.decorators";
+import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional, IsBoolean } from "class-validator";
+import { IsEmailExist, IsLoginExist, IsUsersIdExist } from "../decorators/users.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import {
     LoginAttemptsClass,
     UserAccountEmailClass,
     UserDevicesDataClass,
     EmailRecoveryCodeClass,
+    BanInfoClass,
 } from "../users.schema";
 
 const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -55,6 +56,16 @@ export class InputModelForCreatingNewUser {
     public email: string;
 }
 
+export class InputModelForBanUnbanUser {
+    @IsBoolean()
+    @IsNotEmpty()
+    public isBanned: boolean;
+    @IsNotEmpty()
+    @IsString()
+    @Length(20)
+    public banReason: string;
+}
+
 export class UsersIdValidationModel {
     @IsString()
     @IsNotEmpty()
@@ -67,10 +78,11 @@ export class CreatedNewUserDto {
     public login: string;
     public email: string;
     public passwordHash: string;
-    public createdAt: string;
+    public createdAt: Date;
     public emailRecoveryCode: EmailRecoveryCodeClass;
     public loginAttempts: LoginAttemptsClass[];
     public emailConfirmation: UserAccountEmailClass;
     public userDevicesData: UserDevicesDataClass[];
     public currentSession: UserDevicesDataClass;
+    public banInfo: BanInfoClass;
 }

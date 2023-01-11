@@ -14,7 +14,7 @@ export class CheckAccessRightsUseCase implements ICommandHandler<CheckAccessRigh
     constructor(private usersQueryRepository: UsersQueryRepository) {}
 
     async execute(command: CheckAccessRightsCommand): Promise<boolean> {
-        const userByDeviceId = await this.usersQueryRepository.findUserByDeviceId(command.deviceId);
+        const userByDeviceId = await this.usersQueryRepository.getUserByDeviceId(command.deviceId);
         if (userByDeviceId) {
             return command.userWithDeviceData.id === userByDeviceId.id;
         } else {

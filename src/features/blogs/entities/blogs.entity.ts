@@ -1,4 +1,4 @@
-import { BlogDBClass } from "../blogs.schema";
+import { BlogClass } from "../blogs.schema";
 
 export class BlogViewModelClass {
     constructor(
@@ -16,6 +16,6 @@ export class BlogDBPaginationClass {
         public page: number,
         public pageSize: number,
         public totalCount: number,
-        public items: BlogDBClass[],
+        public items: BlogClass[],
     ) {}
 }

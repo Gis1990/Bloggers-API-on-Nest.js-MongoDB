@@ -2,16 +2,20 @@ import { CommentDBClassPagination, CommentViewModelClass } from "./entities/comm
 import { ModelForGettingAllComments } from "./dto/comments.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { CommentDBClass, CommentDocument } from "./comments.schema";
+import { CommentClass } from "./comments.schema";
+import { BannedUsersClass } from "../users/users.schema";
 
 export class CommentsQueryRepository {
-    constructor(@InjectModel(CommentDBClass.name) private commentsModelClass: Model<CommentDocument>) {}
+    constructor(
+        @InjectModel(CommentClass.name) private commentsModelClass: Model<CommentClass>,
+        @InjectModel(BannedUsersClass.name) private bannedUserListClass: Model<BannedUsersClass>,
+    ) {}
 
     async getCommentById(id: string, userId: string | undefined): Promise<CommentViewModelClass | null> {
+        const bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
         const comment = await this.commentsModelClass.findOne({ id: id });
-        comment.getLikesDataInfoForComment(userId);
-        const { _id, postId, usersLikesInfo, ...rest } = comment.toObject();
-        return rest;
+        comment.getLikesDataInfoForComment(userId, bannedUsers);
+        return await comment.transformToCommentViewModelClass();
     }
 
     async getAllCommentsForSpecificPost(
@@ -42,12 +46,12 @@ export class CommentsQueryRepository {
             .sort(sortObj)
             .skip(skips)
             .limit(PageSize);
+        const bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
         cursor.forEach((elem) => {
-            elem.getLikesDataInfoForComment(userId);
+            elem.getLikesDataInfoForComment(userId, bannedUsers);
         });
         const cursorWithCorrectViewModel = cursor.map((elem) => {
-            const { _id, postId, usersLikesInfo, ...rest } = elem.toObject();
-            return rest;
+            return elem.transformToCommentViewModelClass();
         });
         // Count the total number of documents that match the query
         const totalCount = await this.commentsModelClass.count({ postId: postId });
@@ -57,15 +61,11 @@ export class CommentsQueryRepository {
             PageNumber,
             PageSize,
             totalCount,
-            cursorWithCorrectViewModel,
+            await Promise.all(cursorWithCorrectViewModel),
         );
     }
 
-    async getCommentForIdValidation(id: string): Promise<CommentViewModelClass | null> {
-        return this.commentsModelClass.findOne({ id: id }, { _id: 1 });
-    }
-
-    async getCommentByIdForLikeOperation(id: string): Promise<CommentDBClass | null> {
+    async getCommentByIdForLikeOperation(id: string): Promise<CommentClass | null> {
         return this.commentsModelClass.findOne({ id: id });
     }
 }

@@ -1,9 +1,9 @@
-import { PostsQueryRepository } from "../posts.query.repository";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { PostsRepository } from "../posts.repository";
 import { NewestLikesClass } from "../posts.schema";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { GetPostByIdForLikeOperationCommand } from "./queries/get-post-by-id-for-like-opertation-query";
 
 export class LikeOperationForPostCommand {
     constructor(
@@ -18,13 +18,13 @@ export class LikeOperationForPostCommand {
 export class LikeOperationForPostUseCase implements ICommandHandler<LikeOperationForPostCommand> {
     constructor(
         private postsRepository: PostsRepository,
-        private postsQueryRepository: PostsQueryRepository,
+        private queryBus: QueryBus,
         @InjectModel(NewestLikesClass.name) private newestLikesModelClass: Model<NewestLikesClass>,
     ) {}
 
     async execute(command: LikeOperationForPostCommand): Promise<boolean> {
         // Find the post with the given ID
-        const post = await this.postsQueryRepository.getPostByIdForOperationWithLikes(command.id);
+        const post = await this.queryBus.execute(new GetPostByIdForLikeOperationCommand(command.id));
         // If the post does not exist, return false
         if (!post) {
             return false;

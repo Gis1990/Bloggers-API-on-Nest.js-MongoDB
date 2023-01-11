@@ -1,6 +1,6 @@
 import { UsersQueryRepository } from "../../users/users.query.repository";
 import { BcryptService } from "../../../utils/bcrypt/bcrypt.service";
-import { UserAccountDBClass, UserDevicesDataClass } from "../../users/users.schema";
+import { UserAccountClass, UserDevicesDataClass } from "../../users/users.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { UsersRepository } from "../../users/users.repository";
@@ -24,8 +24,8 @@ export class CheckCredentialsUseCase implements ICommandHandler<CheckCredentials
         @InjectModel(UserDevicesDataClass.name) private userDevicesDataModelClass: Model<UserDevicesDataClass>,
     ) {}
 
-    async execute(command: CheckCredentialsCommand): Promise<UserAccountDBClass | null> {
-        const user = await this.usersQueryRepository.findByLoginOrEmail(command.loginOrEmail);
+    async execute(command: CheckCredentialsCommand): Promise<UserAccountClass | null> {
+        const user = await this.usersQueryRepository.getUserByLoginOrEmail(command.loginOrEmail);
         if (!user) return null;
         await this.usersRepository.addLoginAttempt(user.id, command.ip);
         const isHashesEqual = await this.bcryptService._isHashesEquals(command.password, user.passwordHash);
@@ -39,7 +39,7 @@ export class CheckCredentialsUseCase implements ICommandHandler<CheckCredentials
             const userDevicesData: UserDevicesDataClass = new this.userDevicesDataModelClass(createdUserDevicesData);
             await this.usersRepository.addUserDevicesData(user.id, userDevicesData);
             await this.usersRepository.addCurrentSession(user.id, userDevicesData);
-            return await this.usersQueryRepository.findUserById(user.id);
+            return await this.usersQueryRepository.getUserById(user.id);
         } else {
             return null;
         }

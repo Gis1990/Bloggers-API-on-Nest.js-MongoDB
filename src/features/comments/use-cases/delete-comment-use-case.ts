@@ -1,7 +1,7 @@
 import { HttpException } from "@nestjs/common";
 import { CommentsRepository } from "../comments.repository";
-import { CommentsQueryRepository } from "../comments.query.repository";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { GetCommentByIdCommand } from "./queries/get-comment-by-id-query";
 
 export class DeleteCommentCommand {
     constructor(public readonly id: string, public readonly userId: string | undefined) {}
@@ -9,13 +9,10 @@ export class DeleteCommentCommand {
 
 @CommandHandler(DeleteCommentCommand)
 export class DeleteCommentUseCase implements ICommandHandler<DeleteCommentCommand> {
-    constructor(
-        private commentsRepository: CommentsRepository,
-        private commentsQueryRepository: CommentsQueryRepository,
-    ) {}
+    constructor(private commentsRepository: CommentsRepository, private queryBus: QueryBus) {}
 
     async execute(command: DeleteCommentCommand): Promise<boolean> {
-        const comment = await this.commentsQueryRepository.getCommentById(command.id, command.userId);
+        const comment = await this.queryBus.execute(new GetCommentByIdCommand(command.id, command.userId));
         if (!comment) {
             return false;
         }

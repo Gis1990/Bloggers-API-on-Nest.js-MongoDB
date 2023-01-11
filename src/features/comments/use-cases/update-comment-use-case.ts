@@ -1,7 +1,7 @@
 import { HttpException } from "@nestjs/common";
 import { CommentsRepository } from "../comments.repository";
-import { CommentsQueryRepository } from "../comments.query.repository";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { GetCommentByIdCommand } from "./queries/get-comment-by-id-query";
 
 export class UpdateCommentCommand {
     constructor(
@@ -13,13 +13,10 @@ export class UpdateCommentCommand {
 
 @CommandHandler(UpdateCommentCommand)
 export class UpdateCommentUseCase implements ICommandHandler<UpdateCommentCommand> {
-    constructor(
-        private commentsRepository: CommentsRepository,
-        private commentsQueryRepository: CommentsQueryRepository,
-    ) {}
+    constructor(private commentsRepository: CommentsRepository, private queryBus: QueryBus) {}
 
     async execute(command: UpdateCommentCommand): Promise<boolean> {
-        const comment = await this.commentsQueryRepository.getCommentById(command.id, command.userId);
+        const comment = await this.queryBus.execute(new GetCommentByIdCommand(command.id, command.userId));
         if (!comment) {
             return false;
         }

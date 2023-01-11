@@ -1,22 +1,21 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Put, UseGuards } from "@nestjs/common";
-import { JwtAccessTokenAuthGuard } from "../auth/guards/jwtAccessToken-auth.guard";
+import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
 import { CommentsIdValidationModel, ModelForLikeStatus, ModelForUpdatingComment } from "./dto/comments.dto";
-import { CurrentUser, CurrentUserId } from "../auth/auth.cutsom.decorators";
-import { strategyForUnauthorizedUser } from "../auth/guards/strategy-for-unauthorized-user-guard";
+import { CurrentUser, CurrentUserId } from "../auth/decorators/auth.custom.decorators";
+import { strategyForUnauthorizedUser } from "../../guards/strategy-for-unauthorized-user-guard";
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { SkipThrottle } from "@nestjs/throttler";
-import { CommentsQueryRepository } from "./comments.query.repository";
 import { LikeOperationForCommentCommand } from "./use-cases/like-operation-for-comment-use-case";
-
 import { CommentViewModelClass } from "./entities/comments.entity";
-import { CommandBus } from "@nestjs/cqrs";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { UpdateCommentCommand } from "./use-cases/update-comment-use-case";
 import { DeleteCommentCommand } from "./use-cases/delete-comment-use-case";
+import { GetCommentByIdCommand } from "./use-cases/queries/get-comment-by-id-query";
 
 @SkipThrottle()
 @Controller("comments")
 export class CommentsController {
-    constructor(private commandBus: CommandBus, private commentsQueryRepository: CommentsQueryRepository) {}
+    constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Put(":id")
@@ -42,7 +41,7 @@ export class CommentsController {
         @Param() params: CommentsIdValidationModel,
         @CurrentUserId() userId: string,
     ): Promise<CommentViewModelClass | null> {
-        return await this.commentsQueryRepository.getCommentById(params.id, userId);
+        return await this.queryBus.execute(new GetCommentByIdCommand(params.id, userId));
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)

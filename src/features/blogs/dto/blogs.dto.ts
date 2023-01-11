@@ -1,5 +1,5 @@
 import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
-import { IsBlogsIdExist } from "../blogs.custom.decorators";
+import { IsBlogsIdExist } from "../decorators/blogs.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 
 const pattern = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/;
@@ -71,4 +71,8 @@ export class CreatedBlogDto {
     public description: string;
     public websiteUrl: string;
     public createdAt: Date;
+    public blogOwnerInfo: {
+        userId: string;
+        userLogin: string;
+    };
 }

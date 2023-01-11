@@ -25,7 +25,7 @@ export class PasswordRecoveryUseCase implements ICommandHandler<PasswordRecovery
     ) {}
 
     async execute(command: PasswordRecoveryCommand): Promise<true> {
-        const user = await this.usersQueryRepository.findByLoginOrEmail(command.dto.email);
+        const user = await this.usersQueryRepository.getUserByLoginOrEmail(command.dto.email);
         if (user) {
             const createUserRecoveryCodeDto = {
                 recoveryCode: uuidv4(),

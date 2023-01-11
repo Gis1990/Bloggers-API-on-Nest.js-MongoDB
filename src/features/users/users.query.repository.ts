@@ -3,11 +3,14 @@ import { UserDBClassPagination } from "./entities/users.entity";
 import { ModelForGettingAllUsers } from "./dto/users.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UserAccountDBClass, UserAccountDocument } from "./users.schema";
+import { BannedUsersClass, UserAccountClass } from "./users.schema";
 
 @Injectable()
 export class UsersQueryRepository {
-    constructor(@InjectModel(UserAccountDBClass.name) private usersAccountModelClass: Model<UserAccountDocument>) {}
+    constructor(
+        @InjectModel(UserAccountClass.name) private usersAccountModelClass: Model<UserAccountClass>,
+        @InjectModel(BannedUsersClass.name) private bannedUserListClass: Model<BannedUsersClass>,
+    ) {}
 
     async getAllUsers(dto: ModelForGettingAllUsers): Promise<UserDBClassPagination> {
         const {
@@ -42,7 +45,7 @@ export class UsersQueryRepository {
 
         // Retrieve the documents from the UsersAccountModelClass collection, applying the query, sort, skip, and limit options
         const cursor = await this.usersAccountModelClass
-            .find(query, { _id: 0, id: 1, login: 1, email: 1, createdAt: 1 })
+            .find(query, { _id: 0, id: 1, login: 1, email: 1, createdAt: 1, banInfo: 1 })
             .sort(sortObj)
             .skip(skips)
             .limit(pageSize)
@@ -55,7 +58,16 @@ export class UsersQueryRepository {
         return new UserDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
 
-    async findUserById(id: string): Promise<UserAccountDBClass | null> {
+    async getAllBannedUsers(): Promise<any> {
+        const bannedUsers = await this.bannedUserListClass.find({});
+        if (bannedUsers) {
+            return bannedUsers;
+        } else {
+            return null;
+        }
+    }
+
+    async getUserById(id: string): Promise<UserAccountClass | null> {
         const user = await this.usersAccountModelClass.findOne(
             { id: id },
             {
@@ -65,6 +77,7 @@ export class UsersQueryRepository {
                 email: 1,
                 userDevicesData: 1,
                 currentSession: 1,
+                banInfo: 1,
             },
         );
 
@@ -75,7 +88,7 @@ export class UsersQueryRepository {
         }
     }
 
-    async findUserByDeviceId(deviceId: string): Promise<UserAccountDBClass | null> {
+    async getUserByDeviceId(deviceId: string): Promise<UserAccountClass | null> {
         const user = await this.usersAccountModelClass.findOne(
             { userDevicesData: { $elemMatch: { deviceId: deviceId } } },
             {
@@ -94,15 +107,15 @@ export class UsersQueryRepository {
         }
     }
 
-    async findByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDBClass | null> {
+    async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserAccountClass | null> {
         return this.usersAccountModelClass.findOne({ $or: [{ email: loginOrEmail }, { login: loginOrEmail }] });
     }
 
-    async findUserByConfirmationCode(emailConfirmationCode: string): Promise<UserAccountDBClass | null> {
+    async getUserByConfirmationCode(emailConfirmationCode: string): Promise<UserAccountClass | null> {
         return this.usersAccountModelClass.findOne({ "emailConfirmation.confirmationCode": emailConfirmationCode });
     }
 
-    async findUserByRecoveryCode(recoveryCode: string): Promise<UserAccountDBClass | null> {
+    async getUserByRecoveryCode(recoveryCode: string): Promise<UserAccountClass | null> {
         return this.usersAccountModelClass.findOne({ "emailRecoveryCode.recoveryCode": recoveryCode });
     }
 }

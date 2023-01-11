@@ -1,6 +1,6 @@
-import { IsBlogsIdExistInTheRequestBody } from "../../blogs/blogs.custom.decorators";
+import { IsBlogsIdExistInTheRequestBody } from "../../blogs/decorators/blogs.custom.decorators";
 import { IsString, Length, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
-import { IsPostIdExist } from "../posts.custom.decorators";
+import { IsPostIdExist } from "../decorators/posts.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import { UsersLikesInfoClass } from "../posts.schema";
 import { LikesInfoClass } from "../../comments/comments.schema";
@@ -20,6 +20,24 @@ export class ModelForGettingAllPosts {
     @IsString()
     @IsOptional()
     public sortDirection: string;
+}
+
+export class InputModelForCreatingAndUpdatingNewPostForSpecificBlog {
+    @IsString()
+    @Length(1, 30)
+    @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
+    public title: string;
+    @IsString()
+    @Length(1, 100)
+    @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
+    public shortDescription: string;
+    @IsString()
+    @Length(1, 1000)
+    @IsNotEmpty()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
+    public content: string;
 }
 
 export class InputModelForCreatingAndUpdatingPost {
@@ -46,29 +64,11 @@ export class InputModelForCreatingAndUpdatingPost {
     public blogId: string;
 }
 
-export class InputModelForCreatingNewPostForSpecificBlog {
-    @IsString()
-    @Length(1, 30)
-    @IsNotEmpty()
-    @Transform(({ value }: TransformFnParams) => value?.trim())
-    public title: string;
-    @IsString()
-    @Length(1, 100)
-    @IsNotEmpty()
-    @Transform(({ value }: TransformFnParams) => value?.trim())
-    public shortDescription: string;
-    @IsString()
-    @Length(1, 1000)
-    @IsNotEmpty()
-    @Transform(({ value }: TransformFnParams) => value?.trim())
-    public content: string;
-}
-
 export class PostsIdValidationModel {
     @IsString()
     @IsNotEmpty()
     @IsPostIdExist()
-    public id: string;
+    public postId: string;
 }
 
 export class CreatedPostDto {

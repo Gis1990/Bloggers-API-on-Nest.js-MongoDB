@@ -3,36 +3,38 @@ import { PostDBPaginationClass, PostViewModelClass } from "./entities/posts.enti
 import { ModelForGettingAllPosts } from "./dto/posts.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { PostDBClass, PostDocument } from "./posts.schema";
+import { PostClass } from "./posts.schema";
+import { BannedUsersClass } from "../users/users.schema";
+import { createQueryForPosts } from "./helpers/posts.query.repository.helpers";
 
 @Injectable()
 export class PostsQueryRepository {
-    constructor(@InjectModel(PostDBClass.name) private postsModelClass: Model<PostDocument>) {}
+    constructor(
+        @InjectModel(PostClass.name) private postsModelClass: Model<PostClass>,
+        @InjectModel(BannedUsersClass.name) private bannedUserListClass: Model<BannedUsersClass>,
+    ) {}
 
     async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostDBPaginationClass> {
-        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
-        const skips = pageSize * (pageNumber - 1);
+        const result = await createQueryForPosts(dto);
+        const cursor = await this.postsModelClass
+            .find({})
+            .sort(result.sortObj)
+            .skip(result.skips)
+            .limit(result.pageSize);
         const totalCount = await this.postsModelClass.count({});
-        const sortObj: any = {};
-        if (sortDirection === "desc") {
-            sortObj[sortBy] = -1;
-        } else {
-            sortObj[sortBy] = 1;
-        }
-        const cursor = await this.postsModelClass.find({}).sort(sortObj).skip(skips).limit(pageSize);
+        const bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
         cursor.forEach((elem) => {
-            elem.getLikesDataInfoForPost(userId);
+            elem.getLikesDataInfoForPost(userId, bannedUsers);
         });
         const cursorWithCorrectViewModel = cursor.map((elem) => {
-            const { _id, usersLikesInfo, ...rest } = elem;
-            return rest;
+            return elem.transformToPostViewModelClass();
         });
         return new PostDBPaginationClass(
-            Math.ceil(totalCount / pageSize),
-            pageNumber,
-            pageSize,
+            Math.ceil(totalCount / result.pageSize),
+            result.pageNumber,
+            result.pageSize,
             totalCount,
-            cursorWithCorrectViewModel,
+            await Promise.all(cursorWithCorrectViewModel),
         );
     }
 
@@ -41,43 +43,40 @@ export class PostsQueryRepository {
         blogId: string,
         userId: string | undefined,
     ): Promise<PostDBPaginationClass> {
-        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
-        const skips = pageSize * (pageNumber - 1);
-        const sortObj: any = {};
-        const totalCount = await this.postsModelClass.count({ blogId: blogId });
-        if (sortDirection === "desc") {
-            sortObj[sortBy] = -1;
-        } else {
-            sortObj[sortBy] = 1;
-        }
-        const cursor = await this.postsModelClass.find({ blogId: blogId }).sort(sortObj).skip(skips).limit(pageSize);
+        const result = await createQueryForPosts(dto);
+        const cursor = await this.postsModelClass
+            .find({ blogId: blogId })
+            .sort(result.sortObj)
+            .skip(result.skips)
+            .limit(result.pageSize);
+        const bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
         cursor.forEach((elem) => {
-            elem.getLikesDataInfoForPost(userId);
+            elem.getLikesDataInfoForPost(userId, bannedUsers);
         });
         const cursorWithCorrectViewModel = cursor.map((elem) => {
-            const { _id, usersLikesInfo, ...rest } = elem.toObject();
-            return rest;
+            return elem.transformToPostViewModelClass();
         });
+        const totalCount = await this.postsModelClass.count({ blogId: blogId });
         return new PostDBPaginationClass(
-            Math.ceil(totalCount / pageSize),
-            pageNumber,
-            pageSize,
+            Math.ceil(totalCount / result.pageSize),
+            result.pageNumber,
+            result.pageSize,
             totalCount,
-            cursorWithCorrectViewModel,
+            await Promise.all(cursorWithCorrectViewModel),
         );
     }
 
     async getPostById(id: string, userId: string | undefined): Promise<PostViewModelClass | null> {
+        const bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
         const post = await this.postsModelClass.findOne({ id: id });
         if (!post) {
             return null;
         }
-        post.getLikesDataInfoForPost(userId);
-        const { _id, usersLikesInfo, ...rest } = post.toObject();
-        return rest;
+        post.getLikesDataInfoForPost(userId, bannedUsers);
+        return post.transformToPostViewModelClass();
     }
 
-    async getPostByIdForOperationWithLikes(id: string): Promise<PostDBClass | null> {
+    async getPostByIdForOperationWithLikes(id: string): Promise<PostClass | null> {
         return this.postsModelClass.findOne({ id: id });
     }
 }

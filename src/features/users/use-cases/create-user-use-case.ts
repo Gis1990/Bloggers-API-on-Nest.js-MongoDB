@@ -1,6 +1,6 @@
-import { InputModelForCreatingNewUser } from "../dto/users.dto";
-import { EmailRecoveryCodeClass, UserAccountEmailClass } from "../users.schema";
-import { NewUserClassResponseModel } from "../entities/users.entity";
+import { CreatedNewUserDto, InputModelForCreatingNewUser } from "../dto/users.dto";
+import { BanInfoClass, EmailRecoveryCodeClass, UserAccountEmailClass } from "../users.schema";
+import { UserViewModelClass } from "../entities/users.entity";
 import { UsersRepository } from "../users.repository";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
@@ -10,6 +10,7 @@ export class CreateUserCommand {
         public readonly passwordHash: string,
         public readonly emailConfirmation: UserAccountEmailClass,
         public readonly emailRecoveryCodeData: EmailRecoveryCodeClass,
+        public readonly banInfo: BanInfoClass,
     ) {}
 }
 
@@ -17,13 +18,13 @@ export class CreateUserCommand {
 export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     constructor(private usersRepository: UsersRepository) {}
 
-    async execute(command: CreateUserCommand): Promise<NewUserClassResponseModel> {
-        const createdNewUserDto = {
+    async execute(command: CreateUserCommand): Promise<UserViewModelClass> {
+        const createdNewUserDto: CreatedNewUserDto = {
             id: Number(new Date()).toString(),
             login: command.dto.login,
             email: command.dto.email,
             passwordHash: command.passwordHash,
-            createdAt: new Date().toISOString(),
+            createdAt: command.banInfo.banDate,
             emailRecoveryCode: command.emailRecoveryCodeData,
             loginAttempts: [],
             emailConfirmation: command.emailConfirmation,
@@ -34,7 +35,11 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
                 title: "title",
                 deviceId: "deviceId",
             },
+            banInfo: command.banInfo,
         };
+        if (command.banInfo.isBanned) {
+            await this.usersRepository.addUserToBannedList(createdNewUserDto.id);
+        }
         return await this.usersRepository.createUser(createdNewUserDto);
     }
 }

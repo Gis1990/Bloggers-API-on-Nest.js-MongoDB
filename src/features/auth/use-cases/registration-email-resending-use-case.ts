@@ -17,13 +17,13 @@ export class RegistrationEmailResendingUseCase implements ICommandHandler<Regist
     ) {}
 
     async execute(command: RegistrationEmailResendingCommand): Promise<boolean> {
-        const user = await this.usersQueryRepository.findByLoginOrEmail(command.dto.email);
+        const user = await this.usersQueryRepository.getUserByLoginOrEmail(command.dto.email);
         if (user) {
             await this.usersRepository.updateConfirmationCode(user.id);
         } else {
             return false;
         }
-        const updatedUser = await this.usersQueryRepository.findByLoginOrEmail(command.dto.email);
+        const updatedUser = await this.usersQueryRepository.getUserByLoginOrEmail(command.dto.email);
         if (updatedUser) {
             await this.sendEmailForRegistrationUseCase.execute(
                 command.dto.email,

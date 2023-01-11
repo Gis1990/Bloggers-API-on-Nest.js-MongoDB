@@ -1,5 +1,5 @@
 import { IsString, Length, IsIn, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
-import { IsCommentsIdExist } from "../comments.custom.decorators";
+import { IsCommentsIdExist } from "../decorators/comments.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import { UsersLikesInfoClass } from "../../posts/posts.schema";
 import { LikesInfoClass } from "../comments.schema";

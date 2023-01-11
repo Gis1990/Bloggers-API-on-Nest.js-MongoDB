@@ -12,7 +12,7 @@ export class ReturnAllDevicesUseCase implements ICommandHandler<ReturnAllDevices
     constructor(private usersQueryRepository: UsersQueryRepository) {}
 
     async execute(command: ReturnAllDevicesCommand): Promise<UserDevicesDataClass[] | null> {
-        const user = await this.usersQueryRepository.findUserById(command.userWithDeviceData.id);
+        const user = await this.usersQueryRepository.getUserById(command.userWithDeviceData.id);
         if (user) {
             return user.userDevicesData;
         } else {

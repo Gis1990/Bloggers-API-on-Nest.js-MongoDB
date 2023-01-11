@@ -1,5 +1,5 @@
 import { InputModelForCreatingNewUser } from "../../users/dto/users.dto";
-import { NewUserClassResponseModel } from "../../users/entities/users.entity";
+import { UserViewModelClass } from "../../users/entities/users.entity";
 import { AuthService } from "../auth.service";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
@@ -13,7 +13,7 @@ export class CreateUserWithoutConfirmationEmailUseCase
 {
     constructor(private authService: AuthService) {}
 
-    async execute(command: CreateUserWithoutConfirmationEmailCommand): Promise<NewUserClassResponseModel> {
-        return await this.authService.createUser(command.dto, true);
+    async execute(command: CreateUserWithoutConfirmationEmailCommand): Promise<UserViewModelClass> {
+        return await this.authService.createUser(command.dto, true, true);
     }
 }

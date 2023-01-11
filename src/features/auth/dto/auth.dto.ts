@@ -1,5 +1,5 @@
 import { IsString, Matches, IsNotEmpty, Length } from "class-validator";
-import { IsEmailExistOrConfirmed } from "../../users/users.custom.decorators";
+import { IsEmailExistOrConfirmed } from "../../users/decorators/users.custom.decorators";
 import { Transform, TransformFnParams } from "class-transformer";
 import { UserDevicesDataClass } from "../../users/users.schema";
 

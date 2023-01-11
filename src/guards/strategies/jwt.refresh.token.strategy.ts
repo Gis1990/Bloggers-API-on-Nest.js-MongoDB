@@ -3,7 +3,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { ConfigService } from "@nestjs/config";
 import { Request } from "express";
-import { UsersQueryRepository } from "../../users/users.query.repository";
+import { UsersQueryRepository } from "../../features/users/users.query.repository";
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
@@ -21,7 +21,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-ref
     }
 
     async validate(request: Request, payload: any) {
-        const user = await this.usersQueryRepository.findUserById(payload.id);
+        const user = await this.usersQueryRepository.getUserById(payload.id);
         if (!user) {
             throw new UnauthorizedException();
         }

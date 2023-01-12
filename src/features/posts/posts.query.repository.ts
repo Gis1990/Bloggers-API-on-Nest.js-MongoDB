@@ -22,7 +22,13 @@ export class PostsQueryRepository {
             .skip(result.skips)
             .limit(result.pageSize);
         const totalCount = await this.postsModelClass.count({});
-        const bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+        let bannedUsers;
+        const bannedUsersInDB = await this.bannedUserListClass.find({});
+        if (!bannedUsersInDB) {
+            bannedUsers = [];
+        } else {
+            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+        }
         cursor.forEach((elem) => {
             elem.getLikesDataInfoForPost(userId, bannedUsers);
         });
@@ -49,7 +55,13 @@ export class PostsQueryRepository {
             .sort(result.sortObj)
             .skip(result.skips)
             .limit(result.pageSize);
-        const bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+        let bannedUsers;
+        const bannedUsersInDB = await this.bannedUserListClass.find({});
+        if (!bannedUsersInDB) {
+            bannedUsers = [];
+        } else {
+            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+        }
         cursor.forEach((elem) => {
             elem.getLikesDataInfoForPost(userId, bannedUsers);
         });
@@ -67,7 +79,13 @@ export class PostsQueryRepository {
     }
 
     async getPostById(id: string, userId: string | undefined): Promise<PostViewModelClass | null> {
-        const bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+        let bannedUsers;
+        const bannedUsersInDB = await this.bannedUserListClass.find({});
+        if (!bannedUsersInDB) {
+            bannedUsers = [];
+        } else {
+            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+        }
         const post = await this.postsModelClass.findOne({ id: id });
         if (!post) {
             return null;

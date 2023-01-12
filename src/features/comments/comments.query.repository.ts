@@ -12,7 +12,13 @@ export class CommentsQueryRepository {
     ) {}
 
     async getCommentById(id: string, userId: string | undefined): Promise<CommentViewModelClass | null> {
-        const bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+        let bannedUsers;
+        const bannedUsersInDB = await this.bannedUserListClass.find({});
+        if (!bannedUsersInDB) {
+            bannedUsers = [];
+        } else {
+            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+        }
         const comment = await this.commentsModelClass.findOne({ id: id });
         comment.getLikesDataInfoForComment(userId, bannedUsers);
         return await comment.transformToCommentViewModelClass();
@@ -46,7 +52,13 @@ export class CommentsQueryRepository {
             .sort(sortObj)
             .skip(skips)
             .limit(PageSize);
-        const bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+        let bannedUsers;
+        const bannedUsersInDB = await this.bannedUserListClass.find({});
+        if (!bannedUsersInDB) {
+            bannedUsers = [];
+        } else {
+            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+        }
         cursor.forEach((elem) => {
             elem.getLikesDataInfoForComment(userId, bannedUsers);
         });

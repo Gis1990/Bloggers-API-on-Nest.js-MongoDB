@@ -131,6 +131,11 @@ export class UsersRepository {
     }
 
     async createUser(newUser: CreatedNewUserDto): Promise<UserViewModelClass> {
+        const bannedUsers = await this.bannedUsersListClass.findOne({});
+        if (!bannedUsers) {
+            const newBannedUsers = new this.bannedUsersListClass();
+            await newBannedUsers.save();
+        }
         const user = new this.usersAccountModelClass(newUser);
         await user.save();
         return await user.transformToUserViewModelClass();

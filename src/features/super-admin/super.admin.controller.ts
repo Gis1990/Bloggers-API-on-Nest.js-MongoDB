@@ -11,12 +11,12 @@ import {
     ModelForGettingAllUsers,
     UsersIdValidationModel,
 } from "../users/dto/users.dto";
-import { BindUserWithBlogCommand } from "./use-cases/bind-user-with-blog-use-case";
+import { BindUserWithBlogCommand } from "../users/use-cases/bind-user-with-blog-use-case";
 import { UsersQueryRepository } from "../users/users.query.repository";
 import { UserViewModelClass, UserDBClassPagination } from "../users/entities/users.entity";
 import { CreateUserWithoutConfirmationEmailCommand } from "../auth/use-cases/create-user-without-confirmation-email-use-case";
 import { DeleteUserCommand } from "../users/use-cases/delete-user-use-case";
-import { BanUnbanUserCommand } from "./use-cases/ban-unban-user-use-case";
+import { BanUnbanUserCommand } from "../users/use-cases/ban-unban-user-use-case";
 import { GetAllBlogsWithAdditionalInfoCommand } from "../blogs/use-cases/queries/get-all-blogs-with-additional-info-query";
 
 @SkipThrottle()

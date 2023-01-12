@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
 import { HttpException } from "@nestjs/common";
 import { BlogsRepository } from "../../blogs/blogs.repository";
-import { UsersQueryRepository } from "../../users/users.query.repository";
+import { UsersQueryRepository } from "../users.query.repository";
 import { GetBlogByIdCommand } from "../../blogs/use-cases/queries/get-blog-by-id-query";
 
 export class BindUserWithBlogCommand {

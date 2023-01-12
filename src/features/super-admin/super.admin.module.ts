@@ -3,7 +3,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { PostClass, PostsSchema } from "../posts/posts.schema";
 import { CqrsModule } from "@nestjs/cqrs";
 import { SuperAdminController } from "./super.admin.controller";
-import { BindUserWithBlogUseCase } from "./use-cases/bind-user-with-blog-use-case";
+import { BindUserWithBlogUseCase } from "../users/use-cases/bind-user-with-blog-use-case";
 import {
     IsEmailExistConstraint,
     IsLoginExistConstraint,
@@ -36,7 +36,7 @@ import { CreateUserWithoutConfirmationEmailUseCase } from "../auth/use-cases/cre
 import { UsersRepository } from "../users/users.repository";
 import { AuthService } from "../auth/auth.service";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
-import { BanUnbanUserUseCase } from "./use-cases/ban-unban-user-use-case";
+import { BanUnbanUserUseCase } from "../users/use-cases/ban-unban-user-use-case";
 import { GetAllBlogsWithAdditionalInfoQuery } from "../blogs/use-cases/queries/get-all-blogs-with-additional-info-query";
 
 const useCases = [

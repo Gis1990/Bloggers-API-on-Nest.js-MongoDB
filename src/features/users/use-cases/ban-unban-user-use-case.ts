@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { UsersRepository } from "../../users/users.repository";
+import { UsersRepository } from "../users.repository";
 
 export class BanUnbanUserCommand {
     constructor(public isBanned: boolean, public banReason: string, public userId: string) {}

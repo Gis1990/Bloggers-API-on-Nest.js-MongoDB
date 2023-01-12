@@ -124,18 +124,20 @@ export class PostClass {
     }
 
     async getLikesDataInfoForPost(userId: string | undefined, bannedUsers: string[]): Promise<PostClass> {
-        const likesWithoutBannedUsers = this.extendedLikesInfo.newestLikes.filter(
-            (elem) => !bannedUsers.includes(elem.userId),
-        );
-        this.extendedLikesInfo.newestLikes = likesWithoutBannedUsers
-            .slice(-3)
-            .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
-        this.extendedLikesInfo.likesCount = this.usersLikesInfo.usersWhoPutLike.filter(
-            (elem) => !bannedUsers.includes(elem),
-        ).length;
-        this.extendedLikesInfo.dislikesCount = this.usersLikesInfo.usersWhoPutDislike.filter(
-            (elem) => !bannedUsers.includes(elem),
-        ).length;
+        if (bannedUsers.length > 0) {
+            const likesWithoutBannedUsers = this.extendedLikesInfo.newestLikes.filter(
+                (elem) => !bannedUsers.includes(elem.userId),
+            );
+            this.extendedLikesInfo.newestLikes = likesWithoutBannedUsers
+                .slice(-3)
+                .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
+            this.extendedLikesInfo.likesCount = this.usersLikesInfo.usersWhoPutLike.filter(
+                (elem) => !bannedUsers.includes(elem),
+            ).length;
+            this.extendedLikesInfo.dislikesCount = this.usersLikesInfo.usersWhoPutDislike.filter(
+                (elem) => !bannedUsers.includes(elem),
+            ).length;
+        }
         if (userId) {
             this.extendedLikesInfo.myStatus = await this.returnUsersLikeStatusForPosts(userId);
         } else {

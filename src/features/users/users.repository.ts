@@ -147,6 +147,8 @@ export class UsersRepository {
             await this.bannedUsersListClass.updateOne({ $push: { bannedUsers: id } });
         } else {
             await this.bannedUsersListClass.updateOne({ $pull: { bannedUsers: id } });
+            banData.banDate = null;
+            banData.banReason = null;
         }
         await this.usersAccountModelClass.updateOne({ id: id }, { $set: { userDevicesData: [] } });
         const result = await this.usersAccountModelClass.updateOne({ id: id }, { $set: { banInfo: banData } });

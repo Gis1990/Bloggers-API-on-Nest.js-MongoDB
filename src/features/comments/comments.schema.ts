@@ -84,12 +84,14 @@ export class CommentClass {
         if (!this) {
             throw new NotFoundException();
         }
-        this.likesInfo.likesCount = this.usersLikesInfo.usersWhoPutLike.filter(
-            (elem) => !bannedUsers.includes(elem),
-        ).length;
-        this.likesInfo.dislikesCount = this.usersLikesInfo.usersWhoPutDislike.filter(
-            (elem) => !bannedUsers.includes(elem),
-        ).length;
+        if (bannedUsers.length > 0) {
+            this.likesInfo.likesCount = this.usersLikesInfo.usersWhoPutLike.filter(
+                (elem) => !bannedUsers.includes(elem),
+            ).length;
+            this.likesInfo.dislikesCount = this.usersLikesInfo.usersWhoPutDislike.filter(
+                (elem) => !bannedUsers.includes(elem),
+            ).length;
+        }
         if (userId) {
             this.likesInfo.myStatus = await this.returnUsersLikeStatusForComments(userId);
         } else {

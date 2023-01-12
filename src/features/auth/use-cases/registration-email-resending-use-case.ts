@@ -1,7 +1,7 @@
-import { UsersQueryRepository } from "../../users/users.query.repository";
+import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
 import { InputModelForResendingEmail } from "../dto/auth.dto";
 import { SendEmailForRegistrationUseCase } from "../../../utils/email/use-cases/send-email-for-registration-use-case";
-import { UsersRepository } from "../../users/users.repository";
+import { UsersRepository } from "../../super-admin/users/users.repository";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 export class RegistrationEmailResendingCommand {

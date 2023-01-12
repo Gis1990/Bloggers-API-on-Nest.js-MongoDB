@@ -5,7 +5,7 @@ import { Model } from "mongoose";
 import { BlogClass } from "../../src/features/blogs/blogs.schema";
 import { PostClass } from "../../src/features/posts/posts.schema";
 import { CommentClass } from "../../src/features/comments/comments.schema";
-import { BannedUsersClass, UserAccountClass } from "../../src/features/users/users.schema";
+import { BannedUsersClass, UserAccountClass } from "../../src/features/super-admin/users/users.schema";
 
 @SkipThrottle()
 @Controller("testing")

@@ -1,7 +1,7 @@
-import { UsersQueryRepository } from "../../users/users.query.repository";
+import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
 import { InputModelForNewPassword } from "../dto/auth.dto";
 import { BcryptService } from "../../../utils/bcrypt/bcrypt.service";
-import { UsersRepository } from "../../users/users.repository";
+import { UsersRepository } from "../../super-admin/users/users.repository";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 export class AcceptNewPasswordCommand {

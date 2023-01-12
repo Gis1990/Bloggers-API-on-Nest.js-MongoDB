@@ -1,5 +1,5 @@
 import { CurrentUserWithDevicesDataModel } from "../../auth/dto/auth.dto";
-import { UsersRepository } from "../../users/users.repository";
+import { UsersRepository } from "../../super-admin/users/users.repository";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 export class TerminateAllDevicesCommand {

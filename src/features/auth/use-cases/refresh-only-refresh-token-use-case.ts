@@ -1,7 +1,7 @@
 import { CurrentUserWithDevicesDataModel } from "../dto/auth.dto";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { UsersRepository } from "../../users/users.repository";
+import { UsersRepository } from "../../super-admin/users/users.repository";
 import { SecurityService } from "../../security/security.service";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 

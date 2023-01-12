@@ -1,5 +1,5 @@
-import { InputModelForCreatingNewUser } from "../../users/dto/users.dto";
-import { UserViewModelClass } from "../../users/entities/users.entity";
+import { InputModelForCreatingNewUser } from "../../super-admin/users/dto/users.dto";
+import { UserViewModelClass } from "../../super-admin/users/entities/users.entity";
 import { AuthService } from "../auth.service";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 

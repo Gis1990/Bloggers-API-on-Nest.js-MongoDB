@@ -18,11 +18,12 @@ import { NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema } from "./p
 import { CreateCommentUseCase } from "../comments/use-cases/create-comment-use-case";
 import { CqrsModule } from "@nestjs/cqrs";
 import { GetBlogByIdQuery } from "../blogs/use-cases/queries/get-blog-by-id-query";
-import { BannedUsersClass, BannedUsersSchema } from "../users/users.schema";
+import { BannedUsersClass, BannedUsersSchema } from "../super-admin/users/users.schema";
 import { GetAllCommentsForSpecificPostQuery } from "../comments/use-cases/queries/get-all-comments-for-specific-post-query";
 import { GetAllPostsQuery } from "./use-cases/queries/get-all-posts-query";
 import { GetPostByIdQuery } from "./use-cases/queries/get-post-by-id-query";
 import { GetPostByIdForLikeOperationQuery } from "./use-cases/queries/get-post-by-id-for-like-opertation-query";
+import { GetUserByIdQuery } from "../super-admin/users/use-cases/queries/get-user-by-id-query";
 
 const useCases = [UpdatePostUseCase, DeletePostUseCase, LikeOperationForPostUseCase, CreateCommentUseCase];
 const queries = [
@@ -31,6 +32,7 @@ const queries = [
     GetAllPostsQuery,
     GetPostByIdQuery,
     GetPostByIdForLikeOperationQuery,
+    GetUserByIdQuery,
 ];
 
 @Module({

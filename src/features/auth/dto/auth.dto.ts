@@ -1,7 +1,7 @@
 import { IsString, Matches, IsNotEmpty, Length } from "class-validator";
-import { IsEmailExistOrConfirmed } from "../../users/decorators/users.custom.decorators";
+import { IsEmailExistOrConfirmed } from "../../super-admin/users/decorators/users.custom.decorators";
 import { Transform, TransformFnParams } from "class-transformer";
-import { UserDevicesDataClass } from "../../users/users.schema";
+import { UserDevicesDataClass } from "../../super-admin/users/users.schema";
 
 const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 

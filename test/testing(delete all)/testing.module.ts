@@ -9,7 +9,7 @@ import {
     BannedUsersSchema,
     UserAccountClass,
     UsersAccountSchema,
-} from "../../src/features/users/users.schema";
+} from "../../src/features/super-admin/users/users.schema";
 
 @Module({
     imports: [

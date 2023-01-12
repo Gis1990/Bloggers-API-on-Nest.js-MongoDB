@@ -20,7 +20,8 @@ import { GetAllBlogsQuery } from "./use-cases/queries/get-all-blogs-query";
 import { GetBlogByIdQuery } from "./use-cases/queries/get-blog-by-id-query";
 import { GetBlogByIdWithCorrectViewModelQuery } from "./use-cases/queries/get-blog-by-id-with-correct-view-model-query";
 import { GetAllPostsForSpecificBlogQuery } from "../posts/use-cases/queries/get-all-posts-for-specific-blog-query";
-import { BannedUsersClass, BannedUsersSchema } from "../users/users.schema";
+import { BannedUsersClass, BannedUsersSchema } from "../super-admin/users/users.schema";
+import { GetUserByIdQuery } from "../super-admin/users/use-cases/queries/get-user-by-id-query";
 
 const useCases = [CreateBlogUseCase, UpdateBlogUseCase, DeleteBlogUseCase, CreatePostUseCase];
 const queries = [
@@ -28,6 +29,7 @@ const queries = [
     GetBlogByIdQuery,
     GetBlogByIdWithCorrectViewModelQuery,
     GetAllPostsForSpecificBlogQuery,
+    GetUserByIdQuery,
 ];
 
 @Module({

@@ -1,10 +1,11 @@
-import { UsersQueryRepository } from "../../users/users.query.repository";
+import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
 import { BcryptService } from "../../../utils/bcrypt/bcrypt.service";
-import { UserAccountClass, UserDevicesDataClass } from "../../users/users.schema";
+import { UserAccountClass, UserDevicesDataClass } from "../../super-admin/users/users.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { UsersRepository } from "../../users/users.repository";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { UsersRepository } from "../../super-admin/users/users.repository";
+import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { GetUserByIdCommand } from "../../super-admin/users/use-cases/queries/get-user-by-id-query";
 
 export class CheckCredentialsCommand {
     constructor(
@@ -18,6 +19,7 @@ export class CheckCredentialsCommand {
 @CommandHandler(CheckCredentialsCommand)
 export class CheckCredentialsUseCase implements ICommandHandler<CheckCredentialsCommand> {
     constructor(
+        private queryBus: QueryBus,
         private usersQueryRepository: UsersQueryRepository,
         private usersRepository: UsersRepository,
         private bcryptService: BcryptService,
@@ -39,7 +41,7 @@ export class CheckCredentialsUseCase implements ICommandHandler<CheckCredentials
             const userDevicesData: UserDevicesDataClass = new this.userDevicesDataModelClass(createdUserDevicesData);
             await this.usersRepository.addUserDevicesData(user.id, userDevicesData);
             await this.usersRepository.addCurrentSession(user.id, userDevicesData);
-            return await this.usersQueryRepository.getUserById(user.id);
+            return await this.queryBus.execute(new GetUserByIdCommand(user.id));
         } else {
             return null;
         }

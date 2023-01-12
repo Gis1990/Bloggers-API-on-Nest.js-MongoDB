@@ -18,10 +18,18 @@ import {
 import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
 import { BloggerController } from "./blogger.controller";
 import { GetAllBlogsForAuthorizedUserQuery } from "../blogs/use-cases/queries/get-all-blogs-for-authorized-user-query";
-import { BannedUsersClass, BannedUsersSchema } from "../users/users.schema";
+import {
+    BannedUsersClass,
+    BannedUsersSchema,
+    UserAccountClass,
+    UsersAccountSchema,
+} from "../super-admin/users/users.schema";
+import { GetAllUsersQuery } from "../super-admin/users/use-cases/queries/get-all-users-query";
+import { UsersQueryRepository } from "../super-admin/users/users.query.repository";
+import { GetUserByIdQuery } from "../super-admin/users/use-cases/queries/get-user-by-id-query";
 
 const useCases = [CreateBlogUseCase, UpdateBlogUseCase, DeleteBlogUseCase, CreatePostUseCase, UpdatePostUseCase];
-const queries = [GetAllBlogsForAuthorizedUserQuery];
+const queries = [GetAllBlogsForAuthorizedUserQuery, GetAllUsersQuery, GetUserByIdQuery];
 
 @Module({
     imports: [
@@ -39,6 +47,10 @@ const queries = [GetAllBlogsForAuthorizedUserQuery];
                 name: BannedUsersClass.name,
                 schema: BannedUsersSchema,
             },
+            {
+                name: UserAccountClass.name,
+                schema: UsersAccountSchema,
+            },
         ]),
     ],
     controllers: [BloggerController],
@@ -46,6 +58,7 @@ const queries = [GetAllBlogsForAuthorizedUserQuery];
         BlogsRepository,
         BlogsQueryRepository,
         PostsQueryRepository,
+        UsersQueryRepository,
         PostsRepository,
         IsBlogsIdExistConstraint,
         IsBlogsIdExistInTheRequestBodyConstraint,

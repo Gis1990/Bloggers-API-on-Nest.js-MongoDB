@@ -7,14 +7,16 @@ import {
 
 import { HttpException, Injectable } from "@nestjs/common";
 import { UsersQueryRepository } from "../users.query.repository";
+import { GetUserByIdCommand } from "../use-cases/queries/get-user-by-id-query";
+import { QueryBus } from "@nestjs/cqrs";
 
 @ValidatorConstraint({ name: "IsUsersIdExist", async: true })
 @Injectable()
 export class IsUsersIdExistConstraint implements ValidatorConstraintInterface {
-    constructor(protected usersQueryRepository: UsersQueryRepository) {}
+    constructor(protected queryBus: QueryBus) {}
 
     async validate(userId: string) {
-        const user = await this.usersQueryRepository.getUserById(userId);
+        const user = await this.queryBus.execute(new GetUserByIdCommand(userId));
         if (!user) {
             throw new HttpException("User not found", 404);
         } else {

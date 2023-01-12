@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { BlogsIdValidationModel, ModelForGettingAllBlogs } from "../blogs/dto/blogs.dto";
 import { BlogDBPaginationClass } from "../blogs/entities/blogs.entity";
-import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
 import { BasicAuthGuard } from "../../guards/basic-auth.guard";
 import { SkipThrottle } from "@nestjs/throttler";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
@@ -10,24 +9,19 @@ import {
     InputModelForCreatingNewUser,
     ModelForGettingAllUsers,
     UsersIdValidationModel,
-} from "../users/dto/users.dto";
-import { BindUserWithBlogCommand } from "../users/use-cases/bind-user-with-blog-use-case";
-import { UsersQueryRepository } from "../users/users.query.repository";
-import { UserViewModelClass, UserDBClassPagination } from "../users/entities/users.entity";
+} from "./users/dto/users.dto";
+import { BindUserWithBlogCommand } from "./users/use-cases/bind-user-with-blog-use-case";
+import { UserViewModelClass, UserDBClassPagination } from "./users/entities/users.entity";
 import { CreateUserWithoutConfirmationEmailCommand } from "../auth/use-cases/create-user-without-confirmation-email-use-case";
-import { DeleteUserCommand } from "../users/use-cases/delete-user-use-case";
-import { BanUnbanUserCommand } from "../users/use-cases/ban-unban-user-use-case";
+import { DeleteUserCommand } from "./users/use-cases/delete-user-use-case";
+import { BanUnbanUserCommand } from "./users/use-cases/ban-unban-user-use-case";
 import { GetAllBlogsWithAdditionalInfoCommand } from "../blogs/use-cases/queries/get-all-blogs-with-additional-info-query";
+import { GetAllUsersCommand } from "./users/use-cases/queries/get-all-users-query";
 
 @SkipThrottle()
 @Controller("sa")
 export class SuperAdminController {
-    constructor(
-        private commandBus: CommandBus,
-        private queryBus: QueryBus,
-        private blogsQueryRepository: BlogsQueryRepository,
-        private usersQueryRepository: UsersQueryRepository,
-    ) {}
+    constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
 
     @UseGuards(BasicAuthGuard)
     @Get("/blogs")
@@ -64,7 +58,7 @@ export class SuperAdminController {
         @Query()
         dto: ModelForGettingAllUsers,
     ): Promise<UserDBClassPagination> {
-        return await this.usersQueryRepository.getAllUsers(dto);
+        return await this.queryBus.execute(new GetAllUsersCommand(dto));
     }
 
     @UseGuards(BasicAuthGuard)

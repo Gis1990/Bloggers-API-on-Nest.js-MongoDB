@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from "@nestjs/common";
-import { UsersQueryRepository } from "../../users/users.query.repository";
-import { UsersRepository } from "../../users/users.repository";
+import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
+import { UsersRepository } from "../../super-admin/users/users.repository";
 import { ICommandHandler } from "@nestjs/cqrs";
 
 export class ConfirmEmailCommand {

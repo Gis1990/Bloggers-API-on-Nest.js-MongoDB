@@ -1,5 +1,5 @@
 import { CurrentUserWithDevicesDataModel } from "../../auth/dto/auth.dto";
-import { UsersQueryRepository } from "../../users/users.query.repository";
+import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 export class CheckAccessRightsCommand {

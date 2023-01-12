@@ -3,7 +3,7 @@ import { ModelForGettingAllComments } from "./dto/comments.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { CommentClass } from "./comments.schema";
-import { BannedUsersClass } from "../users/users.schema";
+import { BannedUsersClass } from "../super-admin/users/users.schema";
 
 export class CommentsQueryRepository {
     constructor(

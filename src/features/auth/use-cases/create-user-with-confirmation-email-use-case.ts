@@ -1,8 +1,8 @@
-import { InputModelForCreatingNewUser } from "../../users/dto/users.dto";
+import { InputModelForCreatingNewUser } from "../../super-admin/users/dto/users.dto";
 import { AuthService } from "../auth.service";
 import { SendEmailForRegistrationUseCase } from "../../../utils/email/use-cases/send-email-for-registration-use-case";
-import { UsersQueryRepository } from "../../users/users.query.repository";
-import { UsersRepository } from "../../users/users.repository";
+import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
+import { UsersRepository } from "../../super-admin/users/users.repository";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 export class CreateUserWithConfirmationEmailCommand {

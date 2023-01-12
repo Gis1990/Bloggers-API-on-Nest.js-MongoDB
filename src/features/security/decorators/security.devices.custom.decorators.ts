@@ -6,7 +6,7 @@ import {
 } from "class-validator";
 
 import { HttpException, Injectable } from "@nestjs/common";
-import { UsersQueryRepository } from "../../users/users.query.repository";
+import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
 
 @ValidatorConstraint({ name: "IsDeviceIdExist", async: true })
 @Injectable()

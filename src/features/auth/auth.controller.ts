@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, Post, UseGuards, Res, Get } from "@nestjs/common";
-import { InputModelForCreatingNewUser } from "../users/dto/users.dto";
+import { InputModelForCreatingNewUser } from "../super-admin/users/dto/users.dto";
 import {
     CurrentUserModel,
     CurrentUserModelForMeEndpoint,

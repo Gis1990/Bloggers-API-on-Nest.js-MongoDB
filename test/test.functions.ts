@@ -18,7 +18,7 @@ import {
     UserDevicesDataClass,
     UserDevicesDataSchema,
     UsersAccountSchema,
-} from "../src/features/users/users.schema";
+} from "../src/features/super-admin/users/users.schema";
 import { BlogClass, BlogsSchema } from "../src/features/blogs/blogs.schema";
 import { CommentClass, CommentsSchema } from "../src/features/comments/comments.schema";
 import { NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema } from "../src/features/posts/posts.schema";

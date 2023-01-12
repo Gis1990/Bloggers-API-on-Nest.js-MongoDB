@@ -4,7 +4,7 @@ import { CurrentUser } from "../auth/decorators/auth.custom.decorators";
 import { CurrentUserWithDevicesDataModel } from "../auth/dto/auth.dto";
 import { SkipThrottle } from "@nestjs/throttler";
 import { deviceIdValidationModel } from "./dto/security.dto";
-import { UserDevicesDataClass } from "../users/users.schema";
+import { UserDevicesDataClass } from "../super-admin/users/users.schema";
 import { CommandBus } from "@nestjs/cqrs";
 import { ReturnAllDevicesCommand } from "./use-cases/return-all-devices-use-case";
 import { TerminateAllDevicesCommand } from "./use-cases/terminate-all-devices-use-case";

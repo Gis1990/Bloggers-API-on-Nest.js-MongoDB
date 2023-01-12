@@ -10,7 +10,7 @@ export class GetCommentByIdForLikeOperationCommand {
 export class GetCommentByIdForLikeOperationQuery implements IQueryHandler<GetCommentByIdForLikeOperationCommand> {
     constructor(private commentsQueryRepository: CommentsQueryRepository) {}
 
-    async execute(query: GetCommentByIdForLikeOperationCommand): Promise<CommentClass | null> {
+    async execute(query: GetCommentByIdForLikeOperationCommand): Promise<CommentClass> {
         return await this.commentsQueryRepository.getCommentByIdForLikeOperation(query.id);
     }
 }

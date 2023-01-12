@@ -81,7 +81,7 @@ export class CommentClass {
     }
 
     async getLikesDataInfoForComment(userId: string | undefined, bannedUsers: string[]): Promise<CommentClass> {
-        if (!this) {
+        if (!this && bannedUsers.includes(userId)) {
             throw new NotFoundException();
         }
         if (bannedUsers.length > 0) {

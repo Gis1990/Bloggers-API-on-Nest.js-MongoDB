@@ -16,10 +16,16 @@ import { GetCommentByIdQuery } from "./use-cases/queries/get-comment-by-id-query
 import { BannedUsersClass, BannedUsersSchema } from "../users/users.schema";
 import { GetCommentByIdForLikeOperationQuery } from "./use-cases/queries/get-comment-by-id-for-like-operation-query";
 import { GetAllCommentsForSpecificPostQuery } from "./use-cases/queries/get-all-comments-for-specific-post-query";
+import { GetCommentForIdValidationQuery } from "./use-cases/queries/get-comment-for-id-validation-query";
 
 const useCases = [CreateCommentUseCase, UpdateCommentUseCase, DeleteCommentUseCase, LikeOperationForCommentUseCase];
 
-const queries = [GetCommentByIdQuery, GetCommentByIdForLikeOperationQuery, GetAllCommentsForSpecificPostQuery];
+const queries = [
+    GetCommentByIdQuery,
+    GetCommentByIdForLikeOperationQuery,
+    GetAllCommentsForSpecificPostQuery,
+    GetCommentForIdValidationQuery,
+];
 
 @Module({
     imports: [

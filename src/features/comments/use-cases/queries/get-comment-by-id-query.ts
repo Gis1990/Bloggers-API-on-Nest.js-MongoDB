@@ -10,7 +10,7 @@ export class GetCommentByIdCommand {
 export class GetCommentByIdQuery implements IQueryHandler<GetCommentByIdCommand> {
     constructor(private commentsQueryRepository: CommentsQueryRepository) {}
 
-    async execute(query: GetCommentByIdCommand): Promise<CommentViewModelClass | null> {
+    async execute(query: GetCommentByIdCommand): Promise<CommentViewModelClass> {
         return await this.commentsQueryRepository.getCommentById(query.id, query.userId);
     }
 }

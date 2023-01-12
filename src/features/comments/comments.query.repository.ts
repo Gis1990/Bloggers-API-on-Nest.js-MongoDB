@@ -11,7 +11,7 @@ export class CommentsQueryRepository {
         @InjectModel(BannedUsersClass.name) private bannedUserListClass: Model<BannedUsersClass>,
     ) {}
 
-    async getCommentById(id: string, userId: string | undefined): Promise<CommentViewModelClass | null> {
+    async getCommentById(id: string, userId: string | undefined): Promise<CommentViewModelClass> {
         let bannedUsers;
         const bannedUsersInDB = await this.bannedUserListClass.find({});
         if (!bannedUsersInDB) {
@@ -77,7 +77,16 @@ export class CommentsQueryRepository {
         );
     }
 
-    async getCommentByIdForLikeOperation(id: string): Promise<CommentClass | null> {
+    async getCommentByIdForLikeOperation(id: string): Promise<CommentClass> {
         return this.commentsModelClass.findOne({ id: id });
+    }
+
+    async getCommentForIdValidation(id: string): Promise<CommentClass | null> {
+        const comment = await this.commentsModelClass.findOne({ id: id });
+        if (!comment) {
+            return null;
+        } else {
+            return comment;
+        }
     }
 }

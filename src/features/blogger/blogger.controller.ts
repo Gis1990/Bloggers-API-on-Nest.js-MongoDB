@@ -58,6 +58,7 @@ export class BloggerController {
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Put("/:blogId/posts/:postId")
+    @HttpCode(204)
     async updatePostForSpecificBlog(
         @ParamBlogIdAndPostId("blogId") blogId: BlogsIdValidationModel,
         @ParamBlogIdAndPostId("postId") postId: PostsIdValidationModel,

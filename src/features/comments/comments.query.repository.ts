@@ -82,8 +82,9 @@ export class CommentsQueryRepository {
     }
 
     async getCommentForIdValidation(id: string): Promise<CommentClass | null> {
-        const comment = await this.commentsModelClass.findOne({ id: id });
-        if (!comment) {
+        const bannedUsersInDB = await this.bannedUserListClass.find({}).lean();
+        const comment = await this.commentsModelClass.findOne({ id: id }).lean();
+        if (!comment || bannedUsersInDB[0].bannedUsers.includes(comment.userId)) {
             return null;
         } else {
             return comment;

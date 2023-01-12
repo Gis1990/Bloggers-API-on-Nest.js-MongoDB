@@ -30,7 +30,7 @@ export class BlogsQueryRepository {
     async getAllBlogsForAuthorizedUser(dto: ModelForGettingAllBlogs, userId: string): Promise<BlogDBPaginationClass> {
         const result = await createQueryForBlogs(dto);
         const cursor = await this.blogsModelClass
-            .find({ $and: [result.query, { userId: userId }] }, { _id: 0, blogOwnerInfo: 0 })
+            .find({ $and: [result.query, { "blogOwnerInfo.userId": userId }] }, { _id: 0, blogOwnerInfo: 0 })
             .sort(result.sortObj)
             .skip(result.skips)
             .limit(result.pageSize);

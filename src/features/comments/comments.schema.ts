@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { NotFoundException } from "@nestjs/common";
 import { UsersLikesInfoClass, UsersLikesInfoSchema } from "../posts/posts.schema";
 import { CommentViewModelClass } from "./entities/comments.entity";
 
@@ -81,9 +80,6 @@ export class CommentClass {
     }
 
     async getLikesDataInfoForComment(userId: string | undefined, bannedUsers: string[]): Promise<CommentClass> {
-        if (!this && bannedUsers.includes(userId)) {
-            throw new NotFoundException();
-        }
         if (bannedUsers.length > 0) {
             this.likesInfo.likesCount = this.usersLikesInfo.usersWhoPutLike.filter(
                 (elem) => !bannedUsers.includes(elem),

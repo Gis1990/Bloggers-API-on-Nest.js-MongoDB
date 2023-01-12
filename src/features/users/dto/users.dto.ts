@@ -16,6 +16,7 @@ export class ModelForGettingAllUsers {
     @IsString()
     @IsNotEmpty()
     @IsIn(listOfCorrectBanStatus)
+    @IsOptional()
     public banStatus: string;
     @IsString()
     @IsOptional()

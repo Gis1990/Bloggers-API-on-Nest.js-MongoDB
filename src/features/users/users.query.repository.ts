@@ -14,6 +14,7 @@ export class UsersQueryRepository {
 
     async getAllUsers(dto: ModelForGettingAllUsers): Promise<UserDBClassPagination> {
         const {
+            banStatus = "all",
             searchLoginTerm = null,
             searchEmailTerm = null,
             pageNumber = 1,
@@ -41,6 +42,13 @@ export class UsersQueryRepository {
                     { email: { $regex: searchEmailTerm, $options: "i" } },
                 ],
             };
+        }
+        if (banStatus !== "all") {
+            if (banStatus === "banned") {
+                query = { ...query, banInfo: { $ne: null } };
+            } else if (banStatus === "notBanned") {
+                query = { ...query, banInfo: null };
+            }
         }
 
         // Retrieve the documents from the UsersAccountModelClass collection, applying the query, sort, skip, and limit options

@@ -1,4 +1,4 @@
-import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional, IsBoolean } from "class-validator";
+import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional, IsBoolean, IsIn } from "class-validator";
 import { IsEmailExist, IsLoginExist, IsUsersIdExist } from "../decorators/users.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import {
@@ -10,8 +10,13 @@ import {
 } from "../users.schema";
 
 const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+const listOfCorrectBanStatus = ["all", "banned", "notBanned"];
 
 export class ModelForGettingAllUsers {
+    @IsString()
+    @IsNotEmpty()
+    @IsIn(listOfCorrectBanStatus)
+    public banStatus: string;
     @IsString()
     @IsOptional()
     public searchLoginTerm: string;

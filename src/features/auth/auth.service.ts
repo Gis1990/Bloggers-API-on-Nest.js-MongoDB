@@ -35,8 +35,8 @@ export class AuthService {
         };
         const createdBanInfoDto = {
             isBanned: isBanned,
-            banDate: new Date(),
-            banReason: "None",
+            banDate: null,
+            banReason: null,
         };
         const banInfo: BanInfoClass = new this.banInfoClass(createdBanInfoDto);
         const emailConfirmation: UserAccountEmailClass = new this.userAccountEmailModelClass(

@@ -24,7 +24,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
             login: command.dto.login,
             email: command.dto.email,
             passwordHash: command.passwordHash,
-            createdAt: command.banInfo.banDate,
+            createdAt: new Date(),
             emailRecoveryCode: command.emailRecoveryCodeData,
             loginAttempts: [],
             emailConfirmation: command.emailConfirmation,

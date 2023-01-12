@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { UserViewModelClass } from "./entities/users.entity";
-import { Optional } from "@nestjs/common";
 
 @Schema({ versionKey: false, _id: false })
 export class LoginAttemptsClass {
@@ -95,9 +94,9 @@ export class BanInfoClass {
         required: true,
     })
     isBanned: boolean;
-    @Optional()
+    @Prop()
     banDate: Date;
-    @Optional()
+    @Prop()
     banReason: string;
 }
 

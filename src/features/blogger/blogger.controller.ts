@@ -20,6 +20,7 @@ import { DeletePostCommand } from "../posts/use-cases/delete-post-use-case";
 import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { GetAllBlogsForAuthorizedUserCommand } from "../blogs/use-cases/queries/get-all-blogs-for-authorized-user-query";
+import { ParamBlogIdAndPostId } from "./decorators/blogger.custom.decorators";
 
 @SkipThrottle()
 @Controller("blogger/blogs")
@@ -58,8 +59,8 @@ export class BloggerController {
     @UseGuards(JwtAccessTokenAuthGuard)
     @Put("/:blogId/posts/:postId")
     async updatePostForSpecificBlog(
-        @Param("blogId") blogId: BlogsIdValidationModel,
-        @Param("postId") postId: PostsIdValidationModel,
+        @ParamBlogIdAndPostId("blogId") blogId: BlogsIdValidationModel,
+        @ParamBlogIdAndPostId("postId") postId: PostsIdValidationModel,
         @Body() model: InputModelForCreatingAndUpdatingNewPostForSpecificBlog,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<PostViewModelClass> {
@@ -76,11 +77,11 @@ export class BloggerController {
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Delete(":postId")
+    @Delete("/:blogId/posts/:postId")
     @HttpCode(204)
     async deletePost(
-        @Param("blogId") blogId: BlogsIdValidationModel,
-        @Param("postId") postId: PostsIdValidationModel,
+        @ParamBlogIdAndPostId("blogId") blogId: BlogsIdValidationModel,
+        @ParamBlogIdAndPostId("postId") postId: PostsIdValidationModel,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<boolean> {
         return await this.commandBus.execute(new DeletePostCommand(blogId.toString(), postId.toString(), user.id));

@@ -1,7 +1,20 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
+import { BlogsIdValidationModel } from "../../blogs/dto/blogs.dto";
+import { PostsIdValidationModel } from "../../posts/dto/posts.dto";
+import { validate } from "class-validator";
 
-export const ParamBlogIdAndPostId = createParamDecorator((data: string, context: ExecutionContext) => {
+export const ValidateBlogId = createParamDecorator(async (data: any, context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest();
-    const params = request["params"];
-    return params && data ? params[data] : params;
+    const validationModel = new BlogsIdValidationModel();
+    validationModel.id = request.params.blogId;
+    await validate(validationModel);
+    return validationModel.id;
+});
+
+export const ValidatePostId = createParamDecorator(async (data: any, context: ExecutionContext) => {
+    const request = context.switchToHttp().getRequest();
+    const validationModel = new PostsIdValidationModel();
+    validationModel.postId = request.params.postId;
+    await validate(validationModel);
+    return validationModel.postId;
 });

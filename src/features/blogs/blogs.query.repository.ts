@@ -34,7 +34,9 @@ export class BlogsQueryRepository {
             .sort(result.sortObj)
             .skip(result.skips)
             .limit(result.pageSize);
-        const totalCount = await this.blogsModelClass.count(result.query);
+        const totalCount = await this.blogsModelClass.count({
+            $and: [result.query, { "blogOwnerInfo.userId": userId }],
+        });
         return new BlogDBPaginationClass(
             Math.ceil(totalCount / result.pageSize),
             result.pageNumber,

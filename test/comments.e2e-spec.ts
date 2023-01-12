@@ -3,7 +3,6 @@ import * as request from "supertest";
 import {
     app,
     createBlogForTests,
-    createContentCommentForTesting,
     createOutputCommentForTesting,
     createPostForTesting,
     createUserForTesting,
@@ -98,8 +97,41 @@ describe("comments endpoint (e2e)", () => {
                     banReason: "stringstringstringst",
                 })
                 .expect(204);
+
             await request(app.getHttpServer()).get(`/comments/5`).expect(404);
             await request(app.getHttpServer()).get(`/comments/${commentId}`).expect(404);
+            // UnBan the user
+            const response6 = await request(app.getHttpServer())
+                .put(`/sa/users/${userId1}/ban`)
+                .set("authorization", "Basic YWRtaW46cXdlcnR5")
+                .send({
+                    isBanned: false,
+                    banReason: "stringstringstringst",
+                })
+                .expect(204);
+            await request(app.getHttpServer()).get(`/comments/${commentId}`).expect(200);
+
+            await request(app.getHttpServer()).delete(`/blogger/blogs/${blogId}/posts/${postId}`).expect(401);
+
+            await request(app.getHttpServer())
+                .delete(`/blogger/blogs/5/posts/${postId}`)
+                .set("authorization", "Bearer " + accessToken1)
+                .expect(404);
+
+            await request(app.getHttpServer())
+                .delete(`/blogger/blogs/5/posts/1`)
+                .set("authorization", "Bearer " + accessToken1)
+                .expect(404);
+
+            await request(app.getHttpServer())
+                .delete(`/blogger/blogs/${blogId}/posts/${postId}`)
+                .set("authorization", "Bearer " + accessToken1)
+                .expect(204);
+
+            await request(app.getHttpServer())
+                .delete(`/blogger/blogs/${blogId}/posts/${postId}`)
+                .set("authorization", "Bearer " + accessToken1)
+                .expect(404);
         });
 
         // const updatedCorrectContentForComment = createContentCommentForTesting(50);

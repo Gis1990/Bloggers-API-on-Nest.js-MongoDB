@@ -45,9 +45,9 @@ export class UsersQueryRepository {
         }
         if (banStatus !== "all") {
             if (banStatus === "banned") {
-                query = { ...query, banInfo: { $ne: null } };
+                query = { ...query, "banInfo.isBanned": true };
             } else if (banStatus === "notBanned") {
-                query = { ...query, banInfo: null };
+                query = { ...query, "banInfo.isBanned": true };
             }
         }
 
@@ -64,15 +64,6 @@ export class UsersQueryRepository {
 
         // Return a new UserDBClassPagination object with the calculated pagination information and the retrieved documents
         return new UserDBClassPagination(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
-    }
-
-    async getAllBannedUsers(): Promise<any> {
-        const bannedUsers = await this.bannedUserListClass.find({});
-        if (bannedUsers) {
-            return bannedUsers;
-        } else {
-            return null;
-        }
     }
 
     async getUserById(id: string): Promise<UserAccountClass | null> {

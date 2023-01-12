@@ -14,6 +14,6 @@ export class CreateUserWithoutConfirmationEmailUseCase
     constructor(private authService: AuthService) {}
 
     async execute(command: CreateUserWithoutConfirmationEmailCommand): Promise<UserViewModelClass> {
-        return await this.authService.createUser(command.dto, true, true);
+        return await this.authService.createUser(command.dto, true);
     }
 }

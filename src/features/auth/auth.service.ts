@@ -20,11 +20,7 @@ export class AuthService {
         @InjectModel(BanInfoClass.name) private banInfoClass: Model<BanInfoClass>,
     ) {}
 
-    async createUser(
-        dto: InputModelForCreatingNewUser,
-        isConfirmed: boolean,
-        isBanned: boolean,
-    ): Promise<UserViewModelClass> {
+    async createUser(dto: InputModelForCreatingNewUser, isConfirmed: boolean): Promise<UserViewModelClass> {
         const passwordHash = await this.bcryptService._generateHash(dto.password);
         const emailRecoveryCodeData: EmailRecoveryCodeClass = new this.userRecoveryCodeModelClass();
         const createdEmailConfirmationDto = {
@@ -34,7 +30,7 @@ export class AuthService {
             sentEmails: [],
         };
         const createdBanInfoDto = {
-            isBanned: isBanned,
+            isBanned: false,
             banDate: null,
             banReason: null,
         };

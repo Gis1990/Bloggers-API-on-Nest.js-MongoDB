@@ -20,8 +20,14 @@ import { GetAllBlogsQuery } from "./use-cases/queries/get-all-blogs-query";
 import { GetBlogByIdQuery } from "./use-cases/queries/get-blog-by-id-query";
 import { GetBlogByIdWithCorrectViewModelQuery } from "./use-cases/queries/get-blog-by-id-with-correct-view-model-query";
 import { GetAllPostsForSpecificBlogQuery } from "../posts/use-cases/queries/get-all-posts-for-specific-blog-query";
-import { BannedUsersClass, BannedUsersSchema } from "../super-admin/users/users.schema";
+import {
+    BannedUsersClass,
+    BannedUsersSchema,
+    UserAccountClass,
+    UsersAccountSchema,
+} from "../super-admin/users/users.schema";
 import { GetUserByIdQuery } from "../super-admin/users/use-cases/queries/get-user-by-id-query";
+import { UsersQueryRepository } from "../super-admin/users/users.query.repository";
 
 const useCases = [CreateBlogUseCase, UpdateBlogUseCase, DeleteBlogUseCase, CreatePostUseCase];
 const queries = [
@@ -48,19 +54,24 @@ const queries = [
                 name: BannedUsersClass.name,
                 schema: BannedUsersSchema,
             },
+            {
+                name: UserAccountClass.name,
+                schema: UsersAccountSchema,
+            },
         ]),
     ],
     controllers: [BlogsController],
     providers: [
         BlogsRepository,
         BlogsQueryRepository,
-        PostsQueryRepository,
         PostsRepository,
+        PostsQueryRepository,
+        UsersQueryRepository,
         IsBlogsIdExistConstraint,
         IsBlogsIdExistInTheRequestBodyConstraint,
         ...useCases,
         ...queries,
     ],
-    exports: [BlogsRepository],
+    exports: [BlogsRepository, BlogsQueryRepository],
 })
 export class BlogsModule {}

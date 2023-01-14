@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { UsersQueryRepository } from "../../users.query.repository";
 import { ModelForGettingAllUsers } from "../../dto/users.dto";
-import { UserDBClassPagination } from "../../entities/users.entity";
+import { UserPaginationClass } from "../../entities/users.entity";
 
 export class GetAllUsersCommand {
     constructor(public dto: ModelForGettingAllUsers) {}
@@ -11,7 +11,7 @@ export class GetAllUsersCommand {
 export class GetAllUsersQuery implements IQueryHandler<GetAllUsersCommand> {
     constructor(private usersQueryRepository: UsersQueryRepository) {}
 
-    async execute(query: GetAllUsersCommand): Promise<UserDBClassPagination> {
+    async execute(query: GetAllUsersCommand): Promise<UserPaginationClass> {
         return await this.usersQueryRepository.getAllUsers(query.dto);
     }
 }

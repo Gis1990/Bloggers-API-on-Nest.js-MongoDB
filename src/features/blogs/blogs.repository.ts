@@ -4,10 +4,14 @@ import { InjectModel } from "@nestjs/mongoose";
 import { BlogClass } from "./blogs.schema";
 import { CreatedBlogDto, InputModelForUpdatingBlog } from "./dto/blogs.dto";
 import { BlogViewModelClass } from "./entities/blogs.entity";
+import { BannedUsersAndBlogsClass } from "../super-admin/users/users.schema";
 
 @Injectable()
 export class BlogsRepository {
-    constructor(@InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>) {}
+    constructor(
+        @InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>,
+        @InjectModel(BannedUsersAndBlogsClass.name) private bannedUsersClass: Model<BannedUsersAndBlogsClass>,
+    ) {}
 
     async createBlog(newBlog: CreatedBlogDto): Promise<BlogViewModelClass> {
         const blog = new this.blogsModelClass(newBlog);
@@ -43,8 +47,10 @@ export class BlogsRepository {
         let dataForUpdating;
         if (isBanned) {
             dataForUpdating = { isBanned: isBanned, banDate: new Date() };
+            await this.bannedUsersClass.updateOne({ $push: { bannedBlogsBySuperAdmin: blogId } });
         } else {
             dataForUpdating = { isBanned: isBanned, banDate: null };
+            await this.bannedUsersClass.updateOne({ $pull: { bannedBlogsBySuperAdmin: blogId } });
         }
         const result = await this.blogsModelClass.updateOne({ id: blogId }, { banInfo: dataForUpdating });
         return result.matchedCount === 1;

@@ -72,11 +72,38 @@ export class InputModelForBanUnbanUser {
     public banReason: string;
 }
 
+export class InputModelForBanUnbanUserByBloggerForBlog extends InputModelForBanUnbanUser {
+    @IsNotEmpty()
+    @IsString()
+    @Length(20)
+    public blogId: string;
+}
+
 export class UsersIdValidationModel {
     @IsString()
     @IsNotEmpty()
     @IsUsersIdExist()
     public id: string;
+}
+
+export class ModelForGettingAllBannedUsersForBlog {
+    @IsString()
+    @IsOptional()
+    public searchLoginTerm: string;
+    @IsString()
+    @IsOptional()
+    public sortBy: string;
+    @IsString()
+    @IsOptional()
+    public sortDirection: string;
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    public pageNumber: number;
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    public pageSize: number;
 }
 
 export class CreatedNewUserDto {

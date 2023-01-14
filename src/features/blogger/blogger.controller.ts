@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import {
     BlogsIdValidationModel,
+    BlogsIdValidationModelWhenBlogIsBanned,
     InputModelForCreatingBlog,
     InputModelForUpdatingBlog,
     ModelForGettingAllBlogs,
@@ -23,14 +24,22 @@ import { GetAllBlogsForAuthorizedUserCommand } from "../blogs/use-cases/queries/
 import { ValidateBlogId, ValidatePostId } from "./decorators/blogger.custom.decorators";
 import { ModelForGettingAllComments } from "../comments/dto/comments.dto";
 import { GetAllCommentsForAllPostsForBloggersBlogsCommand } from "../comments/use-cases/queries/get-all-comments-for-all-posts-for-blogs-query";
+import {
+    InputModelForBanUnbanUserByBloggerForBlog,
+    ModelForGettingAllBannedUsersForBlog,
+    UsersIdValidationModel,
+} from "../super-admin/users/dto/users.dto";
+import { UserPaginationClass } from "../super-admin/users/entities/users.entity";
+import { GetAllBannedUsersForBlogCommand } from "../super-admin/users/use-cases/queries/get-all-banned-users-for-blog-query";
+import { BanUnbanUserByBloggerForBlog } from "../super-admin/users/use-cases/ban-unban-user-by-blogger-for-blog-use-case";
 
 @SkipThrottle()
-@Controller("blogger/blogs")
+@Controller("blogger")
 export class BloggerController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Get("/comments")
+    @Get("/blogs/comments")
     async getAllCommentsForAllPostsForBloggersBlogs(
         @Query()
         dto: ModelForGettingAllComments,
@@ -40,14 +49,7 @@ export class BloggerController {
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Delete(":id")
-    @HttpCode(204)
-    async deleteBlog(@Param() params: BlogsIdValidationModel, @CurrentUser() user: CurrentUserModel): Promise<boolean> {
-        return await this.commandBus.execute(new DeleteBlogCommand(params.id, user));
-    }
-
-    @UseGuards(JwtAccessTokenAuthGuard)
-    @Put(":id")
+    @Put("/blogs/:id")
     @HttpCode(204)
     async updateBlog(
         @Param() params: BlogsIdValidationModel,
@@ -58,7 +60,23 @@ export class BloggerController {
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Post("/:id/posts")
+    @Delete("/blogs/:id")
+    @HttpCode(204)
+    async deleteBlog(@Param() params: BlogsIdValidationModel, @CurrentUser() user: CurrentUserModel): Promise<boolean> {
+        return await this.commandBus.execute(new DeleteBlogCommand(params.id, user));
+    }
+
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @Post("/blogs")
+    async createBlog(
+        @Body() dto: InputModelForCreatingBlog,
+        @CurrentUser() user: CurrentUserModel,
+    ): Promise<BlogViewModelClass> {
+        return await this.commandBus.execute(new CreateBlogCommand(dto, user));
+    }
+
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @Post("/blogs/:id/posts")
     async createNewPostForSpecificBlog(
         @Param() params: BlogsIdValidationModel,
         @Body() model: InputModelForCreatingAndUpdatingNewPostForSpecificBlog,
@@ -69,7 +87,17 @@ export class BloggerController {
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Put("/:blogId/posts/:postId")
+    @Get("/blogs")
+    async getAllBlogs(
+        @Query()
+        dto: ModelForGettingAllBlogs,
+        @CurrentUser() user: CurrentUserModel,
+    ): Promise<BlogClassPagination> {
+        return await this.queryBus.execute(new GetAllBlogsForAuthorizedUserCommand(dto, user.id));
+    }
+
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @Put("/blogs/:blogId/posts/:postId")
     @HttpCode(204)
     async updatePostForSpecificBlog(
         @ValidateBlogId() blogId: BlogsIdValidationModel,
@@ -90,7 +118,7 @@ export class BloggerController {
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Delete("/:blogId/posts/:postId")
+    @Delete("/blogs/:blogId/posts/:postId")
     @HttpCode(204)
     async deletePost(
         @ValidateBlogId() blogId: BlogsIdValidationModel,
@@ -101,21 +129,26 @@ export class BloggerController {
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Post()
-    async createBlog(
-        @Body() dto: InputModelForCreatingBlog,
-        @CurrentUser() user: CurrentUserModel,
-    ): Promise<BlogViewModelClass> {
-        return await this.commandBus.execute(new CreateBlogCommand(dto, user));
+    @Put("/users/:userId/ban")
+    async banUnbanUserByBloggerForBlog(
+        @Param()
+        params: UsersIdValidationModel,
+        @Body()
+        dto: InputModelForBanUnbanUserByBloggerForBlog,
+    ): Promise<UserPaginationClass> {
+        return await this.queryBus.execute(
+            new BanUnbanUserByBloggerForBlog(dto.isBanned, dto.banReason, dto.blogId, params.id),
+        );
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Get()
-    async getAllBlogs(
+    @Get("/users")
+    async GetAllBannedUsersForBlog(
+        @Param()
+        params: BlogsIdValidationModelWhenBlogIsBanned,
         @Query()
-        dto: ModelForGettingAllBlogs,
-        @CurrentUser() user: CurrentUserModel,
-    ): Promise<BlogClassPagination> {
-        return await this.queryBus.execute(new GetAllBlogsForAuthorizedUserCommand(dto, user.id));
+        dto: ModelForGettingAllBannedUsersForBlog,
+    ): Promise<UserPaginationClass> {
+        return await this.queryBus.execute(new GetAllBannedUsersForBlogCommand(dto));
     }
 }

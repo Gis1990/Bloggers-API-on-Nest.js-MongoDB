@@ -18,7 +18,7 @@ import { CreateCommentUseCase } from "../comments/use-cases/create-comment-use-c
 import { CqrsModule } from "@nestjs/cqrs";
 import { GetBlogByIdQuery } from "../blogs/use-cases/queries/get-blog-by-id-query";
 import {
-    BannedUsersClass,
+    BannedUsersAndBlogsClass,
     BannedUsersSchema,
     UserAccountClass,
     UsersAccountSchema,
@@ -62,7 +62,7 @@ const queries = [
                 schema: NewestLikesSchema,
             },
             {
-                name: BannedUsersClass.name,
+                name: BannedUsersAndBlogsClass.name,
                 schema: BannedUsersSchema,
             },
             {

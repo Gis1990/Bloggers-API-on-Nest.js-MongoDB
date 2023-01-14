@@ -8,7 +8,8 @@ import {
     UserAccountClass,
     UserDevicesDataClass,
     EmailRecoveryCodeClass,
-    BannedUsersClass,
+    BannedUsersAndBlogsClass,
+    ExtendedBanInfoClass,
 } from "./users.schema";
 import { CreatedNewUserDto } from "./dto/users.dto";
 import { UserViewModelClass } from "./entities/users.entity";
@@ -18,7 +19,7 @@ export class UsersRepository {
     constructor(
         @InjectModel(UserAccountClass.name) private usersAccountModelClass: Model<UserAccountClass>,
         @InjectModel(LoginAttemptsClass.name) private loginAttemptsModelClass: Model<LoginAttemptsClass>,
-        @InjectModel(BannedUsersClass.name) private bannedUsersClass: Model<BannedUsersClass>,
+        @InjectModel(BannedUsersAndBlogsClass.name) private bannedUsersClass: Model<BannedUsersAndBlogsClass>,
     ) {}
 
     async userConfirmedEmail(id: string): Promise<boolean> {
@@ -157,6 +158,30 @@ export class UsersRepository {
         }
         await this.usersAccountModelClass.updateOne({ id: id }, { $set: { userDevicesData: [] } });
         const result = await this.usersAccountModelClass.updateOne({ id: id }, { $set: { banInfo: banData } });
+        return result.modifiedCount === 1;
+    }
+
+    async banUnbanUserByBloggerForBlog(
+        isBanned: boolean,
+        banReason: string,
+        blogId: string,
+        userId: string,
+    ): Promise<boolean> {
+        let result;
+        const banData: ExtendedBanInfoClass = {
+            isBanned: isBanned,
+            banDate: new Date(),
+            banReason: banReason,
+            blogId: blogId,
+        };
+        if (isBanned) {
+            result = await this.bannedUsersClass.updateOne({ id: userId }, { $push: { banInfoForBlogs: banData } });
+        } else {
+            result = await this.bannedUsersClass.updateOne(
+                { id: userId },
+                { $pull: { banInfoForBlogs: { blogId: blogId } } },
+            );
+        }
         return result.modifiedCount === 1;
     }
 }

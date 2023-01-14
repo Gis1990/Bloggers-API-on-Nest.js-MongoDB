@@ -7,6 +7,7 @@ import {
 import { HttpException, Injectable } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 import { GetBlogByIdCommand } from "../use-cases/queries/get-blog-by-id-query";
+import { GetBlogByIdForBanUnbanOperationCommand } from "../use-cases/queries/get-blog-by-id-for-ban-unban-operation-query";
 
 @ValidatorConstraint({ name: "IsBlogsIdExist", async: true })
 @Injectable()
@@ -54,6 +55,33 @@ export function IsBlogsIdExistInTheRequestBody(validationOptions?: ValidationOpt
             options: validationOptions,
             constraints: [],
             validator: IsBlogsIdExistInTheRequestBodyConstraint,
+        });
+    };
+}
+
+@ValidatorConstraint({ name: "IsBlogsIdExistForBanUnbanOperation", async: true })
+@Injectable()
+export class IsBlogsIdExistForBanUnbanOperationConstraint implements ValidatorConstraintInterface {
+    constructor(private queryBus: QueryBus) {}
+
+    async validate(blogId: string) {
+        const blog = await this.queryBus.execute(new GetBlogByIdForBanUnbanOperationCommand(blogId));
+        if (!blog) {
+            throw new HttpException("blog not found", 404);
+        } else {
+            return true;
+        }
+    }
+}
+
+export function IsBlogsIdExistForBanUnbanOperation(validationOptions?: ValidationOptions) {
+    return function (object: any, propertyName: string) {
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [],
+            validator: IsBlogsIdExistForBanUnbanOperationConstraint,
         });
     };
 }

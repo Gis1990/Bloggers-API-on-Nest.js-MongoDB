@@ -102,6 +102,16 @@ export class BanInfoClass {
 
 export const BanInfoSchema = SchemaFactory.createForClass(BanInfoClass);
 
+@Schema({ versionKey: false, _id: false })
+export class ExtendedBanInfoClass extends BanInfoClass {
+    @Prop({
+        required: true,
+    })
+    blogId: string;
+}
+
+export const ExtendedBanInfoSchema = SchemaFactory.createForClass(ExtendedBanInfoClass);
+
 @Schema({ versionKey: false })
 export class UserAccountClass {
     @Prop({
@@ -157,7 +167,15 @@ export class UserAccountClass {
         type: BanInfoSchema,
         required: true,
     })
+    // if banned by sa
     banInfo: BanInfoClass;
+    @Prop({
+        type: [ExtendedBanInfoSchema],
+        required: true,
+        _id: false,
+    })
+    // if banned by bloggers
+    banInfoForBlogs: ExtendedBanInfoClass;
 
     async transformToUserViewModelClass(): Promise<UserViewModelClass> {
         return new UserViewModelClass(this.id, this.login, this.email, this.createdAt, this.banInfo);
@@ -170,18 +188,17 @@ UsersAccountSchema.methods = {
 };
 
 @Schema({ versionKey: false })
-export class BannedUsersClass {
+export class BannedUsersAndBlogsClass {
     @Prop({
         type: [String],
         default: [],
     })
     bannedUsersBySuperAdmin: string[];
-
     @Prop({
         type: [String],
         default: [],
     })
-    bannedUsersForBlogsByBlogger: string[];
+    bannedBlogsBySuperAdmin: string[];
 }
 
-export const BannedUsersSchema = SchemaFactory.createForClass(BannedUsersClass);
+export const BannedUsersSchema = SchemaFactory.createForClass(BannedUsersAndBlogsClass);

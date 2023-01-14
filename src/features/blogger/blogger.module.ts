@@ -19,8 +19,10 @@ import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
 import { BloggerController } from "./blogger.controller";
 import { GetAllBlogsForAuthorizedUserQuery } from "../blogs/use-cases/queries/get-all-blogs-for-authorized-user-query";
 import {
-    BannedUsersClass,
+    BannedUsersAndBlogsClass,
     BannedUsersSchema,
+    LoginAttemptsClass,
+    LoginAttemptsSchema,
     UserAccountClass,
     UsersAccountSchema,
 } from "../super-admin/users/users.schema";
@@ -30,13 +32,24 @@ import { GetUserByIdQuery } from "../super-admin/users/use-cases/queries/get-use
 import { GetAllCommentsForAllPostsForBloggersBlogsQuery } from "../comments/use-cases/queries/get-all-comments-for-all-posts-for-blogs-query";
 import { CommentsQueryRepository } from "../comments/comments.query.repository";
 import { CommentClass, CommentsSchema } from "../comments/comments.schema";
+import { GetAllBannedUsersForBlogQuery } from "../super-admin/users/use-cases/queries/get-all-banned-users-for-blog-query";
+import { BanUnbanUserByBloggerForBlogUseCase } from "../super-admin/users/use-cases/ban-unban-user-by-blogger-for-blog-use-case";
+import { UsersRepository } from "../super-admin/users/users.repository";
 
-const useCases = [CreateBlogUseCase, UpdateBlogUseCase, DeleteBlogUseCase, CreatePostUseCase, UpdatePostUseCase];
+const useCases = [
+    CreateBlogUseCase,
+    UpdateBlogUseCase,
+    DeleteBlogUseCase,
+    CreatePostUseCase,
+    UpdatePostUseCase,
+    BanUnbanUserByBloggerForBlogUseCase,
+];
 const queries = [
     GetAllBlogsForAuthorizedUserQuery,
     GetAllUsersQuery,
     GetUserByIdQuery,
     GetAllCommentsForAllPostsForBloggersBlogsQuery,
+    GetAllBannedUsersForBlogQuery,
 ];
 
 @Module({
@@ -52,7 +65,7 @@ const queries = [
                 schema: PostsSchema,
             },
             {
-                name: BannedUsersClass.name,
+                name: BannedUsersAndBlogsClass.name,
                 schema: BannedUsersSchema,
             },
             {
@@ -63,6 +76,10 @@ const queries = [
                 name: CommentClass.name,
                 schema: CommentsSchema,
             },
+            {
+                name: LoginAttemptsClass.name,
+                schema: LoginAttemptsSchema,
+            },
         ]),
     ],
     controllers: [BloggerController],
@@ -70,6 +87,7 @@ const queries = [
         BlogsRepository,
         BlogsQueryRepository,
         PostsQueryRepository,
+        UsersRepository,
         UsersQueryRepository,
         CommentsQueryRepository,
         PostsRepository,

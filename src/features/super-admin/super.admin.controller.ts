@@ -1,5 +1,10 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
-import { BlogsIdValidationModel, InputModelForBanUnbanBlog, ModelForGettingAllBlogs } from "../blogs/dto/blogs.dto";
+import {
+    BlogsIdValidationModel,
+    BlogsIdValidationModelWhenBlogIsBanned,
+    InputModelForBanUnbanBlog,
+    ModelForGettingAllBlogs,
+} from "../blogs/dto/blogs.dto";
 import { BlogClassPagination } from "../blogs/entities/blogs.entity";
 import { BasicAuthGuard } from "../../guards/basic-auth.guard";
 import { SkipThrottle } from "@nestjs/throttler";
@@ -11,7 +16,7 @@ import {
     UsersIdValidationModel,
 } from "./users/dto/users.dto";
 import { BindUserWithBlogCommand } from "./users/use-cases/bind-user-with-blog-use-case";
-import { UserViewModelClass, UserDBClassPagination } from "./users/entities/users.entity";
+import { UserViewModelClass, UserPaginationClass } from "./users/entities/users.entity";
 import { CreateUserWithoutConfirmationEmailCommand } from "../auth/use-cases/create-user-without-confirmation-email-use-case";
 import { DeleteUserCommand } from "./users/use-cases/delete-user-use-case";
 import { BanUnbanUserBySuperAdminCommand } from "./users/use-cases/ban-unban-user-by-super-admin-use-case";
@@ -28,7 +33,7 @@ export class SuperAdminController {
     @Put("/blogs/:id/ban")
     @HttpCode(204)
     async banUnbanBlog(
-        @Param() param: BlogsIdValidationModel,
+        @Param() param: BlogsIdValidationModelWhenBlogIsBanned,
         @Body() dto: InputModelForBanUnbanBlog,
     ): Promise<boolean> {
         return await this.commandBus.execute(new BanUnbanBlogBySuperAdminCommand(dto.isBanned, param.id));
@@ -70,7 +75,7 @@ export class SuperAdminController {
     async getAllUsers(
         @Query()
         dto: ModelForGettingAllUsers,
-    ): Promise<UserDBClassPagination> {
+    ): Promise<UserPaginationClass> {
         return await this.queryBus.execute(new GetAllUsersCommand(dto));
     }
 

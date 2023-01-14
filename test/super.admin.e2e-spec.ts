@@ -265,7 +265,7 @@ describe("super admin endpoint blogs /sa/blogs (e2e)", () => {
                 .expect(204);
         });
         it("should return status 200 for banned blog 1", async () => {
-            await request(app.getHttpServer()).get(`/blogs/${blogId1}`).expect(200);
+            await request(app.getHttpServer()).get(`/blogs/${blogId1}`).expect(404);
         });
         it("should return status 200 and blog 2", async () => {
             const response = await request(app.getHttpServer()).get(`/blogs`).expect(200);

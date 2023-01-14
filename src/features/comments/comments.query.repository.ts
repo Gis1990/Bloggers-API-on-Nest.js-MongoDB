@@ -7,14 +7,14 @@ import { ModelForGettingAllComments } from "./dto/comments.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { CommentClass } from "./comments.schema";
-import { BannedUsersClass } from "../super-admin/users/users.schema";
+import { BannedUsersAndBlogsClass } from "../super-admin/users/users.schema";
 import { BlogClass } from "../blogs/blogs.schema";
 import { PostClass } from "../posts/posts.schema";
 
 export class CommentsQueryRepository {
     constructor(
         @InjectModel(CommentClass.name) private commentsModelClass: Model<CommentClass>,
-        @InjectModel(BannedUsersClass.name) private bannedUserListClass: Model<BannedUsersClass>,
+        @InjectModel(BannedUsersAndBlogsClass.name) private bannedUserListClass: Model<BannedUsersAndBlogsClass>,
         @InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>,
         @InjectModel(PostClass.name) private postsModelClass: Model<PostClass>,
     ) {}

@@ -5,7 +5,7 @@ import { BlogClass, BlogsSchema } from "../../src/features/blogs/blogs.schema";
 import { PostClass, PostsSchema } from "../../src/features/posts/posts.schema";
 import { CommentClass, CommentsSchema } from "../../src/features/comments/comments.schema";
 import {
-    BannedUsersClass,
+    BannedUsersAndBlogsClass,
     BannedUsersSchema,
     UserAccountClass,
     UsersAccountSchema,
@@ -31,7 +31,7 @@ import {
                 schema: UsersAccountSchema,
             },
             {
-                name: BannedUsersClass.name,
+                name: BannedUsersAndBlogsClass.name,
                 schema: BannedUsersSchema,
             },
         ]),

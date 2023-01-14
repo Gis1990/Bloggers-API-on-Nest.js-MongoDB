@@ -1,6 +1,6 @@
 import { BanInfoClass, UserAccountClass } from "../users.schema";
 
-export class UserDBClassPagination {
+export class UserPaginationClass {
     constructor(
         public pagesCount: number,
         public page: number,

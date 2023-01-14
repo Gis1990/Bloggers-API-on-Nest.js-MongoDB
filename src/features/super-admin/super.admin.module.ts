@@ -11,13 +11,16 @@ import {
 } from "./users/decorators/users.custom.decorators";
 import { BlogsRepository } from "../blogs/blogs.repository";
 import { BlogClass, BlogsSchema } from "../blogs/blogs.schema";
-import { IsBlogsIdExistConstraint } from "../blogs/decorators/blogs.custom.decorators";
+import {
+    IsBlogsIdExistConstraint,
+    IsBlogsIdExistForBanUnbanOperationConstraint,
+} from "../blogs/decorators/blogs.custom.decorators";
 import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
 import { UsersQueryRepository } from "./users/users.query.repository";
 import {
     BanInfoClass,
     BanInfoSchema,
-    BannedUsersClass,
+    BannedUsersAndBlogsClass,
     BannedUsersSchema,
     EmailRecoveryCodeClass,
     EmailRecoveryCodeSchema,
@@ -40,6 +43,7 @@ import { BanUnbanUserBySuperAdminUseCase } from "./users/use-cases/ban-unban-use
 import { GetAllBlogsForSuperAdminQuery } from "../blogs/use-cases/queries/get-all-blogs-for-super-admin-query";
 import { GetUserByIdQuery } from "./users/use-cases/queries/get-user-by-id-query";
 import { BanUnbanBlogBySuperAdminUseCase } from "../blogs/use-cases/ban-unban-blog-by-super-admin-use-case";
+import { GetBlogByIdForBanUnbanOperationQuery } from "../blogs/use-cases/queries/get-blog-by-id-for-ban-unban-operation-query";
 
 const useCases = [
     BindUserWithBlogUseCase,
@@ -50,7 +54,7 @@ const useCases = [
     BanUnbanBlogBySuperAdminUseCase,
 ];
 
-const queries = [GetAllBlogsForSuperAdminQuery, GetUserByIdQuery];
+const queries = [GetAllBlogsForSuperAdminQuery, GetUserByIdQuery, GetBlogByIdForBanUnbanOperationQuery];
 
 @Module({
     imports: [
@@ -89,7 +93,7 @@ const queries = [GetAllBlogsForSuperAdminQuery, GetUserByIdQuery];
                 schema: BanInfoSchema,
             },
             {
-                name: BannedUsersClass.name,
+                name: BannedUsersAndBlogsClass.name,
                 schema: BannedUsersSchema,
             },
         ]),
@@ -104,6 +108,7 @@ const queries = [GetAllBlogsForSuperAdminQuery, GetUserByIdQuery];
         UsersRepository,
         IsBlogsIdExistConstraint,
         IsUsersIdExistConstraint,
+        IsBlogsIdExistForBanUnbanOperationConstraint,
         IsLoginExistConstraint,
         IsEmailExistConstraint,
         ...useCases,

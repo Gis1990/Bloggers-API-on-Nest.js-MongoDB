@@ -45,6 +45,10 @@ import { SendEmailForRegistrationUseCase } from "../../utils/email/use-cases/sen
 import { SendEmailForPasswordRecoveryUseCase } from "../../utils/email/use-cases/send-email-for-password-recovery-use-case";
 import { CqrsModule } from "@nestjs/cqrs";
 import { SecurityService } from "../security/security.service";
+import { GetUserByIdQuery } from "../super-admin/users/use-cases/queries/get-user-by-id-query";
+import { GetUserByRecoveryCodeQuery } from "../super-admin/users/use-cases/queries/get-user-by-recovery-code-query";
+import { GetUserByConfirmationCodeQuery } from "../super-admin/users/use-cases/queries/get-user-by-confirmation-code-query";
+import { GetUserByLoginOrEmailQuery } from "../super-admin/users/use-cases/queries/get-user-by-login-or-email-query";
 
 const useCases = [
     AcceptNewPasswordUseCase,
@@ -59,6 +63,13 @@ const useCases = [
     CreateUserUseCase,
     SendEmailForRegistrationUseCase,
     SendEmailForPasswordRecoveryUseCase,
+];
+
+const queries = [
+    GetUserByIdQuery,
+    GetUserByRecoveryCodeQuery,
+    GetUserByConfirmationCodeQuery,
+    GetUserByLoginOrEmailQuery,
 ];
 
 @Module({
@@ -76,6 +87,7 @@ const useCases = [
         BcryptService,
         IsEmailExistOrConfirmedConstraint,
         ...useCases,
+        ...queries,
     ],
     imports: [
         CqrsModule,

@@ -17,6 +17,7 @@ import { BannedUsersClass, BannedUsersSchema } from "../super-admin/users/users.
 import { GetCommentByIdForLikeOperationQuery } from "./use-cases/queries/get-comment-by-id-for-like-operation-query";
 import { GetAllCommentsForSpecificPostQuery } from "./use-cases/queries/get-all-comments-for-specific-post-query";
 import { GetCommentForIdValidationQuery } from "./use-cases/queries/get-comment-for-id-validation-query";
+import { BlogClass, BlogsSchema } from "../blogs/blogs.schema";
 
 const useCases = [CreateCommentUseCase, UpdateCommentUseCase, DeleteCommentUseCase, LikeOperationForCommentUseCase];
 
@@ -43,6 +44,10 @@ const queries = [
             {
                 name: BannedUsersClass.name,
                 schema: BannedUsersSchema,
+            },
+            {
+                name: BlogClass.name,
+                schema: BlogsSchema,
             },
         ]),
     ],

@@ -2,7 +2,8 @@ import { IsString, Length, IsIn, IsNotEmpty, IsNumber, IsOptional } from "class-
 import { IsCommentsIdExist } from "../decorators/comments.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import { UsersLikesInfoClass } from "../../posts/posts.schema";
-import { LikesInfoClass } from "../comments.schema";
+import { LikesInfoClass, PostInfoClass } from "../comments.schema";
+import { OwnerInfoClass } from "../../blogs/blogs.schema";
 
 const listOfCorrectLikeStatus = ["Like", "Dislike", "None"];
 
@@ -55,10 +56,9 @@ export class ModelForCreatingNewComment {
 export class CreatedCommentDto {
     public id: string;
     public content: string;
-    public userId: string;
-    public userLogin: string;
-    public postId: string;
     public createdAt: Date;
     public likesInfo: LikesInfoClass;
     public usersLikesInfo: UsersLikesInfoClass;
+    public commentatorInfo: OwnerInfoClass;
+    public postInfo: PostInfoClass;
 }

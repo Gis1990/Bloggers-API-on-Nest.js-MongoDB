@@ -1,4 +1,4 @@
-import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
+import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional, IsBoolean } from "class-validator";
 import { IsBlogsIdExist } from "../decorators/blogs.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 
@@ -49,6 +49,12 @@ export class BlogsIdValidationModel {
     public id: string;
 }
 
+export class InputModelForBanUnbanBlog {
+    @IsBoolean()
+    @IsNotEmpty()
+    public isBanned: boolean;
+}
+
 export class InputModelForUpdatingBlog {
     @IsString()
     @Length(1, 15)
@@ -74,5 +80,9 @@ export class CreatedBlogDto {
     public blogOwnerInfo: {
         userId: string;
         userLogin: string;
+    };
+    public banInfo: {
+        isBanned: boolean;
+        banDate: Date;
     };
 }

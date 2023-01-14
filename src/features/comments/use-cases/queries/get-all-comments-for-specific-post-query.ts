@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
-import { CommentDBClassPagination } from "../../entities/comments.entity";
+import { CommentPaginationClass } from "../../entities/comments.entity";
 import { CommentsQueryRepository } from "../../comments.query.repository";
 import { ModelForGettingAllComments } from "../../dto/comments.dto";
 
@@ -11,7 +11,7 @@ export class GetAllCommentsForSpecificPostCommand {
 export class GetAllCommentsForSpecificPostQuery implements IQueryHandler<GetAllCommentsForSpecificPostCommand> {
     constructor(private commentsQueryRepository: CommentsQueryRepository) {}
 
-    async execute(query: GetAllCommentsForSpecificPostCommand): Promise<CommentDBClassPagination> {
+    async execute(query: GetAllCommentsForSpecificPostCommand): Promise<CommentPaginationClass> {
         return await this.commentsQueryRepository.getAllCommentsForSpecificPost(query.dto, query.postId, query.userId);
     }
 }

@@ -27,9 +27,17 @@ import {
 import { GetAllUsersQuery } from "../super-admin/users/use-cases/queries/get-all-users-query";
 import { UsersQueryRepository } from "../super-admin/users/users.query.repository";
 import { GetUserByIdQuery } from "../super-admin/users/use-cases/queries/get-user-by-id-query";
+import { GetAllCommentsForAllPostsForBloggersBlogsQuery } from "../comments/use-cases/queries/get-all-comments-for-all-posts-for-blogs-query";
+import { CommentsQueryRepository } from "../comments/comments.query.repository";
+import { CommentClass, CommentsSchema } from "../comments/comments.schema";
 
 const useCases = [CreateBlogUseCase, UpdateBlogUseCase, DeleteBlogUseCase, CreatePostUseCase, UpdatePostUseCase];
-const queries = [GetAllBlogsForAuthorizedUserQuery, GetAllUsersQuery, GetUserByIdQuery];
+const queries = [
+    GetAllBlogsForAuthorizedUserQuery,
+    GetAllUsersQuery,
+    GetUserByIdQuery,
+    GetAllCommentsForAllPostsForBloggersBlogsQuery,
+];
 
 @Module({
     imports: [
@@ -51,6 +59,10 @@ const queries = [GetAllBlogsForAuthorizedUserQuery, GetAllUsersQuery, GetUserByI
                 name: UserAccountClass.name,
                 schema: UsersAccountSchema,
             },
+            {
+                name: CommentClass.name,
+                schema: CommentsSchema,
+            },
         ]),
     ],
     controllers: [BloggerController],
@@ -59,6 +71,7 @@ const queries = [GetAllBlogsForAuthorizedUserQuery, GetAllUsersQuery, GetUserByI
         BlogsQueryRepository,
         PostsQueryRepository,
         UsersQueryRepository,
+        CommentsQueryRepository,
         PostsRepository,
         IsBlogsIdExistConstraint,
         IsBlogsIdExistInTheRequestBodyConstraint,

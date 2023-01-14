@@ -38,7 +38,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
             banInfo: command.banInfo,
         };
         if (command.banInfo.isBanned) {
-            await this.usersRepository.addUserToBannedList(createdNewUserDto.id);
+            await this.usersRepository.addUserToBannedListBySuperAdmin(createdNewUserDto.id);
         }
         return await this.usersRepository.createUser(createdNewUserDto);
     }

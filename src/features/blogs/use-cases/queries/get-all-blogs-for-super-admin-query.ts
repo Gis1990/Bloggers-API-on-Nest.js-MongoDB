@@ -3,15 +3,15 @@ import { BlogsQueryRepository } from "../../blogs.query.repository";
 import { ModelForGettingAllBlogs } from "../../dto/blogs.dto";
 import { BlogClassPagination } from "../../entities/blogs.entity";
 
-export class GetAllBlogsCommand {
+export class GetAllBlogsForSuperAdminCommand {
     constructor(public dto: ModelForGettingAllBlogs) {}
 }
 
-@QueryHandler(GetAllBlogsCommand)
-export class GetAllBlogsQuery implements IQueryHandler<GetAllBlogsCommand> {
+@QueryHandler(GetAllBlogsForSuperAdminCommand)
+export class GetAllBlogsForSuperAdminQuery implements IQueryHandler<GetAllBlogsForSuperAdminCommand> {
     constructor(private blogsQueryRepository: BlogsQueryRepository) {}
 
-    async execute(query: GetAllBlogsCommand): Promise<BlogClassPagination> {
-        return await this.blogsQueryRepository.getAllBlogs(query.dto);
+    async execute(query: GetAllBlogsForSuperAdminCommand): Promise<BlogClassPagination> {
+        return await this.blogsQueryRepository.getAllBlogsForSuperAdmin(query.dto);
     }
 }

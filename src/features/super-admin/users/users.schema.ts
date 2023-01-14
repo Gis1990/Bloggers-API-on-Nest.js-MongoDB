@@ -171,8 +171,17 @@ UsersAccountSchema.methods = {
 
 @Schema({ versionKey: false })
 export class BannedUsersClass {
-    @Prop()
-    bannedUsers: string[];
+    @Prop({
+        type: [String],
+        default: [],
+    })
+    bannedUsersBySuperAdmin: string[];
+
+    @Prop({
+        type: [String],
+        default: [],
+    })
+    bannedUsersForBlogsByBlogger: string[];
 }
 
 export const BannedUsersSchema = SchemaFactory.createForClass(BannedUsersClass);

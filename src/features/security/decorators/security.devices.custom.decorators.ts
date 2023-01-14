@@ -6,15 +6,16 @@ import {
 } from "class-validator";
 
 import { HttpException, Injectable } from "@nestjs/common";
-import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
+import { QueryBus } from "@nestjs/cqrs";
+import { GetUserByDeviceIdCommand } from "../../super-admin/users/use-cases/queries/get-user-by-device-id-query";
 
 @ValidatorConstraint({ name: "IsDeviceIdExist", async: true })
 @Injectable()
 export class IsDeviceIdExistConstraint implements ValidatorConstraintInterface {
-    constructor(protected usersQueryRepository: UsersQueryRepository) {}
+    constructor(private queryBus: QueryBus) {}
 
     async validate(deviceId: string) {
-        const user = await this.usersQueryRepository.getUserByDeviceId(deviceId);
+        const user = await this.queryBus.execute(new GetUserByDeviceIdCommand(deviceId));
         if (!user) {
             throw new HttpException("Device  not found", 404);
         } else {

@@ -5,7 +5,7 @@ import {
     InputModelForUpdatingBlog,
     ModelForGettingAllBlogs,
 } from "../blogs/dto/blogs.dto";
-import { BlogViewModelClass, BlogDBPaginationClass } from "../blogs/entities/blogs.entity";
+import { BlogViewModelClass, BlogClassPagination } from "../blogs/entities/blogs.entity";
 import { PostViewModelClass } from "../posts/entities/posts.entity";
 import { InputModelForCreatingAndUpdatingNewPostForSpecificBlog, PostsIdValidationModel } from "../posts/dto/posts.dto";
 import { CurrentUser } from "../auth/decorators/auth.custom.decorators";
@@ -21,11 +21,23 @@ import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard"
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { GetAllBlogsForAuthorizedUserCommand } from "../blogs/use-cases/queries/get-all-blogs-for-authorized-user-query";
 import { ValidateBlogId, ValidatePostId } from "./decorators/blogger.custom.decorators";
+import { ModelForGettingAllComments } from "../comments/dto/comments.dto";
+import { GetAllCommentsForAllPostsForBloggersBlogsCommand } from "../comments/use-cases/queries/get-all-comments-for-all-posts-for-blogs-query";
 
 @SkipThrottle()
 @Controller("blogger/blogs")
 export class BloggerController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
+
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @Get()
+    async getAllCommentsForAllPostsForBloggersBlogs(
+        @Query()
+        dto: ModelForGettingAllComments,
+        @CurrentUser() user: CurrentUserModel,
+    ): Promise<BlogClassPagination> {
+        return await this.queryBus.execute(new GetAllCommentsForAllPostsForBloggersBlogsCommand(dto, user.id));
+    }
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Delete(":id")
@@ -103,7 +115,7 @@ export class BloggerController {
         @Query()
         dto: ModelForGettingAllBlogs,
         @CurrentUser() user: CurrentUserModel,
-    ): Promise<BlogDBPaginationClass> {
+    ): Promise<BlogClassPagination> {
         return await this.queryBus.execute(new GetAllBlogsForAuthorizedUserCommand(dto, user.id));
     }
 }

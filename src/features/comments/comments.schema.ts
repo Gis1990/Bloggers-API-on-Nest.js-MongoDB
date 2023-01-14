@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { UsersLikesInfoClass, UsersLikesInfoSchema } from "../posts/posts.schema";
-import { CommentViewModelClass } from "./entities/comments.entity";
+import { CommentViewModelClass, CommentViewModelForBloggerClass } from "./entities/comments.entity";
+import { OwnerInfoClass, OwnerInfoSchema } from "../blogs/blogs.schema";
 
 @Schema({ versionKey: false })
 export class LikesInfoClass {
@@ -24,6 +25,28 @@ export class LikesInfoClass {
 export const LikesInfoSchema = SchemaFactory.createForClass(LikesInfoClass);
 
 @Schema({ versionKey: false })
+export class PostInfoClass {
+    @Prop({
+        required: true,
+    })
+    id: string;
+    @Prop({
+        required: true,
+    })
+    title: string;
+    @Prop({
+        required: true,
+    })
+    blogId: string;
+    @Prop({
+        required: true,
+    })
+    blogName: string;
+}
+
+export const PostInfoSchema = SchemaFactory.createForClass(PostInfoClass);
+
+@Schema({ versionKey: false })
 export class CommentClass {
     @Prop({
         required: true,
@@ -33,18 +56,6 @@ export class CommentClass {
         required: true,
     })
     content: string;
-    @Prop({
-        required: true,
-    })
-    userId: string;
-    @Prop({
-        required: true,
-    })
-    userLogin: string;
-    @Prop({
-        required: true,
-    })
-    postId: string;
     @Prop({
         required: true,
     })
@@ -63,6 +74,18 @@ export class CommentClass {
         _id: false,
     })
     usersLikesInfo: UsersLikesInfoClass;
+    @Prop({
+        type: OwnerInfoSchema,
+        required: true,
+        _id: false,
+    })
+    commentatorInfo: OwnerInfoClass;
+    @Prop({
+        type: PostInfoSchema,
+        required: true,
+        _id: false,
+    })
+    postInfo: PostInfoClass;
 
     async returnUsersLikeStatusForComments(userId: string): Promise<string> {
         const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
@@ -100,10 +123,21 @@ export class CommentClass {
         return new CommentViewModelClass(
             this.id,
             this.content,
-            this.userId,
-            this.userLogin,
+            this.commentatorInfo.userId,
+            this.commentatorInfo.userLogin,
             this.createdAt,
             this.likesInfo,
+        );
+    }
+
+    async transformToCommentViewModelForBloggerClass(): Promise<CommentViewModelForBloggerClass> {
+        return new CommentViewModelForBloggerClass(
+            this.id,
+            this.content,
+            this.createdAt,
+            this.likesInfo,
+            this.commentatorInfo,
+            this.postInfo,
         );
     }
 }

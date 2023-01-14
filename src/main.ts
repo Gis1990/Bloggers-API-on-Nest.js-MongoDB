@@ -26,9 +26,9 @@ export const validationPipeSettings = {
         const errorsForResponse = [];
         errors.forEach((e) => {
             const constraintsKeys = Object.keys(e.constraints);
-            constraintsKeys.forEach((ckey) => {
+            constraintsKeys.forEach((key) => {
                 errorsForResponse.push({
-                    message: e.constraints[ckey],
+                    message: e.constraints[key],
                     field: e.property,
                 });
             });

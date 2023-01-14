@@ -18,9 +18,10 @@ import { TerminateAllDevicesUseCase } from "./use-cases/terminate-all-devices-us
 import { ReturnAllDevicesUseCase } from "./use-cases/return-all-devices-use-case";
 import { CqrsModule } from "@nestjs/cqrs";
 import { GetUserByIdQuery } from "../super-admin/users/use-cases/queries/get-user-by-id-query";
+import { GetUserByDeviceIdQuery } from "../super-admin/users/use-cases/queries/get-user-by-device-id-query";
 
 const useCases = [CheckAccessRightsUseCase, TerminateAllDevicesUseCase, ReturnAllDevicesUseCase];
-const queries = [GetUserByIdQuery];
+const queries = [GetUserByIdQuery, GetUserByDeviceIdQuery];
 
 @Module({
     controllers: [SecurityController],

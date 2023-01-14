@@ -1,6 +1,6 @@
 import { ExtendedLikesInfoClass } from "../posts.schema";
 
-export class PostDBPaginationClass {
+export class PostClassPagination {
     constructor(
         public pagesCount: number,
         public page: number,

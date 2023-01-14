@@ -6,9 +6,9 @@ import {
 } from "class-validator";
 
 import { HttpException, Injectable } from "@nestjs/common";
-import { UsersQueryRepository } from "../users.query.repository";
 import { GetUserByIdCommand } from "../use-cases/queries/get-user-by-id-query";
 import { QueryBus } from "@nestjs/cqrs";
+import { GetUserByLoginOrEmailCommand } from "../use-cases/queries/get-user-by-login-or-email-query";
 
 @ValidatorConstraint({ name: "IsUsersIdExist", async: true })
 @Injectable()
@@ -40,10 +40,10 @@ export function IsUsersIdExist(validationOptions?: ValidationOptions) {
 @ValidatorConstraint({ name: "IsEmailExist", async: true })
 @Injectable()
 export class IsEmailExistConstraint implements ValidatorConstraintInterface {
-    constructor(private usersQueryRepository: UsersQueryRepository) {}
+    constructor(private queryBus: QueryBus) {}
 
     async validate(value: string) {
-        const user = await this.usersQueryRepository.getUserByLoginOrEmail(value);
+        const user = await this.queryBus.execute(new GetUserByLoginOrEmailCommand(value));
         return !user;
     }
 }
@@ -63,10 +63,10 @@ export function IsEmailExist(validationOptions?: ValidationOptions) {
 @ValidatorConstraint({ name: "IsLoginExist", async: true })
 @Injectable()
 export class IsLoginExistConstraint implements ValidatorConstraintInterface {
-    constructor(protected usersQueryRepository: UsersQueryRepository) {}
+    constructor(private queryBus: QueryBus) {}
 
     async validate(value: string) {
-        const user = await this.usersQueryRepository.getUserByLoginOrEmail(value);
+        const user = await this.queryBus.execute(new GetUserByLoginOrEmailCommand(value));
         return !user;
     }
 }
@@ -86,10 +86,10 @@ export function IsLoginExist(validationOptions?: ValidationOptions) {
 @ValidatorConstraint({ name: "IsEmailExistOrConfirmed", async: true })
 @Injectable()
 export class IsEmailExistOrConfirmedConstraint implements ValidatorConstraintInterface {
-    constructor(private usersQueryRepository: UsersQueryRepository) {}
+    constructor(private queryBus: QueryBus) {}
 
     async validate(value: string) {
-        const user = await this.usersQueryRepository.getUserByLoginOrEmail(value);
+        const user = await this.queryBus.execute(new GetUserByLoginOrEmailCommand(value));
         if (!user) {
             return false;
         } else {

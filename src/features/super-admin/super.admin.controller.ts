@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
-import { BlogsIdValidationModel, ModelForGettingAllBlogs } from "../blogs/dto/blogs.dto";
-import { BlogDBPaginationClass } from "../blogs/entities/blogs.entity";
+import { BlogsIdValidationModel, InputModelForBanUnbanBlog, ModelForGettingAllBlogs } from "../blogs/dto/blogs.dto";
+import { BlogClassPagination } from "../blogs/entities/blogs.entity";
 import { BasicAuthGuard } from "../../guards/basic-auth.guard";
 import { SkipThrottle } from "@nestjs/throttler";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
@@ -14,9 +14,10 @@ import { BindUserWithBlogCommand } from "./users/use-cases/bind-user-with-blog-u
 import { UserViewModelClass, UserDBClassPagination } from "./users/entities/users.entity";
 import { CreateUserWithoutConfirmationEmailCommand } from "../auth/use-cases/create-user-without-confirmation-email-use-case";
 import { DeleteUserCommand } from "./users/use-cases/delete-user-use-case";
-import { BanUnbanUserCommand } from "./users/use-cases/ban-unban-user-use-case";
-import { GetAllBlogsWithAdditionalInfoCommand } from "../blogs/use-cases/queries/get-all-blogs-with-additional-info-query";
+import { BanUnbanUserBySuperAdminCommand } from "./users/use-cases/ban-unban-user-by-super-admin-use-case";
+import { GetAllBlogsForSuperAdminCommand } from "../blogs/use-cases/queries/get-all-blogs-for-super-admin-query";
 import { GetAllUsersCommand } from "./users/use-cases/queries/get-all-users-query";
+import { BanUnbanBlogBySuperAdminCommand } from "../blogs/use-cases/ban-unban-blog-by-super-admin-use-case";
 
 @SkipThrottle()
 @Controller("sa")
@@ -24,12 +25,22 @@ export class SuperAdminController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
 
     @UseGuards(BasicAuthGuard)
+    @Put("/blogs/:id/ban")
+    @HttpCode(204)
+    async banUnbanBlog(
+        @Param() param: BlogsIdValidationModel,
+        @Body() dto: InputModelForBanUnbanBlog,
+    ): Promise<boolean> {
+        return await this.commandBus.execute(new BanUnbanBlogBySuperAdminCommand(dto.isBanned, param.id));
+    }
+
+    @UseGuards(BasicAuthGuard)
     @Get("/blogs")
-    async getAllBlogs(
+    async getAllBlogsForSuperAdmin(
         @Query()
         dto: ModelForGettingAllBlogs,
-    ): Promise<BlogDBPaginationClass> {
-        return await this.queryBus.execute(new GetAllBlogsWithAdditionalInfoCommand(dto));
+    ): Promise<BlogClassPagination> {
+        return await this.queryBus.execute(new GetAllBlogsForSuperAdminCommand(dto));
     }
 
     @UseGuards(BasicAuthGuard)
@@ -45,11 +56,13 @@ export class SuperAdminController {
     @UseGuards(BasicAuthGuard)
     @Put("/users/:id/ban")
     @HttpCode(204)
-    async banUnbanUser(
+    async banUnbanUserBySuperAdmin(
         @Body() dto: InputModelForBanUnbanUser,
         @Param() param: UsersIdValidationModel,
     ): Promise<boolean> {
-        return await this.commandBus.execute(new BanUnbanUserCommand(dto.isBanned, dto.banReason, param.id));
+        return await this.commandBus.execute(
+            new BanUnbanUserBySuperAdminCommand(dto.isBanned, dto.banReason, param.id),
+        );
     }
 
     @UseGuards(BasicAuthGuard)

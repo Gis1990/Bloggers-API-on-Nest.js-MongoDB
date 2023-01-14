@@ -18,7 +18,7 @@ export class UsersRepository {
     constructor(
         @InjectModel(UserAccountClass.name) private usersAccountModelClass: Model<UserAccountClass>,
         @InjectModel(LoginAttemptsClass.name) private loginAttemptsModelClass: Model<LoginAttemptsClass>,
-        @InjectModel(BannedUsersClass.name) private bannedUsersListClass: Model<BannedUsersClass>,
+        @InjectModel(BannedUsersClass.name) private bannedUsersClass: Model<BannedUsersClass>,
     ) {}
 
     async userConfirmedEmail(id: string): Promise<boolean> {
@@ -59,14 +59,14 @@ export class UsersRepository {
         return result.modifiedCount === 1;
     }
 
-    async addUserToBannedList(id: string): Promise<boolean> {
-        const bannedUsers = await this.bannedUsersListClass.findOne({});
+    async addUserToBannedListBySuperAdmin(id: string): Promise<boolean> {
+        const bannedUsers = await this.bannedUsersClass.findOne({});
         if (!bannedUsers) {
-            const newBannedUsers = new this.bannedUsersListClass({ bannedUsers: id });
+            const newBannedUsers = new this.bannedUsersClass();
             await newBannedUsers.save();
             return true;
         } else {
-            const result = await this.bannedUsersListClass.updateOne({}, { $push: { bannedUsers: id } });
+            const result = await this.bannedUsersClass.updateOne({}, { $push: { bannedUsersBySuperAdmin: id } });
             return result.modifiedCount === 1;
         }
     }
@@ -131,9 +131,9 @@ export class UsersRepository {
     }
 
     async createUser(newUser: CreatedNewUserDto): Promise<UserViewModelClass> {
-        const bannedUsers = await this.bannedUsersListClass.findOne({});
+        const bannedUsers = await this.bannedUsersClass.findOne({});
         if (!bannedUsers) {
-            const newBannedUsers = new this.bannedUsersListClass();
+            const newBannedUsers = new this.bannedUsersClass();
             await newBannedUsers.save();
         }
         const user = new this.usersAccountModelClass(newUser);
@@ -146,12 +146,12 @@ export class UsersRepository {
         return result.deletedCount === 1;
     }
 
-    async banUnbanUser(isBanned: boolean, banReason: string, id: string): Promise<boolean> {
+    async banUnbanUserBySuperAdmin(isBanned: boolean, banReason: string, id: string): Promise<boolean> {
         const banData = { isBanned: isBanned, banDate: new Date(), banReason: banReason };
         if (isBanned) {
-            await this.bannedUsersListClass.updateOne({ $push: { bannedUsers: id } });
+            await this.bannedUsersClass.updateOne({ $push: { bannedUsersBySuperAdmin: id } });
         } else {
-            await this.bannedUsersListClass.updateOne({ $pull: { bannedUsers: id } });
+            await this.bannedUsersClass.updateOne({ $pull: { bannedUsersBySuperAdmin: id } });
             banData.banDate = null;
             banData.banReason = null;
         }

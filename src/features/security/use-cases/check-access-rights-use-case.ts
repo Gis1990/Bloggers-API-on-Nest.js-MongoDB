@@ -1,6 +1,6 @@
 import { CurrentUserWithDevicesDataModel } from "../../auth/dto/auth.dto";
-import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { GetUserByDeviceIdCommand } from "../../super-admin/users/use-cases/queries/get-user-by-device-id-query";
 
 export class CheckAccessRightsCommand {
     constructor(
@@ -11,10 +11,10 @@ export class CheckAccessRightsCommand {
 
 @CommandHandler(CheckAccessRightsCommand)
 export class CheckAccessRightsUseCase implements ICommandHandler<CheckAccessRightsCommand> {
-    constructor(private usersQueryRepository: UsersQueryRepository) {}
+    constructor(private queryBus: QueryBus) {}
 
     async execute(command: CheckAccessRightsCommand): Promise<boolean> {
-        const userByDeviceId = await this.usersQueryRepository.getUserByDeviceId(command.deviceId);
+        const userByDeviceId = await this.queryBus.execute(new GetUserByDeviceIdCommand(command.deviceId));
         if (userByDeviceId) {
             return command.userWithDeviceData.id === userByDeviceId.id;
         } else {

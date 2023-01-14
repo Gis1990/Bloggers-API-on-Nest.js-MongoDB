@@ -1,4 +1,3 @@
-import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
 import { BcryptService } from "../../../utils/bcrypt/bcrypt.service";
 import { UserAccountClass, UserDevicesDataClass } from "../../super-admin/users/users.schema";
 import { InjectModel } from "@nestjs/mongoose";
@@ -6,6 +5,7 @@ import { Model } from "mongoose";
 import { UsersRepository } from "../../super-admin/users/users.repository";
 import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
 import { GetUserByIdCommand } from "../../super-admin/users/use-cases/queries/get-user-by-id-query";
+import { GetUserByLoginOrEmailCommand } from "../../super-admin/users/use-cases/queries/get-user-by-login-or-email-query";
 
 export class CheckCredentialsCommand {
     constructor(
@@ -20,14 +20,13 @@ export class CheckCredentialsCommand {
 export class CheckCredentialsUseCase implements ICommandHandler<CheckCredentialsCommand> {
     constructor(
         private queryBus: QueryBus,
-        private usersQueryRepository: UsersQueryRepository,
         private usersRepository: UsersRepository,
         private bcryptService: BcryptService,
         @InjectModel(UserDevicesDataClass.name) private userDevicesDataModelClass: Model<UserDevicesDataClass>,
     ) {}
 
     async execute(command: CheckCredentialsCommand): Promise<UserAccountClass | null> {
-        const user = await this.usersQueryRepository.getUserByLoginOrEmail(command.loginOrEmail);
+        const user = await this.queryBus.execute(new GetUserByLoginOrEmailCommand(command.loginOrEmail));
         if (!user) return null;
         await this.usersRepository.addLoginAttempt(user.id, command.ip);
         const isHashesEqual = await this.bcryptService._isHashesEquals(command.password, user.passwordHash);

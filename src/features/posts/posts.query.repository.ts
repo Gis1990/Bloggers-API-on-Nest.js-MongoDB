@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PostDBPaginationClass, PostViewModelClass } from "./entities/posts.entity";
+import { PostClassPagination, PostViewModelClass } from "./entities/posts.entity";
 import { ModelForGettingAllPosts } from "./dto/posts.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
@@ -14,7 +14,7 @@ export class PostsQueryRepository {
         @InjectModel(BannedUsersClass.name) private bannedUserListClass: Model<BannedUsersClass>,
     ) {}
 
-    async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostDBPaginationClass> {
+    async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostClassPagination> {
         const result = await createQueryForPosts(dto);
         const cursor = await this.postsModelClass
             .find({})
@@ -27,7 +27,7 @@ export class PostsQueryRepository {
         if (!bannedUsersInDB) {
             bannedUsers = [];
         } else {
-            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsersBySuperAdmin;
         }
         cursor.forEach((elem) => {
             elem.getLikesDataInfoForPost(userId, bannedUsers);
@@ -35,7 +35,7 @@ export class PostsQueryRepository {
         const cursorWithCorrectViewModel = cursor.map((elem) => {
             return elem.transformToPostViewModelClass();
         });
-        return new PostDBPaginationClass(
+        return new PostClassPagination(
             Math.ceil(totalCount / result.pageSize),
             result.pageNumber,
             result.pageSize,
@@ -48,7 +48,7 @@ export class PostsQueryRepository {
         dto: ModelForGettingAllPosts,
         blogId: string,
         userId: string | undefined,
-    ): Promise<PostDBPaginationClass> {
+    ): Promise<PostClassPagination> {
         const result = await createQueryForPosts(dto);
         const cursor = await this.postsModelClass
             .find({ blogId: blogId })
@@ -60,7 +60,7 @@ export class PostsQueryRepository {
         if (!bannedUsersInDB) {
             bannedUsers = [];
         } else {
-            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsersBySuperAdmin;
         }
         cursor.forEach((elem) => {
             elem.getLikesDataInfoForPost(userId, bannedUsers);
@@ -69,7 +69,7 @@ export class PostsQueryRepository {
             return elem.transformToPostViewModelClass();
         });
         const totalCount = await this.postsModelClass.count({ blogId: blogId });
-        return new PostDBPaginationClass(
+        return new PostClassPagination(
             Math.ceil(totalCount / result.pageSize),
             result.pageNumber,
             result.pageSize,
@@ -84,7 +84,7 @@ export class PostsQueryRepository {
         if (!bannedUsersInDB) {
             bannedUsers = [];
         } else {
-            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsers;
+            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsersBySuperAdmin;
         }
         const post = await this.postsModelClass.findOne({ id: id });
         if (!post) {

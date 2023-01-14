@@ -23,7 +23,7 @@ import { BlogClass, BlogsSchema } from "../src/features/blogs/blogs.schema";
 import { CommentClass, CommentsSchema } from "../src/features/comments/comments.schema";
 import { NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema } from "../src/features/posts/posts.schema";
 
-export const BlogsModelClass = mongoose.connection.collection("blogdbclasses");
+export const BlogsModelClass = mongoose.connection.collection("blogclasses");
 
 export let app: INestApplication;
 export let mongoServer: MongoMemoryServer;
@@ -35,9 +35,9 @@ export const testValidationPipeSettings = {
         const errorsForResponse = [];
         errors.forEach((e) => {
             const constraintsKeys = Object.keys(e.constraints);
-            constraintsKeys.forEach((ckey) => {
+            constraintsKeys.forEach((key) => {
                 errorsForResponse.push({
-                    message: e.constraints[ckey],
+                    message: e.constraints[key],
                     field: e.property,
                 });
             });

@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from "@nestjs/common";
-import { UsersQueryRepository } from "../../super-admin/users/users.query.repository";
 import { UsersRepository } from "../../super-admin/users/users.repository";
-import { ICommandHandler } from "@nestjs/cqrs";
+import { ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { GetUserByConfirmationCodeCommand } from "../../super-admin/users/use-cases/queries/get-user-by-confirmation-code-query";
 
 export class ConfirmEmailCommand {
     constructor(public readonly code: string) {}
@@ -9,10 +9,10 @@ export class ConfirmEmailCommand {
 
 @Injectable()
 export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand> {
-    constructor(private usersQueryRepository: UsersQueryRepository, private usersRepository: UsersRepository) {}
+    constructor(private queryBus: QueryBus, private usersRepository: UsersRepository) {}
 
     async execute(command: ConfirmEmailCommand): Promise<boolean> {
-        const user = await this.usersQueryRepository.getUserByConfirmationCode(command.code);
+        const user = await this.queryBus.execute(new GetUserByConfirmationCodeCommand(command.code));
         if (!user) throw new HttpException("Code is incorrect", 406);
         if (user.emailConfirmation.isConfirmed) throw new HttpException("Code is incorrect", 406);
         if (user.emailConfirmation.confirmationCode !== command.code) throw new HttpException("Code is incorrect", 406);

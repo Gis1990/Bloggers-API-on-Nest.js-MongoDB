@@ -1,10 +1,11 @@
-import { ModelForCreatingNewComment } from "../dto/comments.dto";
+import { CreatedCommentDto, ModelForCreatingNewComment } from "../dto/comments.dto";
 import { CurrentUserModel } from "../../auth/dto/auth.dto";
 import { CommentViewModelClass } from "../entities/comments.entity";
 import { LikesInfoClass } from "../comments.schema";
 import { CommentsRepository } from "../comments.repository";
 import { UsersLikesInfoClass } from "../../posts/posts.schema";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { GetPostByIdCommand } from "../../posts/use-cases/queries/get-post-by-id-query";
 
 export class CreateCommentCommand {
     constructor(
@@ -16,20 +17,20 @@ export class CreateCommentCommand {
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentUseCase implements ICommandHandler<CreateCommentCommand> {
-    constructor(protected commentsRepository: CommentsRepository) {}
+    constructor(protected commentsRepository: CommentsRepository, private queryBus: QueryBus) {}
 
     async execute(command: CreateCommentCommand): Promise<CommentViewModelClass> {
+        const post = await this.queryBus.execute(new GetPostByIdCommand(command.postId, command.user.id));
         const likes: LikesInfoClass = new LikesInfoClass();
         const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass();
-        const createdCommentDto = {
+        const createdCommentDto: CreatedCommentDto = {
             id: Number(new Date()).toString(),
             content: command.dto.content,
-            userId: command.user.id,
-            userLogin: command.user.login,
-            postId: command.postId,
             createdAt: new Date(),
             likesInfo: likes,
             usersLikesInfo: usersLikesInfo,
+            commentatorInfo: { userId: command.user.id, userLogin: command.user.login },
+            postInfo: { id: command.postId, title: post.title, blogId: post.blogId, blogName: post.blogName },
         };
         return await this.commentsRepository.createComment(createdCommentDto);
     }

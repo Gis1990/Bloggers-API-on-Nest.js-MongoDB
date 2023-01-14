@@ -38,4 +38,15 @@ export class BlogsRepository {
         );
         return result.matchedCount === 1;
     }
+
+    async banUnbanBlogBySuperAdmin(isBanned: boolean, blogId: string): Promise<boolean> {
+        let dataForUpdating;
+        if (isBanned) {
+            dataForUpdating = { isBanned: isBanned, banDate: new Date() };
+        } else {
+            dataForUpdating = { isBanned: isBanned, banDate: null };
+        }
+        const result = await this.blogsModelClass.updateOne({ id: blogId }, { banInfo: dataForUpdating });
+        return result.matchedCount === 1;
+    }
 }

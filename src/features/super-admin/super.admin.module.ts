@@ -36,19 +36,21 @@ import { CreateUserWithoutConfirmationEmailUseCase } from "../auth/use-cases/cre
 import { UsersRepository } from "./users/users.repository";
 import { AuthService } from "../auth/auth.service";
 import { BcryptService } from "../../utils/bcrypt/bcrypt.service";
-import { BanUnbanUserUseCase } from "./users/use-cases/ban-unban-user-use-case";
-import { GetAllBlogsWithAdditionalInfoQuery } from "../blogs/use-cases/queries/get-all-blogs-with-additional-info-query";
+import { BanUnbanUserBySuperAdminUseCase } from "./users/use-cases/ban-unban-user-by-super-admin-use-case";
+import { GetAllBlogsForSuperAdminQuery } from "../blogs/use-cases/queries/get-all-blogs-for-super-admin-query";
 import { GetUserByIdQuery } from "./users/use-cases/queries/get-user-by-id-query";
+import { BanUnbanBlogBySuperAdminUseCase } from "../blogs/use-cases/ban-unban-blog-by-super-admin-use-case";
 
 const useCases = [
     BindUserWithBlogUseCase,
     DeleteUserUseCase,
     CreateUserUseCase,
     CreateUserWithoutConfirmationEmailUseCase,
-    BanUnbanUserUseCase,
+    BanUnbanUserBySuperAdminUseCase,
+    BanUnbanBlogBySuperAdminUseCase,
 ];
 
-const queries = [GetAllBlogsWithAdditionalInfoQuery, GetUserByIdQuery];
+const queries = [GetAllBlogsForSuperAdminQuery, GetUserByIdQuery];
 
 @Module({
     imports: [

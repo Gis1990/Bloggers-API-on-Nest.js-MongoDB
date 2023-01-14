@@ -1,13 +1,13 @@
 import { Body, Controller, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { ModelForGettingAllPosts, PostsIdValidationModel } from "./dto/posts.dto";
 import { CurrentUser, CurrentUserId } from "../auth/decorators/auth.custom.decorators";
-import { PostDBPaginationClass, PostViewModelClass } from "./entities/posts.entity";
+import { PostClassPagination, PostViewModelClass } from "./entities/posts.entity";
 import {
     ModelForCreatingNewComment,
     ModelForGettingAllComments,
     ModelForLikeStatus,
 } from "../comments/dto/comments.dto";
-import { CommentDBClassPagination, CommentViewModelClass } from "../comments/entities/comments.entity";
+import { CommentPaginationClass, CommentViewModelClass } from "../comments/entities/comments.entity";
 import { CurrentUserModel } from "../auth/dto/auth.dto";
 import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
 import { strategyForUnauthorizedUser } from "../../guards/strategy-for-unauthorized-user-guard";
@@ -29,7 +29,7 @@ export class PostsController {
     async getAllPosts(
         @Query() dto: ModelForGettingAllPosts,
         @CurrentUserId() userId: string,
-    ): Promise<PostDBPaginationClass> {
+    ): Promise<PostClassPagination> {
         return await this.queryBus.execute(new GetAllPostsCommand(dto, userId));
     }
 
@@ -39,7 +39,7 @@ export class PostsController {
         @Param() params: PostsIdValidationModel,
         @Query() model: ModelForGettingAllComments,
         @CurrentUserId() userId: string,
-    ): Promise<CommentDBClassPagination> {
+    ): Promise<CommentPaginationClass> {
         return await this.queryBus.execute(new GetAllCommentsForSpecificPostCommand(model, params.postId, userId));
     }
 

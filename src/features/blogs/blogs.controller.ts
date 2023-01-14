@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { BlogsIdValidationModel, ModelForGettingAllBlogs } from "./dto/blogs.dto";
-import { BlogDBPaginationClass, BlogViewModelClass } from "./entities/blogs.entity";
-import { PostDBPaginationClass } from "../posts/entities/posts.entity";
+import { BlogClassPagination, BlogViewModelClass } from "./entities/blogs.entity";
+import { PostClassPagination } from "../posts/entities/posts.entity";
 import { ModelForGettingAllPosts } from "../posts/dto/posts.dto";
 import { CurrentUserId } from "../auth/decorators/auth.custom.decorators";
 import { strategyForUnauthorizedUser } from "../../guards/strategy-for-unauthorized-user-guard";
@@ -20,7 +20,7 @@ export class BlogsController {
     async getAllBlogs(
         @Query()
         dto: ModelForGettingAllBlogs,
-    ): Promise<BlogDBPaginationClass> {
+    ): Promise<BlogClassPagination> {
         return await this.queryBus.execute(new GetAllBlogsCommand(dto));
     }
 
@@ -35,7 +35,7 @@ export class BlogsController {
         @Param() params: BlogsIdValidationModel,
         @Query() model: ModelForGettingAllPosts,
         @CurrentUserId() userId: string,
-    ): Promise<PostDBPaginationClass> {
+    ): Promise<PostClassPagination> {
         return await this.queryBus.execute(new GetAllPostsForSpecificBlogCommand(model, params.id, userId));
     }
 }

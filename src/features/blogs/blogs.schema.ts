@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { BlogViewModelClass } from "./entities/blogs.entity";
 
 @Schema({ versionKey: false })
-export class BlogOwnerInfoClass {
+export class OwnerInfoClass {
     @Prop({
         required: true,
     })
@@ -13,7 +13,19 @@ export class BlogOwnerInfoClass {
     userLogin: string;
 }
 
-export const BlogOwnerInfoSchema = SchemaFactory.createForClass(BlogOwnerInfoClass);
+export const OwnerInfoSchema = SchemaFactory.createForClass(OwnerInfoClass);
+
+@Schema({ versionKey: false })
+export class BanInfoClassForBlog {
+    @Prop({
+        required: true,
+    })
+    isBanned: boolean;
+    @Prop()
+    banDate: Date;
+}
+
+export const BanInfoSchemaForBlog = SchemaFactory.createForClass(BanInfoClassForBlog);
 
 @Schema({ versionKey: false })
 export class BlogClass {
@@ -38,14 +50,18 @@ export class BlogClass {
     })
     createdAt: Date;
     @Prop({
-        type: BlogOwnerInfoSchema,
+        type: OwnerInfoSchema,
         required: true,
         _id: false,
     })
-    blogOwnerInfo: {
-        userId: string;
-        userLogin: string;
-    };
+    blogOwnerInfo: OwnerInfoClass;
+
+    @Prop({
+        type: BanInfoSchemaForBlog,
+        required: true,
+        _id: false,
+    })
+    banInfo: BanInfoClassForBlog;
 
     async transformToBlogViewModelClass(): Promise<BlogViewModelClass> {
         return new BlogViewModelClass(this.id, this.name, this.description, this.websiteUrl, this.createdAt);

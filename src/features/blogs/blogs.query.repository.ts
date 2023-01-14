@@ -54,7 +54,7 @@ export class BlogsQueryRepository {
     async getAllBlogsForSuperAdmin(dto: ModelForGettingAllBlogs): Promise<BlogClassPagination> {
         const result = await createQueryForBlogs(dto);
         const cursor = await this.blogsModelClass
-            .find(result.query, { _id: 0 })
+            .find(result.query, { _id: 0, banInfo: 0 })
             .sort(result.sortObj)
             .skip(result.skips)
             .limit(result.pageSize);

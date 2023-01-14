@@ -30,7 +30,7 @@ export class BloggerController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Get()
+    @Get("/comments")
     async getAllCommentsForAllPostsForBloggersBlogs(
         @Query()
         dto: ModelForGettingAllComments,

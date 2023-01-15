@@ -189,9 +189,7 @@ UsersAccountSchema.methods = {
 
 @Schema({ versionKey: false })
 export class BannedUsersBySuperAdminClass {
-    @Prop({
-        required: true,
-    })
+    @Prop({})
     userId: string;
 }
 
@@ -199,9 +197,7 @@ export const BannedUsersSchema = SchemaFactory.createForClass(BannedUsersBySuper
 
 @Schema({ versionKey: false })
 export class BannedBlogsBySuperAdminClass extends BannedUsersBySuperAdminClass {
-    @Prop({
-        required: true,
-    })
+    @Prop({})
     blogId: string;
 }
 

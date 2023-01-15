@@ -44,7 +44,7 @@ export class BlogsRepository {
         let dataForUpdating;
         if (isBanned) {
             dataForUpdating = { isBanned: isBanned, banDate: new Date() };
-            result = await this.blogsModelClass.updateOne({ blogId: blogId }, { banInfo: dataForUpdating });
+            result = await this.blogsModelClass.updateOne({ id: blogId }, { banInfo: dataForUpdating });
         } else {
             dataForUpdating = { isBanned: isBanned, banDate: null };
             result = await this.blogsModelClass.updateOne({ id: blogId }, { banInfo: dataForUpdating });

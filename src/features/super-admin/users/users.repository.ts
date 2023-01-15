@@ -139,7 +139,6 @@ export class UsersRepository {
         }
         await this.usersAccountModelClass.updateOne({ id: userId }, { $set: { userDevicesData: [] } });
         const result = await this.usersAccountModelClass.updateOne({ id: userId }, { $set: { banInfo: banData } });
-        console.log(await this.usersAccountModelClass.find({ id: userId }));
         return result.modifiedCount === 1;
     }
 

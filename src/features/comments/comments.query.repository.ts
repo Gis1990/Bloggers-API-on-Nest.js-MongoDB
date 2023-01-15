@@ -126,9 +126,7 @@ export class CommentsQueryRepository {
 
     async getCommentForIdValidation(id: string): Promise<CommentClass | null> {
         const bannedUserIdsInDB = await this.userAccountClass.find({ "banInfo.isBanned": true });
-        console.log(bannedUserIdsInDB);
         const bannedUsersIds = bannedUserIdsInDB.map((elem) => elem.id);
-        console.log(bannedUsersIds);
         const comment = await this.commentsModelClass.findOne({ id: id });
         if (!comment || bannedUsersIds.includes(comment.commentatorInfo.userId)) {
             return null;

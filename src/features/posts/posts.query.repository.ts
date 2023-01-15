@@ -101,7 +101,6 @@ export class PostsQueryRepository {
     }
 
     async getPostById(id: string, userId: string | undefined): Promise<PostViewModelClass | null> {
-        let bannedBlogsIds;
         let bannedUsersIdsBySuperAdmin;
         const bannedUsersInDB = await this.userAccountClass.find({ "banInfo.isBanned": true });
         if (!bannedUsersInDB) {
@@ -109,16 +108,9 @@ export class PostsQueryRepository {
         } else {
             bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.id);
         }
-        const bannedBlogsInDB = await this.blogsModelClass.find({
-            $or: [{ "blogOwnerInfo.userId": { $in: bannedUsersIdsBySuperAdmin } }, { "banInfo.isBanned": true }],
-        });
-        if (!bannedBlogsInDB) {
-            bannedBlogsIds = [];
-        } else {
-            bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.id);
-        }
-        const post = await this.postsModelClass.findOne({ blogId: { $nin: bannedBlogsIds } });
-        if (!post) {
+        const post = await this.postsModelClass.findOne({ id: id });
+        const blog = await this.blogsModelClass.findOne({ id: post.blogId });
+        if (!post || blog.banInfo.isBanned) {
             return null;
         }
         post.getLikesDataInfoForPost(userId, bannedUsersIdsBySuperAdmin);

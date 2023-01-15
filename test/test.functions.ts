@@ -22,6 +22,7 @@ import {
 import { BlogClass, BlogsSchema } from "../src/features/blogs/blogs.schema";
 import { CommentClass, CommentsSchema } from "../src/features/comments/comments.schema";
 import { NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema } from "../src/features/posts/posts.schema";
+import * as request from "supertest";
 
 export const BlogsModelClass = mongoose.connection.collection("blogclasses");
 
@@ -104,6 +105,19 @@ export async function setupTestApp() {
     app.use(cookieParser());
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
     await app.init();
+    await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
+    const response = await request(app.getHttpServer())
+        .get("/sa/users")
+        .set("authorization", "Basic YWRtaW46cXdlcnR5")
+        .expect(200);
+    expect(response.body).toStrictEqual(emptyAllUsersDbReturnData);
+    const response1 = await request(app.getHttpServer()).get("/blogs").expect(200);
+    expect(response1.body).toStrictEqual(emptyAllBlogsDbReturnData);
+    const response2 = await request(app.getHttpServer())
+        .get("/sa/blogs")
+        .set("authorization", "Basic YWRtaW46cXdlcnR5")
+        .expect(200);
+    expect(response2.body).toStrictEqual(emptyAllBlogsDbReturnData);
 }
 
 export async function teardownTestApp() {

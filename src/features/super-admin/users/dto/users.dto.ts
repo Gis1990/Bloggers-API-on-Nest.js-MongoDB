@@ -8,6 +8,7 @@ import {
     EmailRecoveryCodeClass,
     BanInfoClass,
 } from "../users.schema";
+import { IsBlogsIdExistInTheRequestBody } from "../../../blogs/decorators/blogs.custom.decorators";
 
 const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const listOfCorrectBanStatus = ["all", "banned", "notBanned"];
@@ -75,7 +76,9 @@ export class InputModelForBanUnbanUser {
 export class InputModelForBanUnbanUserByBloggerForBlog extends InputModelForBanUnbanUser {
     @IsNotEmpty()
     @IsString()
-    @Length(20)
+    @IsBlogsIdExistInTheRequestBody({
+        message: "BlogsId is not exist",
+    })
     public blogId: string;
 }
 

@@ -142,7 +142,7 @@ export class BloggerController {
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Get("/users")
+    @Get("/users/blog/:blogId")
     async GetAllBannedUsersForBlog(
         @Param()
         params: BlogsIdValidationModelWhenBlogIsBanned,

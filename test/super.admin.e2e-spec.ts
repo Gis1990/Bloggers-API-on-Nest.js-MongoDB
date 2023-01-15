@@ -1,14 +1,6 @@
 import "reflect-metadata";
 import * as request from "supertest";
-import {
-    app,
-    createBlogForTests,
-    createUserForTesting,
-    emptyAllBlogsDbReturnData,
-    emptyAllUsersDbReturnData,
-    setupTestApp,
-    teardownTestApp,
-} from "./test.functions";
+import { app, createBlogForTests, createUserForTesting, setupTestApp, teardownTestApp } from "./test.functions";
 
 describe("super admin endpoint users /sa/users (e2e)", () => {
     beforeAll(async () => {
@@ -17,15 +9,6 @@ describe("super admin endpoint users /sa/users (e2e)", () => {
     afterAll(async () => {
         await teardownTestApp();
     });
-    beforeAll(async () => {
-        await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
-        const response = await request(app.getHttpServer())
-            .get("/sa/users")
-            .set("authorization", "Basic YWRtaW46cXdlcnR5")
-            .expect(200);
-        expect(response.body).toStrictEqual(emptyAllUsersDbReturnData);
-    });
-
     describe("POST -> /sa/users/", () => {
         let correctUser;
         const items = [];
@@ -175,15 +158,6 @@ describe("super admin endpoint blogs /sa/blogs (e2e)", () => {
     });
     afterAll(async () => {
         await teardownTestApp();
-    });
-    beforeAll(async () => {
-        await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
-        const response = await request(app.getHttpServer())
-            .get("/sa/users")
-            .set("authorization", "Basic YWRtaW46cXdlcnR5")
-            .expect(200);
-        expect(response.body).toStrictEqual(emptyAllUsersDbReturnData);
-        expect(response.body).toStrictEqual(emptyAllBlogsDbReturnData);
     });
     describe("PUT -> /sa/blogs/:id/ban", () => {
         let correctUser;

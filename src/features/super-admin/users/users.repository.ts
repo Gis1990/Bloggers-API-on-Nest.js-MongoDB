@@ -8,7 +8,6 @@ import {
     UserAccountClass,
     UserDevicesDataClass,
     EmailRecoveryCodeClass,
-    BannedUsersBySuperAdminClass,
     ExtendedBanInfoClass,
 } from "./users.schema";
 import { CreatedNewUserDto } from "./dto/users.dto";
@@ -19,8 +18,6 @@ export class UsersRepository {
     constructor(
         @InjectModel(UserAccountClass.name) private usersAccountModelClass: Model<UserAccountClass>,
         @InjectModel(LoginAttemptsClass.name) private loginAttemptsModelClass: Model<LoginAttemptsClass>,
-        @InjectModel(BannedUsersBySuperAdminClass.name)
-        private bannedUsersBySuperAdminClass: Model<BannedUsersBySuperAdminClass>,
     ) {}
 
     async userConfirmedEmail(id: string): Promise<boolean> {
@@ -121,13 +118,8 @@ export class UsersRepository {
     }
 
     async createUser(newUser: CreatedNewUserDto): Promise<UserViewModelClass> {
-        const bannedUsers = await this.bannedUsersBySuperAdminClass.findOne({});
-        if (!bannedUsers) {
-            const newBannedUsers = new this.bannedUsersBySuperAdminClass();
-            await newBannedUsers.save();
-        }
         if (newUser.banInfo.isBanned) {
-            await this.bannedUsersBySuperAdminClass.updateOne({ userId: newUser.id }, { $set: { userId: newUser.id } });
+            await this.usersAccountModelClass.updateOne({ id: newUser.id }, { $set: { userId: newUser.id } });
         }
         const user = new this.usersAccountModelClass(newUser);
         await user.save();
@@ -139,17 +131,15 @@ export class UsersRepository {
         return result.deletedCount === 1;
     }
 
-    async banUnbanUserBySuperAdmin(isBanned: boolean, banReason: string, id: string): Promise<boolean> {
+    async banUnbanUserBySuperAdmin(isBanned: boolean, banReason: string, userId: string): Promise<boolean> {
         const banData = { isBanned: isBanned, banDate: new Date(), banReason: banReason };
-        if (isBanned) {
-            await this.bannedUsersBySuperAdminClass.updateOne({ userId: id }, { $set: { userId: id } });
-        } else {
-            await this.bannedUsersBySuperAdminClass.deleteOne({ userId: id });
+        if (!isBanned) {
             banData.banDate = null;
             banData.banReason = null;
         }
-        await this.usersAccountModelClass.updateOne({ id: id }, { $set: { userDevicesData: [] } });
-        const result = await this.usersAccountModelClass.updateOne({ id: id }, { $set: { banInfo: banData } });
+        await this.usersAccountModelClass.updateOne({ id: userId }, { $set: { userDevicesData: [] } });
+        const result = await this.usersAccountModelClass.updateOne({ id: userId }, { $set: { banInfo: banData } });
+        console.log(await this.usersAccountModelClass.find({ id: userId }));
         return result.modifiedCount === 1;
     }
 

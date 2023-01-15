@@ -4,14 +4,10 @@ import { InjectModel } from "@nestjs/mongoose";
 import { BlogClass } from "./blogs.schema";
 import { CreatedBlogDto, InputModelForUpdatingBlog } from "./dto/blogs.dto";
 import { BlogViewModelClass } from "./entities/blogs.entity";
-import { BannedUsersBySuperAdminClass } from "../super-admin/users/users.schema";
 
 @Injectable()
 export class BlogsRepository {
-    constructor(
-        @InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>,
-        @InjectModel(BannedUsersBySuperAdminClass.name) private bannedUsersClass: Model<BannedUsersBySuperAdminClass>,
-    ) {}
+    constructor(@InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>) {}
 
     async createBlog(newBlog: CreatedBlogDto): Promise<BlogViewModelClass> {
         const blog = new this.blogsModelClass(newBlog);
@@ -44,15 +40,15 @@ export class BlogsRepository {
     }
 
     async banUnbanBlogBySuperAdmin(isBanned: boolean, blogId: string): Promise<boolean> {
+        let result;
         let dataForUpdating;
         if (isBanned) {
             dataForUpdating = { isBanned: isBanned, banDate: new Date() };
-            await this.bannedUsersClass.updateOne({ $push: { bannedBlogsBySuperAdmin: blogId } });
+            result = await this.blogsModelClass.updateOne({ blogId: blogId }, { banInfo: dataForUpdating });
         } else {
             dataForUpdating = { isBanned: isBanned, banDate: null };
-            await this.bannedUsersClass.updateOne({ $pull: { bannedBlogsBySuperAdmin: blogId } });
+            result = await this.blogsModelClass.updateOne({ id: blogId }, { banInfo: dataForUpdating });
         }
-        const result = await this.blogsModelClass.updateOne({ id: blogId }, { banInfo: dataForUpdating });
         return result.matchedCount === 1;
     }
 }

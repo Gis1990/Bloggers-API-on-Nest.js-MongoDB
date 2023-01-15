@@ -8,8 +8,6 @@ import { useContainer } from "class-validator";
 import * as cookieParser from "cookie-parser";
 import { MongooseModule } from "@nestjs/mongoose";
 import {
-    BannedUsersBySuperAdminClass,
-    BannedUsersSchema,
     EmailRecoveryCodeClass,
     EmailRecoveryCodeSchema,
     LoginAttemptsClass,
@@ -95,10 +93,6 @@ export async function setupTestApp() {
                 {
                     name: NewestLikesClass.name,
                     schema: NewestLikesSchema,
-                },
-                {
-                    name: BannedUsersBySuperAdminClass.name,
-                    schema: BannedUsersSchema,
                 },
             ]),
         ],

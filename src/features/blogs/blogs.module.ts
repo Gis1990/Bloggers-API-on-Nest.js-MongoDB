@@ -20,14 +20,7 @@ import { GetAllBlogsQuery } from "./use-cases/queries/get-all-blogs-query";
 import { GetBlogByIdQuery } from "./use-cases/queries/get-blog-by-id-query";
 import { GetBlogByIdWithCorrectViewModelQuery } from "./use-cases/queries/get-blog-by-id-with-correct-view-model-query";
 import { GetAllPostsForSpecificBlogQuery } from "../posts/use-cases/queries/get-all-posts-for-specific-blog-query";
-import {
-    BannedBlogsBySuperAdminClass,
-    BannedBlogsBySuperAdminSchema,
-    BannedUsersBySuperAdminClass,
-    BannedUsersSchema,
-    UserAccountClass,
-    UsersAccountSchema,
-} from "../super-admin/users/users.schema";
+import { UserAccountClass, UsersAccountSchema } from "../super-admin/users/users.schema";
 import { GetUserByIdQuery } from "../super-admin/users/use-cases/queries/get-user-by-id-query";
 import { UsersQueryRepository } from "../super-admin/users/users.query.repository";
 
@@ -53,16 +46,8 @@ const queries = [
                 schema: PostsSchema,
             },
             {
-                name: BannedUsersBySuperAdminClass.name,
-                schema: BannedUsersSchema,
-            },
-            {
                 name: UserAccountClass.name,
                 schema: UsersAccountSchema,
-            },
-            {
-                name: BannedBlogsBySuperAdminClass.name,
-                schema: BannedBlogsBySuperAdminSchema,
             },
         ]),
     ],

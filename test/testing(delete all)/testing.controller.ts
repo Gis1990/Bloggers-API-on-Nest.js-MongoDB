@@ -5,7 +5,7 @@ import { Model } from "mongoose";
 import { BlogClass } from "../../src/features/blogs/blogs.schema";
 import { PostClass } from "../../src/features/posts/posts.schema";
 import { CommentClass } from "../../src/features/comments/comments.schema";
-import { BannedUsersBySuperAdminClass, UserAccountClass } from "../../src/features/super-admin/users/users.schema";
+import { UserAccountClass } from "../../src/features/super-admin/users/users.schema";
 
 @SkipThrottle()
 @Controller("testing")
@@ -15,8 +15,6 @@ export class TestingController {
         @InjectModel(PostClass.name) private postsModelClass: Model<PostClass>,
         @InjectModel(CommentClass.name) private commentsModelClass: Model<CommentClass>,
         @InjectModel(UserAccountClass.name) private userAccountModelClass: Model<UserAccountClass>,
-        @InjectModel(BannedUsersBySuperAdminClass.name)
-        private bannedUsersListClass: Model<BannedUsersBySuperAdminClass>,
     ) {}
 
     @Delete("/all-data")
@@ -26,7 +24,6 @@ export class TestingController {
         await this.postsModelClass.deleteMany({});
         await this.commentsModelClass.deleteMany({});
         await this.userAccountModelClass.deleteMany({});
-        await this.bannedUsersListClass.deleteMany({});
         return true;
     }
 }

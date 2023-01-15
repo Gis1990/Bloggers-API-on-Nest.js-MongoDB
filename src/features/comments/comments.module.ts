@@ -13,11 +13,11 @@ import { DeleteCommentUseCase } from "./use-cases/delete-comment-use-case";
 import { LikeOperationForCommentUseCase } from "./use-cases/like-operation-for-comment-use-case";
 import { CqrsModule } from "@nestjs/cqrs";
 import { GetCommentByIdQuery } from "./use-cases/queries/get-comment-by-id-query";
-import { BannedUsersBySuperAdminClass, BannedUsersSchema } from "../super-admin/users/users.schema";
 import { GetCommentByIdForLikeOperationQuery } from "./use-cases/queries/get-comment-by-id-for-like-operation-query";
 import { GetAllCommentsForSpecificPostQuery } from "./use-cases/queries/get-all-comments-for-specific-post-query";
 import { GetCommentForIdValidationQuery } from "./use-cases/queries/get-comment-for-id-validation-query";
 import { BlogClass, BlogsSchema } from "../blogs/blogs.schema";
+import { UserAccountClass, UsersAccountSchema } from "../super-admin/users/users.schema";
 
 const useCases = [CreateCommentUseCase, UpdateCommentUseCase, DeleteCommentUseCase, LikeOperationForCommentUseCase];
 
@@ -42,12 +42,12 @@ const queries = [
                 schema: PostsSchema,
             },
             {
-                name: BannedUsersBySuperAdminClass.name,
-                schema: BannedUsersSchema,
-            },
-            {
                 name: BlogClass.name,
                 schema: BlogsSchema,
+            },
+            {
+                name: UserAccountClass.name,
+                schema: UsersAccountSchema,
             },
         ]),
     ],

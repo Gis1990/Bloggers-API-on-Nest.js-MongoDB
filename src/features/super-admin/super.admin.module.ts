@@ -20,10 +20,6 @@ import { UsersQueryRepository } from "./users/users.query.repository";
 import {
     BanInfoClass,
     BanInfoSchema,
-    BannedBlogsBySuperAdminClass,
-    BannedBlogsBySuperAdminSchema,
-    BannedUsersBySuperAdminClass,
-    BannedUsersSchema,
     EmailRecoveryCodeClass,
     EmailRecoveryCodeSchema,
     LoginAttemptsClass,
@@ -93,14 +89,6 @@ const queries = [GetAllBlogsForSuperAdminQuery, GetUserByIdQuery, GetBlogByIdFor
             {
                 name: BanInfoClass.name,
                 schema: BanInfoSchema,
-            },
-            {
-                name: BannedUsersBySuperAdminClass.name,
-                schema: BannedUsersSchema,
-            },
-            {
-                name: BannedBlogsBySuperAdminClass.name,
-                schema: BannedBlogsBySuperAdminSchema,
             },
         ]),
     ],

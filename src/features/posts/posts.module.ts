@@ -17,14 +17,7 @@ import { NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema } from "./p
 import { CreateCommentUseCase } from "../comments/use-cases/create-comment-use-case";
 import { CqrsModule } from "@nestjs/cqrs";
 import { GetBlogByIdQuery } from "../blogs/use-cases/queries/get-blog-by-id-query";
-import {
-    BannedBlogsBySuperAdminClass,
-    BannedBlogsBySuperAdminSchema,
-    BannedUsersBySuperAdminClass,
-    BannedUsersSchema,
-    UserAccountClass,
-    UsersAccountSchema,
-} from "../super-admin/users/users.schema";
+import { UserAccountClass, UsersAccountSchema } from "../super-admin/users/users.schema";
 import { GetAllCommentsForSpecificPostQuery } from "../comments/use-cases/queries/get-all-comments-for-specific-post-query";
 import { GetAllPostsQuery } from "./use-cases/queries/get-all-posts-query";
 import { GetPostByIdQuery } from "./use-cases/queries/get-post-by-id-query";
@@ -62,14 +55,6 @@ const queries = [
             {
                 name: NewestLikesClass.name,
                 schema: NewestLikesSchema,
-            },
-            {
-                name: BannedUsersBySuperAdminClass.name,
-                schema: BannedUsersSchema,
-            },
-            {
-                name: BannedBlogsBySuperAdminClass.name,
-                schema: BannedBlogsBySuperAdminSchema,
             },
             {
                 name: UserAccountClass.name,

@@ -28,8 +28,6 @@ import {
     UsersAccountSchema,
     BanInfoClass,
     BanInfoSchema,
-    BannedUsersSchema,
-    BannedUsersBySuperAdminClass,
 } from "../super-admin/users/users.schema";
 import { AcceptNewPasswordUseCase } from "./use-cases/accept-new-password-use-case";
 import { CheckCredentialsUseCase } from "./use-cases/check-credentials-use-case";
@@ -119,10 +117,6 @@ const queries = [
             {
                 name: BanInfoClass.name,
                 schema: BanInfoSchema,
-            },
-            {
-                name: BannedUsersBySuperAdminClass.name,
-                schema: BannedUsersSchema,
             },
         ]),
     ],

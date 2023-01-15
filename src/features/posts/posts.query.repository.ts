@@ -4,38 +4,35 @@ import { ModelForGettingAllPosts } from "./dto/posts.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { PostClass } from "./posts.schema";
-import { BannedBlogsBySuperAdminClass, BannedUsersBySuperAdminClass } from "../super-admin/users/users.schema";
 import { createQueryForPosts } from "./helpers/posts.query.repository.helpers";
 import { BlogClass } from "../blogs/blogs.schema";
+import { UserAccountClass } from "../super-admin/users/users.schema";
 
 @Injectable()
 export class PostsQueryRepository {
     constructor(
         @InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>,
         @InjectModel(PostClass.name) private postsModelClass: Model<PostClass>,
-        @InjectModel(BannedUsersBySuperAdminClass.name)
-        private bannedUsersBySuperAdminClass: Model<BannedUsersBySuperAdminClass>,
-        @InjectModel(BannedBlogsBySuperAdminClass.name)
-        private bannedBlogsBySuperAdminClass: Model<BannedBlogsBySuperAdminClass>,
+        @InjectModel(UserAccountClass.name) private userAccountClass: Model<UserAccountClass>,
     ) {}
 
     async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostClassPagination> {
         const result = await createQueryForPosts(dto);
         let bannedBlogsIds;
         let bannedUsersIdsBySuperAdmin;
-        const bannedUsersInDB = await this.bannedUsersBySuperAdminClass.find({});
+        const bannedUsersInDB = await this.userAccountClass.find({ "banInfo.isBanned": true });
         if (!bannedUsersInDB) {
             bannedUsersIdsBySuperAdmin = [];
         } else {
-            bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.userId);
+            bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.id);
         }
-        const bannedBlogsInDB = await this.bannedBlogsBySuperAdminClass.find({
+        const bannedBlogsInDB = await this.blogsModelClass.find({
             $or: [{ "blogOwnerInfo.userId": { $in: bannedUsersIdsBySuperAdmin } }, { "banInfo.isBanned": true }],
         });
         if (!bannedBlogsInDB) {
             bannedBlogsIds = [];
         } else {
-            bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.blogId);
+            bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.id);
         }
         const cursor = await this.postsModelClass
             .find({ blogId: { $nin: bannedBlogsIds } })
@@ -66,19 +63,19 @@ export class PostsQueryRepository {
         const result = await createQueryForPosts(dto);
         let bannedBlogsIds;
         let bannedUsersIdsBySuperAdmin;
-        const bannedUsersInDB = await this.bannedUsersBySuperAdminClass.find({});
+        const bannedUsersInDB = await this.userAccountClass.find({ "banInfo.isBanned": true });
         if (!bannedUsersInDB) {
             bannedUsersIdsBySuperAdmin = [];
         } else {
-            bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.userId);
+            bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.id);
         }
-        const bannedBlogsInDB = await this.bannedBlogsBySuperAdminClass.find({
+        const bannedBlogsInDB = await this.blogsModelClass.find({
             $or: [{ "blogOwnerInfo.userId": { $in: bannedUsersIdsBySuperAdmin } }, { "banInfo.isBanned": true }],
         });
         if (!bannedBlogsInDB) {
             bannedBlogsIds = [];
         } else {
-            bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.blogId);
+            bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.id);
         }
         const cursor = await this.postsModelClass
             .find({ $and: [{ blogId: blogId }, { blogId: { $nin: bannedBlogsIds } }] })
@@ -106,19 +103,19 @@ export class PostsQueryRepository {
     async getPostById(id: string, userId: string | undefined): Promise<PostViewModelClass | null> {
         let bannedBlogsIds;
         let bannedUsersIdsBySuperAdmin;
-        const bannedUsersInDB = await this.bannedUsersBySuperAdminClass.find({});
+        const bannedUsersInDB = await this.userAccountClass.find({ "banInfo.isBanned": true });
         if (!bannedUsersInDB) {
             bannedUsersIdsBySuperAdmin = [];
         } else {
-            bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.userId);
+            bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.id);
         }
-        const bannedBlogsInDB = await this.bannedBlogsBySuperAdminClass.find({
+        const bannedBlogsInDB = await this.blogsModelClass.find({
             $or: [{ "blogOwnerInfo.userId": { $in: bannedUsersIdsBySuperAdmin } }, { "banInfo.isBanned": true }],
         });
         if (!bannedBlogsInDB) {
             bannedBlogsIds = [];
         } else {
-            bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.blogId);
+            bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.id);
         }
         const post = await this.postsModelClass.findOne({ blogId: { $nin: bannedBlogsIds } });
         if (!post) {

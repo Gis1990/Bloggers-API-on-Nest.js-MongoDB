@@ -223,7 +223,7 @@ describe("super admin endpoint blogs /sa/blogs (e2e)", () => {
                 })
                 .expect(204);
         });
-        it("should return status 200 for banned blog 1", async () => {
+        it("should return status 404 for banned blog 1", async () => {
             await request(app.getHttpServer()).get(`/blogs/${blogId1}`).expect(404);
         });
         it("should return status 200 and blog 2", async () => {

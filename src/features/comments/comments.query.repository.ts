@@ -7,26 +7,25 @@ import { ModelForGettingAllComments } from "./dto/comments.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { CommentClass } from "./comments.schema";
-import { BannedUsersBySuperAdminClass } from "../super-admin/users/users.schema";
 import { BlogClass } from "../blogs/blogs.schema";
 import { PostClass } from "../posts/posts.schema";
+import { UserAccountClass } from "../super-admin/users/users.schema";
 
 export class CommentsQueryRepository {
     constructor(
         @InjectModel(CommentClass.name) private commentsModelClass: Model<CommentClass>,
-        @InjectModel(BannedUsersBySuperAdminClass.name)
-        private bannedUsersBySuperAdminClass: Model<BannedUsersBySuperAdminClass>,
         @InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>,
         @InjectModel(PostClass.name) private postsModelClass: Model<PostClass>,
+        @InjectModel(UserAccountClass.name) private userAccountClass: Model<UserAccountClass>,
     ) {}
 
     async getCommentById(id: string, userId: string | undefined): Promise<CommentViewModelClass> {
         let bannedUsersIds;
-        const bannedUsersInDB = await this.bannedUsersBySuperAdminClass.find({});
+        const bannedUsersInDB = await this.userAccountClass.find({ "banInfo.isBanned": true });
         if (!bannedUsersInDB) {
             bannedUsersIds = [];
         } else {
-            bannedUsersIds = bannedUsersInDB.map((elem) => elem.userId);
+            bannedUsersIds = bannedUsersInDB.map((elem) => elem.id);
         }
         const comment = await this.commentsModelClass.findOne({ id: id });
         comment.getLikesDataInfoForComment(userId, bannedUsersIds);
@@ -51,11 +50,11 @@ export class CommentsQueryRepository {
         // Retrieve the documents from the commentsModelClass collection, applying the sort, skip, and limit options
         const cursor = await this.commentsModelClass.find({ postId: postId }).sort(sortObj).skip(skips).limit(PageSize);
         let bannedUsersIds;
-        const bannedUsersInDB = await this.bannedUsersBySuperAdminClass.find({});
+        const bannedUsersInDB = await this.userAccountClass.find({ "banInfo.isBanned": true });
         if (!bannedUsersInDB) {
             bannedUsersIds = [];
         } else {
-            bannedUsersIds = bannedUsersInDB.map((elem) => elem.userId);
+            bannedUsersIds = bannedUsersInDB.map((elem) => elem.id);
         }
         cursor.forEach((elem) => {
             elem.getLikesDataInfoForComment(userId, bannedUsersIds);
@@ -97,11 +96,11 @@ export class CommentsQueryRepository {
             .skip(skips)
             .limit(PageSize);
         let bannedUsersIds;
-        const bannedUsersInDB = await this.bannedUsersBySuperAdminClass.find({});
+        const bannedUsersInDB = await this.userAccountClass.find({ "banInfo.isBanned": true });
         if (!bannedUsersInDB) {
             bannedUsersIds = [];
         } else {
-            bannedUsersIds = bannedUsersInDB.map((elem) => elem.userId);
+            bannedUsersIds = bannedUsersInDB.map((elem) => elem.id);
         }
         cursor.forEach((elem) => {
             elem.getLikesDataInfoForComment(userId, bannedUsersIds);
@@ -126,8 +125,10 @@ export class CommentsQueryRepository {
     }
 
     async getCommentForIdValidation(id: string): Promise<CommentClass | null> {
-        const bannedUserIdsInDB = await this.bannedUsersBySuperAdminClass.find({});
-        const bannedUsersIds = bannedUserIdsInDB.map((elem) => elem.userId);
+        const bannedUserIdsInDB = await this.userAccountClass.find({ "banInfo.isBanned": true });
+        console.log(bannedUserIdsInDB);
+        const bannedUsersIds = bannedUserIdsInDB.map((elem) => elem.id);
+        console.log(bannedUsersIds);
         const comment = await this.commentsModelClass.findOne({ id: id });
         if (!comment || bannedUsersIds.includes(comment.commentatorInfo.userId)) {
             return null;

@@ -186,19 +186,3 @@ export const UsersAccountSchema = SchemaFactory.createForClass(UserAccountClass)
 UsersAccountSchema.methods = {
     transformToUserViewModelClass: UserAccountClass.prototype.transformToUserViewModelClass,
 };
-
-@Schema({ versionKey: false })
-export class BannedUsersBySuperAdminClass {
-    @Prop({})
-    userId: string;
-}
-
-export const BannedUsersSchema = SchemaFactory.createForClass(BannedUsersBySuperAdminClass);
-
-@Schema({ versionKey: false })
-export class BannedBlogsBySuperAdminClass extends BannedUsersBySuperAdminClass {
-    @Prop({})
-    blogId: string;
-}
-
-export const BannedBlogsBySuperAdminSchema = SchemaFactory.createForClass(BannedBlogsBySuperAdminClass);

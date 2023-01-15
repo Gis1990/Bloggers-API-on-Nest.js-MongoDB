@@ -4,12 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { BlogClass, BlogsSchema } from "../../src/features/blogs/blogs.schema";
 import { PostClass, PostsSchema } from "../../src/features/posts/posts.schema";
 import { CommentClass, CommentsSchema } from "../../src/features/comments/comments.schema";
-import {
-    BannedUsersBySuperAdminClass,
-    BannedUsersSchema,
-    UserAccountClass,
-    UsersAccountSchema,
-} from "../../src/features/super-admin/users/users.schema";
+import { UserAccountClass, UsersAccountSchema } from "../../src/features/super-admin/users/users.schema";
 
 @Module({
     imports: [
@@ -29,10 +24,6 @@ import {
             {
                 name: UserAccountClass.name,
                 schema: UsersAccountSchema,
-            },
-            {
-                name: BannedUsersBySuperAdminClass.name,
-                schema: BannedUsersSchema,
             },
         ]),
     ],

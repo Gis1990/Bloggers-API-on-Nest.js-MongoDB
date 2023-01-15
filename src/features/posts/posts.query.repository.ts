@@ -108,11 +108,10 @@ export class PostsQueryRepository {
         } else {
             bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.id);
         }
-        const post = await this.postsModelClass.findOne({ id: id });
+        const post = await this.postsModelClass.findOne({ id });
+        if (!post) return null;
         const blog = await this.blogsModelClass.findOne({ id: post.blogId });
-        if (!post || blog.banInfo.isBanned) {
-            return null;
-        }
+        if (!blog || blog.banInfo.isBanned) return null;
         post.getLikesDataInfoForPost(userId, bannedUsersIdsBySuperAdmin);
         return post.transformToPostViewModelClass();
     }

@@ -4,13 +4,13 @@ import { InjectModel } from "@nestjs/mongoose";
 import { BlogClass } from "./blogs.schema";
 import { CreatedBlogDto, InputModelForUpdatingBlog } from "./dto/blogs.dto";
 import { BlogViewModelClass } from "./entities/blogs.entity";
-import { BannedUsersAndBlogsClass } from "../super-admin/users/users.schema";
+import { BannedUsersBySuperAdminClass } from "../super-admin/users/users.schema";
 
 @Injectable()
 export class BlogsRepository {
     constructor(
         @InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>,
-        @InjectModel(BannedUsersAndBlogsClass.name) private bannedUsersClass: Model<BannedUsersAndBlogsClass>,
+        @InjectModel(BannedUsersBySuperAdminClass.name) private bannedUsersClass: Model<BannedUsersBySuperAdminClass>,
     ) {}
 
     async createBlog(newBlog: CreatedBlogDto): Promise<BlogViewModelClass> {

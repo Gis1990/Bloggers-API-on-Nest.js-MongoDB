@@ -8,6 +8,8 @@ import { useContainer } from "class-validator";
 import * as cookieParser from "cookie-parser";
 import { MongooseModule } from "@nestjs/mongoose";
 import {
+    BannedUsersBySuperAdminClass,
+    BannedUsersSchema,
     EmailRecoveryCodeClass,
     EmailRecoveryCodeSchema,
     LoginAttemptsClass,
@@ -94,6 +96,10 @@ export async function setupTestApp() {
                     name: NewestLikesClass.name,
                     schema: NewestLikesSchema,
                 },
+                {
+                    name: BannedUsersBySuperAdminClass.name,
+                    schema: BannedUsersSchema,
+                },
             ]),
         ],
     }).compile();
@@ -105,6 +111,9 @@ export async function setupTestApp() {
     app.use(cookieParser());
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
     await app.init();
+}
+
+export async function CheckingDbEmptiness() {
     await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
     const response = await request(app.getHttpServer())
         .get("/sa/users")
@@ -118,6 +127,63 @@ export async function setupTestApp() {
         .set("authorization", "Basic YWRtaW46cXdlcnR5")
         .expect(200);
     expect(response2.body).toStrictEqual(emptyAllBlogsDbReturnData);
+    const response3 = await request(app.getHttpServer()).get("/posts").expect(200);
+    expect(response3.body).toStrictEqual(emptyAllPostsDbReturnData);
+}
+
+export async function CreatingUsersForTesting() {
+    const correctUser1 = createUserForTesting(6, 2, 10);
+    const response = await request(app.getHttpServer())
+        .post("/sa/users")
+        .set("authorization", "Basic YWRtaW46cXdlcnR5")
+        .send(correctUser1)
+        .expect(201);
+    expect(response.body).toStrictEqual({
+        id: expect.any(String),
+        login: correctUser1.login,
+        email: correctUser1.email,
+        createdAt: expect.any(String),
+        banInfo: {
+            isBanned: expect.any(Boolean),
+            banReason: null,
+            banDate: null,
+        },
+    });
+    const correctUser2 = createUserForTesting(6, 2, 10);
+    await request(app.getHttpServer())
+        .post("/sa/users")
+        .set("authorization", "Basic YWRtaW46cXdlcnR5")
+        .send(correctUser2)
+        .expect(201);
+    const correctUser3 = createUserForTesting(6, 2, 10);
+    await request(app.getHttpServer())
+        .post("/sa/users")
+        .set("authorization", "Basic YWRtaW46cXdlcnR5")
+        .send(correctUser3)
+        .expect(201);
+    const response2 = await request(app.getHttpServer())
+        .post("/auth/login")
+        .send({ loginOrEmail: correctUser1.login, password: correctUser1.password })
+        .expect(200);
+    const accessTokenForUser1 = response2.body.accessToken;
+    const response3 = await request(app.getHttpServer())
+        .post("/auth/login")
+        .send({ loginOrEmail: correctUser2.login, password: correctUser2.password })
+        .expect(200);
+    const accessTokenForUser2 = response3.body.accessToken;
+    const response4 = await request(app.getHttpServer())
+        .post("/auth/login")
+        .send({ loginOrEmail: correctUser3.login, password: correctUser3.password })
+        .expect(200);
+    const accessTokenForUser3 = response4.body.accessToken;
+    return {
+        accessTokenForUser1: accessTokenForUser1,
+        accessTokenForUser2: accessTokenForUser2,
+        accessTokenForUser3: accessTokenForUser3,
+        userId1: response.body.id,
+        userId2: response3.body.id,
+        userId3: response4.body.id,
+    };
 }
 
 export async function teardownTestApp() {

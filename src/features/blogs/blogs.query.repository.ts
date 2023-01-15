@@ -18,7 +18,7 @@ export class BlogsQueryRepository {
             .skip(result.skips)
             .limit(result.pageSize);
         const totalCount = await this.blogsModelClass.count({
-            $and: [result.query, { "banInfo.isBanned": false }, { "banInfo.isBanned": false }],
+            $and: [result.query, { "banInfo.isBanned": false }],
         });
         return new BlogClassPagination(
             Math.ceil(totalCount / result.pageSize),

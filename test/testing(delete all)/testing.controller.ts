@@ -5,7 +5,7 @@ import { Model } from "mongoose";
 import { BlogClass } from "../../src/features/blogs/blogs.schema";
 import { PostClass } from "../../src/features/posts/posts.schema";
 import { CommentClass } from "../../src/features/comments/comments.schema";
-import { BannedUsersAndBlogsClass, UserAccountClass } from "../../src/features/super-admin/users/users.schema";
+import { BannedUsersBySuperAdminClass, UserAccountClass } from "../../src/features/super-admin/users/users.schema";
 
 @SkipThrottle()
 @Controller("testing")
@@ -15,7 +15,8 @@ export class TestingController {
         @InjectModel(PostClass.name) private postsModelClass: Model<PostClass>,
         @InjectModel(CommentClass.name) private commentsModelClass: Model<CommentClass>,
         @InjectModel(UserAccountClass.name) private userAccountModelClass: Model<UserAccountClass>,
-        @InjectModel(BannedUsersAndBlogsClass.name) private bannedUsersListClass: Model<BannedUsersAndBlogsClass>,
+        @InjectModel(BannedUsersBySuperAdminClass.name)
+        private bannedUsersListClass: Model<BannedUsersBySuperAdminClass>,
     ) {}
 
     @Delete("/all-data")

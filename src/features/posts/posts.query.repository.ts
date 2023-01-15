@@ -4,34 +4,47 @@ import { ModelForGettingAllPosts } from "./dto/posts.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { PostClass } from "./posts.schema";
-import { BannedUsersAndBlogsClass } from "../super-admin/users/users.schema";
+import { BannedBlogsBySuperAdminClass, BannedUsersBySuperAdminClass } from "../super-admin/users/users.schema";
 import { createQueryForPosts } from "./helpers/posts.query.repository.helpers";
+import { BlogClass } from "../blogs/blogs.schema";
 
 @Injectable()
 export class PostsQueryRepository {
     constructor(
+        @InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>,
         @InjectModel(PostClass.name) private postsModelClass: Model<PostClass>,
-        @InjectModel(BannedUsersAndBlogsClass.name) private bannedUserListClass: Model<BannedUsersAndBlogsClass>,
+        @InjectModel(BannedUsersBySuperAdminClass.name)
+        private bannedUsersBySuperAdminClass: Model<BannedUsersBySuperAdminClass>,
+        @InjectModel(BannedBlogsBySuperAdminClass.name)
+        private bannedBlogsBySuperAdminClass: Model<BannedBlogsBySuperAdminClass>,
     ) {}
 
     async getAllPosts(dto: ModelForGettingAllPosts, userId: string | undefined): Promise<PostClassPagination> {
         const result = await createQueryForPosts(dto);
-        let bannedUsers;
-        const bannedUsersInDB = await this.bannedUserListClass.find({});
+        let bannedBlogsIds;
+        let bannedUsersIdsBySuperAdmin;
+        const bannedUsersInDB = await this.bannedUsersBySuperAdminClass.find({});
         if (!bannedUsersInDB) {
-            bannedUsers = [];
+            bannedUsersIdsBySuperAdmin = [];
         } else {
-            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsersBySuperAdmin;
+            bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.userId);
+        }
+        const bannedBlogsInDB = await this.bannedBlogsBySuperAdminClass.find({
+            $or: [{ "blogOwnerInfo.userId": { $in: bannedUsersIdsBySuperAdmin } }, { "banInfo.isBanned": true }],
+        });
+        if (!bannedBlogsInDB) {
+            bannedBlogsIds = [];
+        } else {
+            bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.blogId);
         }
         const cursor = await this.postsModelClass
-            .find({})
+            .find({ blogId: { $nin: bannedBlogsIds } })
             .sort(result.sortObj)
             .skip(result.skips)
             .limit(result.pageSize);
-        cursor.filter((elem) => !bannedUsersInDB[0].bannedBlogsBySuperAdmin.includes(elem.blogId));
-        const totalCount = await this.postsModelClass.count({});
+        const totalCount = await this.postsModelClass.count({ blogId: { $nin: bannedBlogsIds } });
         cursor.forEach((elem) => {
-            elem.getLikesDataInfoForPost(userId, bannedUsers);
+            elem.getLikesDataInfoForPost(userId, bannedUsersIdsBySuperAdmin);
         });
         const cursorWithCorrectViewModel = cursor.map((elem) => {
             return elem.transformToPostViewModelClass();
@@ -51,28 +64,35 @@ export class PostsQueryRepository {
         userId: string | undefined,
     ): Promise<PostClassPagination> {
         const result = await createQueryForPosts(dto);
-        let bannedUsers;
-        const bannedUsersAndBlogsInDb = await this.bannedUserListClass.find({});
-        if (!bannedUsersAndBlogsInDb) {
-            bannedUsers = [];
+        let bannedBlogsIds;
+        let bannedUsersIdsBySuperAdmin;
+        const bannedUsersInDB = await this.bannedUsersBySuperAdminClass.find({});
+        if (!bannedUsersInDB) {
+            bannedUsersIdsBySuperAdmin = [];
         } else {
-            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsersBySuperAdmin;
+            bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.userId);
+        }
+        const bannedBlogsInDB = await this.bannedBlogsBySuperAdminClass.find({
+            $or: [{ "blogOwnerInfo.userId": { $in: bannedUsersIdsBySuperAdmin } }, { "banInfo.isBanned": true }],
+        });
+        if (!bannedBlogsInDB) {
+            bannedBlogsIds = [];
+        } else {
+            bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.blogId);
         }
         const cursor = await this.postsModelClass
-            .find({ blogId: { $nin: bannedUsersAndBlogsInDb[0].bannedBlogsBySuperAdmin } })
+            .find({ $and: [{ blogId: blogId }, { blogId: { $nin: bannedBlogsIds } }] })
             .sort(result.sortObj)
             .skip(result.skips)
             .limit(result.pageSize);
+        const totalCount = await this.postsModelClass.count({
+            $and: [{ blogId: blogId }, { blogId: { $nin: bannedBlogsIds } }],
+        });
         cursor.forEach((elem) => {
-            elem.getLikesDataInfoForPost(userId, bannedUsers);
+            elem.getLikesDataInfoForPost(userId, bannedUsersIdsBySuperAdmin);
         });
         const cursorWithCorrectViewModel = cursor.map((elem) => {
             return elem.transformToPostViewModelClass();
-        });
-        const totalCount = await this.postsModelClass.count({
-            blogId: {
-                $nin: bannedUsersAndBlogsInDb[0].bannedBlogsBySuperAdmin,
-            },
         });
         return new PostClassPagination(
             Math.ceil(totalCount / result.pageSize),
@@ -84,20 +104,27 @@ export class PostsQueryRepository {
     }
 
     async getPostById(id: string, userId: string | undefined): Promise<PostViewModelClass | null> {
-        let bannedUsers;
-        const bannedUsersAndBlogsInDb = await this.bannedUserListClass.find({});
-        if (!bannedUsersAndBlogsInDb[0].bannedUsersBySuperAdmin) {
-            bannedUsers = [];
+        let bannedBlogsIds;
+        let bannedUsersIdsBySuperAdmin;
+        const bannedUsersInDB = await this.bannedUsersBySuperAdminClass.find({});
+        if (!bannedUsersInDB) {
+            bannedUsersIdsBySuperAdmin = [];
         } else {
-            bannedUsers = (await this.bannedUserListClass.find({}))[0].bannedUsersBySuperAdmin;
+            bannedUsersIdsBySuperAdmin = bannedUsersInDB.map((elem) => elem.userId);
         }
-        const post = await this.postsModelClass.findOne({
-            $and: [{ id: id }, { blogId: { $nin: bannedUsersAndBlogsInDb[0].bannedBlogsBySuperAdmin } }],
+        const bannedBlogsInDB = await this.bannedBlogsBySuperAdminClass.find({
+            $or: [{ "blogOwnerInfo.userId": { $in: bannedUsersIdsBySuperAdmin } }, { "banInfo.isBanned": true }],
         });
+        if (!bannedBlogsInDB) {
+            bannedBlogsIds = [];
+        } else {
+            bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.blogId);
+        }
+        const post = await this.postsModelClass.findOne({ blogId: { $nin: bannedBlogsIds } });
         if (!post) {
             return null;
         }
-        post.getLikesDataInfoForPost(userId, bannedUsers);
+        post.getLikesDataInfoForPost(userId, bannedUsersIdsBySuperAdmin);
         return post.transformToPostViewModelClass();
     }
 

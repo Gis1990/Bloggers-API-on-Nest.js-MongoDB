@@ -8,7 +8,7 @@ import {
     UserAccountClass,
     UserDevicesDataClass,
     EmailRecoveryCodeClass,
-    BannedUsersAndBlogsClass,
+    BannedUsersBySuperAdminClass,
     ExtendedBanInfoClass,
 } from "./users.schema";
 import { CreatedNewUserDto } from "./dto/users.dto";
@@ -19,7 +19,8 @@ export class UsersRepository {
     constructor(
         @InjectModel(UserAccountClass.name) private usersAccountModelClass: Model<UserAccountClass>,
         @InjectModel(LoginAttemptsClass.name) private loginAttemptsModelClass: Model<LoginAttemptsClass>,
-        @InjectModel(BannedUsersAndBlogsClass.name) private bannedUsersClass: Model<BannedUsersAndBlogsClass>,
+        @InjectModel(BannedUsersBySuperAdminClass.name)
+        private bannedUsersBySuperAdminClass: Model<BannedUsersBySuperAdminClass>,
     ) {}
 
     async userConfirmedEmail(id: string): Promise<boolean> {
@@ -58,18 +59,6 @@ export class UsersRepository {
             { $set: { emailRecoveryCode: passwordRecoveryData } },
         );
         return result.modifiedCount === 1;
-    }
-
-    async addUserToBannedListBySuperAdmin(id: string): Promise<boolean> {
-        const bannedUsers = await this.bannedUsersClass.findOne({});
-        if (!bannedUsers) {
-            const newBannedUsers = new this.bannedUsersClass();
-            await newBannedUsers.save();
-            return true;
-        } else {
-            const result = await this.bannedUsersClass.updateOne({}, { $push: { bannedUsersBySuperAdmin: id } });
-            return result.modifiedCount === 1;
-        }
     }
 
     async updatePasswordHash(id: string, passwordHash: string): Promise<boolean> {
@@ -132,10 +121,13 @@ export class UsersRepository {
     }
 
     async createUser(newUser: CreatedNewUserDto): Promise<UserViewModelClass> {
-        const bannedUsers = await this.bannedUsersClass.findOne({});
+        const bannedUsers = await this.bannedUsersBySuperAdminClass.findOne({});
         if (!bannedUsers) {
-            const newBannedUsers = new this.bannedUsersClass();
+            const newBannedUsers = new this.bannedUsersBySuperAdminClass();
             await newBannedUsers.save();
+        }
+        if (newUser.banInfo.isBanned) {
+            await this.bannedUsersBySuperAdminClass.updateOne({ userId: newUser.id }, { $set: { userId: newUser.id } });
         }
         const user = new this.usersAccountModelClass(newUser);
         await user.save();
@@ -150,9 +142,9 @@ export class UsersRepository {
     async banUnbanUserBySuperAdmin(isBanned: boolean, banReason: string, id: string): Promise<boolean> {
         const banData = { isBanned: isBanned, banDate: new Date(), banReason: banReason };
         if (isBanned) {
-            await this.bannedUsersClass.updateOne({ $push: { bannedUsersBySuperAdmin: id } });
+            await this.bannedUsersBySuperAdminClass.updateOne({ userId: id }, { $set: { userId: id } });
         } else {
-            await this.bannedUsersClass.updateOne({ $pull: { bannedUsersBySuperAdmin: id } });
+            await this.bannedUsersBySuperAdminClass.deleteOne({ userId: id });
             banData.banDate = null;
             banData.banReason = null;
         }
@@ -175,9 +167,12 @@ export class UsersRepository {
             blogId: blogId,
         };
         if (isBanned) {
-            result = await this.bannedUsersClass.updateOne({ id: userId }, { $push: { banInfoForBlogs: banData } });
+            result = await this.usersAccountModelClass.updateOne(
+                { id: userId },
+                { $push: { banInfoForBlogs: banData } },
+            );
         } else {
-            result = await this.bannedUsersClass.updateOne(
+            result = await this.usersAccountModelClass.updateOne(
                 { id: userId },
                 { $pull: { banInfoForBlogs: { blogId: blogId } } },
             );

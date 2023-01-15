@@ -1,10 +1,11 @@
 import "reflect-metadata";
 import * as request from "supertest";
-import { app, createBlogForTests, setupTestApp, teardownTestApp } from "./test.functions";
+import { app, CheckingDbEmptiness, createBlogForTests, setupTestApp, teardownTestApp } from "./test.functions";
 
 describe("blogs endpoint (e2e)", () => {
     beforeAll(async () => {
         await setupTestApp();
+        await CheckingDbEmptiness();
     });
     afterAll(async () => {
         await teardownTestApp();

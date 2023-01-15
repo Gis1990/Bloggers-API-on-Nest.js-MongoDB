@@ -21,7 +21,9 @@ import { GetBlogByIdQuery } from "./use-cases/queries/get-blog-by-id-query";
 import { GetBlogByIdWithCorrectViewModelQuery } from "./use-cases/queries/get-blog-by-id-with-correct-view-model-query";
 import { GetAllPostsForSpecificBlogQuery } from "../posts/use-cases/queries/get-all-posts-for-specific-blog-query";
 import {
-    BannedUsersAndBlogsClass,
+    BannedBlogsBySuperAdminClass,
+    BannedBlogsBySuperAdminSchema,
+    BannedUsersBySuperAdminClass,
     BannedUsersSchema,
     UserAccountClass,
     UsersAccountSchema,
@@ -51,12 +53,16 @@ const queries = [
                 schema: PostsSchema,
             },
             {
-                name: BannedUsersAndBlogsClass.name,
+                name: BannedUsersBySuperAdminClass.name,
                 schema: BannedUsersSchema,
             },
             {
                 name: UserAccountClass.name,
                 schema: UsersAccountSchema,
+            },
+            {
+                name: BannedBlogsBySuperAdminClass.name,
+                schema: BannedBlogsBySuperAdminSchema,
             },
         ]),
     ],

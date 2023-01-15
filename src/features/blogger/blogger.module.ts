@@ -19,7 +19,9 @@ import { BlogsQueryRepository } from "../blogs/blogs.query.repository";
 import { BloggerController } from "./blogger.controller";
 import { GetAllBlogsForAuthorizedUserQuery } from "../blogs/use-cases/queries/get-all-blogs-for-authorized-user-query";
 import {
-    BannedUsersAndBlogsClass,
+    BannedBlogsBySuperAdminClass,
+    BannedBlogsBySuperAdminSchema,
+    BannedUsersBySuperAdminClass,
     BannedUsersSchema,
     LoginAttemptsClass,
     LoginAttemptsSchema,
@@ -65,7 +67,7 @@ const queries = [
                 schema: PostsSchema,
             },
             {
-                name: BannedUsersAndBlogsClass.name,
+                name: BannedUsersBySuperAdminClass.name,
                 schema: BannedUsersSchema,
             },
             {
@@ -79,6 +81,10 @@ const queries = [
             {
                 name: LoginAttemptsClass.name,
                 schema: LoginAttemptsSchema,
+            },
+            {
+                name: BannedBlogsBySuperAdminClass.name,
+                schema: BannedBlogsBySuperAdminSchema,
             },
         ]),
     ],

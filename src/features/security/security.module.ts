@@ -6,7 +6,7 @@ import { UsersRepository } from "../super-admin/users/users.repository";
 import { IsDeviceIdExistConstraint } from "./decorators/security.devices.custom.decorators";
 import { MongooseModule } from "@nestjs/mongoose";
 import {
-    BannedUsersAndBlogsClass,
+    BannedUsersBySuperAdminClass,
     BannedUsersSchema,
     LoginAttemptsClass,
     LoginAttemptsSchema,
@@ -45,7 +45,7 @@ const queries = [GetUserByIdQuery, GetUserByDeviceIdQuery];
                 schema: LoginAttemptsSchema,
             },
             {
-                name: BannedUsersAndBlogsClass.name,
+                name: BannedUsersBySuperAdminClass.name,
                 schema: BannedUsersSchema,
             },
         ]),

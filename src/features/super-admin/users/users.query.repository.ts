@@ -3,14 +3,11 @@ import { UserPaginationClass } from "./entities/users.entity";
 import { ModelForGettingAllBannedUsersForBlog, ModelForGettingAllUsers } from "./dto/users.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { BannedUsersAndBlogsClass, UserAccountClass } from "./users.schema";
+import { UserAccountClass } from "./users.schema";
 
 @Injectable()
 export class UsersQueryRepository {
-    constructor(
-        @InjectModel(UserAccountClass.name) private usersAccountModelClass: Model<UserAccountClass>,
-        @InjectModel(BannedUsersAndBlogsClass.name) private bannedUserListClass: Model<BannedUsersAndBlogsClass>,
-    ) {}
+    constructor(@InjectModel(UserAccountClass.name) private usersAccountModelClass: Model<UserAccountClass>) {}
 
     async getAllUsers(dto: ModelForGettingAllUsers): Promise<UserPaginationClass> {
         const {

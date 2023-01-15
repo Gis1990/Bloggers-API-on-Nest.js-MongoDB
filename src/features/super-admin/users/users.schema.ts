@@ -188,17 +188,21 @@ UsersAccountSchema.methods = {
 };
 
 @Schema({ versionKey: false })
-export class BannedUsersAndBlogsClass {
+export class BannedUsersBySuperAdminClass {
     @Prop({
-        type: [String],
-        default: [],
+        required: true,
     })
-    bannedUsersBySuperAdmin: string[];
-    @Prop({
-        type: [String],
-        default: [],
-    })
-    bannedBlogsBySuperAdmin: string[];
+    userId: string;
 }
 
-export const BannedUsersSchema = SchemaFactory.createForClass(BannedUsersAndBlogsClass);
+export const BannedUsersSchema = SchemaFactory.createForClass(BannedUsersBySuperAdminClass);
+
+@Schema({ versionKey: false })
+export class BannedBlogsBySuperAdminClass extends BannedUsersBySuperAdminClass {
+    @Prop({
+        required: true,
+    })
+    blogId: string;
+}
+
+export const BannedBlogsBySuperAdminSchema = SchemaFactory.createForClass(BannedBlogsBySuperAdminClass);

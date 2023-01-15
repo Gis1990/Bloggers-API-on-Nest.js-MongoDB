@@ -135,9 +135,10 @@ export class BloggerController {
         params: UsersIdValidationModel,
         @Body()
         dto: InputModelForBanUnbanUserByBloggerForBlog,
+        @CurrentUser() user: CurrentUserModel,
     ): Promise<UserPaginationClass> {
         return await this.queryBus.execute(
-            new BanUnbanUserByBloggerForBlog(dto.isBanned, dto.banReason, dto.blogId, params.id),
+            new BanUnbanUserByBloggerForBlog(dto.isBanned, dto.banReason, dto.blogId, params.id, user.id),
         );
     }
 

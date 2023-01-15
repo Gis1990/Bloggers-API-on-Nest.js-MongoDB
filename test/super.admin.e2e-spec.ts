@@ -1,10 +1,19 @@
 import "reflect-metadata";
 import * as request from "supertest";
-import { app, createBlogForTests, createUserForTesting, setupTestApp, teardownTestApp } from "./test.functions";
+import {
+    app,
+    CheckingDbEmptiness,
+    createBlogForTests,
+    createUserForTesting,
+    CreatingUsersForTesting,
+    setupTestApp,
+    teardownTestApp,
+} from "./test.functions";
 
 describe("super admin endpoint users /sa/users (e2e)", () => {
     beforeAll(async () => {
         await setupTestApp();
+        await CheckingDbEmptiness();
     });
     afterAll(async () => {
         await teardownTestApp();
@@ -153,43 +162,19 @@ describe("super admin endpoint users /sa/users (e2e)", () => {
     });
 });
 describe("super admin endpoint blogs /sa/blogs (e2e)", () => {
+    let accessToken;
+    let blogId1;
+    const items = [];
     beforeAll(async () => {
         await setupTestApp();
+        await CheckingDbEmptiness();
+        const result = await CreatingUsersForTesting();
+        accessToken = result.accessTokenForUser1;
     });
     afterAll(async () => {
         await teardownTestApp();
     });
     describe("PUT -> /sa/blogs/:id/ban", () => {
-        let correctUser;
-        let accessToken;
-        let blogId1;
-        const items = [];
-        it("should return status 201 and correct body when creating a user with correct data", async () => {
-            correctUser = createUserForTesting(6, 2, 10);
-            const response = await request(app.getHttpServer())
-                .post("/sa/users")
-                .set("authorization", "Basic YWRtaW46cXdlcnR5")
-                .send(correctUser)
-                .expect(201);
-            expect(response.body).toStrictEqual({
-                id: expect.any(String),
-                login: correctUser.login,
-                email: correctUser.email,
-                createdAt: expect.any(String),
-                banInfo: {
-                    isBanned: expect.any(Boolean),
-                    banReason: null,
-                    banDate: null,
-                },
-            });
-        });
-        it("should return status 200 and access token", async () => {
-            const response = await request(app.getHttpServer())
-                .post("/auth/login")
-                .send({ loginOrEmail: correctUser.login, password: correctUser.password })
-                .expect(200);
-            accessToken = response.body.accessToken;
-        });
         it("should return status 201 and correct body when creating blogs", async () => {
             const correctBlog1 = createBlogForTests(10, 5, true);
             const correctBlog2 = createBlogForTests(10, 5, true);

@@ -6,12 +6,12 @@ import { GetBlogByIdCommand } from "../../blogs/use-cases/queries/get-blog-by-id
 
 export class UpdatePostCommand {
     constructor(
-        public postId: string,
-        public title: string,
-        public shortDescription: string,
-        public content: string,
-        public blogId: string,
-        public user: CurrentUserModel,
+        public readonly postId: string,
+        public readonly title: string,
+        public readonly shortDescription: string,
+        public readonly content: string,
+        public readonly blogId: string,
+        public readonly user: CurrentUserModel,
     ) {}
 }
 

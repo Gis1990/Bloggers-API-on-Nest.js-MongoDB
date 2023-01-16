@@ -6,6 +6,8 @@ import { CommentsRepository } from "../comments.repository";
 import { UsersLikesInfoClass } from "../../posts/posts.schema";
 import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
 import { GetPostByIdCommand } from "../../posts/use-cases/queries/get-post-by-id-query";
+import { GetUserByIdCommand } from "../../super-admin/users/use-cases/queries/get-user-by-id-query";
+import { HttpException } from "@nestjs/common";
 
 export class CreateCommentCommand {
     constructor(
@@ -21,6 +23,9 @@ export class CreateCommentUseCase implements ICommandHandler<CreateCommentComman
 
     async execute(command: CreateCommentCommand): Promise<CommentViewModelClass> {
         const post = await this.queryBus.execute(new GetPostByIdCommand(command.postId, command.user.id));
+        const user = await this.queryBus.execute(new GetUserByIdCommand(command.user.id));
+        const blogIdsWhereUserIsBanned = user.map((elem) => elem.banInfoForBlogs.blogId);
+        if (blogIdsWhereUserIsBanned.includes(user.id)) throw new HttpException("Access denied", 403);
         const likes: LikesInfoClass = new LikesInfoClass();
         const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass();
         const createdCommentDto: CreatedCommentDto = {

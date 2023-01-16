@@ -2,6 +2,7 @@ import {
     CommentForBloggerPaginationClass,
     CommentPaginationClass,
     CommentViewModelClass,
+    CommentViewModelForBloggerClass,
 } from "./entities/comments.entity";
 import { ModelForGettingAllComments } from "./dto/comments.dto";
 import { InjectModel } from "@nestjs/mongoose";
@@ -106,7 +107,14 @@ export class CommentsQueryRepository {
             elem.getLikesDataInfoForComment(userId, bannedUsersIds);
         });
         const cursorWithCorrectViewModel = cursor.map((elem) => {
-            return elem.transformToCommentViewModelForBloggerClass();
+            return new CommentViewModelForBloggerClass(
+                elem.id,
+                elem.content,
+                elem.createdAt,
+                elem.likesInfo,
+                elem.commentatorInfo,
+                elem.postInfo,
+            );
         });
         // Count the total number of documents that match the query
         const totalCount = await this.commentsModelClass.count({ $in: [...allPostsIds] });

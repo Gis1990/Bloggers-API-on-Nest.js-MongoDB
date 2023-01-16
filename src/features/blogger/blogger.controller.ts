@@ -31,7 +31,7 @@ import {
 } from "../super-admin/users/dto/users.dto";
 import { UserPaginationClass } from "../super-admin/users/entities/users.entity";
 import { GetAllBannedUsersForBlogCommand } from "../super-admin/users/use-cases/queries/get-all-banned-users-for-blog-query";
-import { BanUnbanUserByBloggerForBlog } from "../super-admin/users/use-cases/ban-unban-user-by-blogger-for-blog-use-case";
+import { BanUnbanUserByBloggerForBlogCommand } from "../super-admin/users/use-cases/ban-unban-user-by-blogger-for-blog-use-case";
 
 @SkipThrottle()
 @Controller("blogger")
@@ -129,7 +129,8 @@ export class BloggerController {
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Put("/users/:userId/ban")
+    @Put("/users/:id/ban")
+    @HttpCode(204)
     async banUnbanUserByBloggerForBlog(
         @Param()
         params: UsersIdValidationModel,
@@ -137,19 +138,19 @@ export class BloggerController {
         dto: InputModelForBanUnbanUserByBloggerForBlog,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<UserPaginationClass> {
-        return await this.queryBus.execute(
-            new BanUnbanUserByBloggerForBlog(dto.isBanned, dto.banReason, dto.blogId, params.id, user.id),
+        return await this.commandBus.execute(
+            new BanUnbanUserByBloggerForBlogCommand(dto.isBanned, dto.banReason, dto.blogId, params.id, user.id),
         );
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Get("/users/blog/:blogId")
+    @Get("/users/blog/:id")
     async GetAllBannedUsersForBlog(
         @Param()
         params: BlogsIdValidationModelWhenBlogIsBanned,
         @Query()
         dto: ModelForGettingAllBannedUsersForBlog,
     ): Promise<UserPaginationClass> {
-        return await this.queryBus.execute(new GetAllBannedUsersForBlogCommand(dto));
+        return await this.queryBus.execute(new GetAllBannedUsersForBlogCommand(dto, params.id));
     }
 }

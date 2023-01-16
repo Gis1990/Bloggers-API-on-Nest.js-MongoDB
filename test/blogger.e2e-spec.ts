@@ -1,22 +1,16 @@
 import "reflect-metadata";
 import * as request from "supertest";
-import {
-    app,
-    BlogsModelClass,
-    createBlogForTests,
-    createDbReturnDataForAllBlogs,
-    createPostForTestingInBlogs,
-    createUserForTesting,
-    CreatingUsersForTesting,
-    setupTestApp,
-    teardownTestApp,
-} from "./test.functions";
+import { app, createBlogForTests, CreatingUsersForTesting, setupTestApp, teardownTestApp } from "./test.functions";
 
-describe("blogger endpoint users /blogger/users (e2e)", () => {
+describe("blogger endpoint users  /blogger/users (e2e)", () => {
     let accessTokenForUser1;
     let accessTokenForUser2;
     let accessTokenForUser3;
+    let userId1;
+    let userId2;
+    let userId3;
     let blogId1;
+    let blogId2;
     beforeAll(async () => {
         await setupTestApp();
         await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
@@ -24,22 +18,44 @@ describe("blogger endpoint users /blogger/users (e2e)", () => {
         accessTokenForUser1 = result.accessTokenForUser1;
         accessTokenForUser2 = result.accessTokenForUser2;
         accessTokenForUser3 = result.accessTokenForUser3;
+        userId1 = result.userId1;
+        userId2 = result.userId2;
+        userId3 = result.userId3;
     });
     afterAll(async () => {
         await teardownTestApp();
     });
-    describe("POST -> /sa/users/", () => {
-        it("should return status 401 when creating a user without authorization", async () => {
+    describe("PUT/GET -> /blogger/users/blog/:blogId", () => {
+        it("should return status 201 and return created blog by user 1", async () => {
             const correctBlog = createBlogForTests(10, 5, true);
-            await request(app.getHttpServer()).post("/blogger/blogs").send(correctBlog).expect(401);
+            const response = await request(app.getHttpServer())
+                .post("/blogger/blogs")
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .send(correctBlog)
+                .expect(201);
+            blogId1 = response.body.id;
+        });
+        it("should return status 201 and return created blog by user 1", async () => {
+            const correctBlog = createBlogForTests(10, 5, true);
+            const response = await request(app.getHttpServer())
+                .post("/blogger/blogs")
+                .set("authorization", "Bearer " + accessTokenForUser2)
+                .send(correctBlog)
+                .expect(201);
+            blogId2 = response.body.id;
+        });
+        it("should return status 204 and ban user 2 for blog ", async () => {
+            await request(app.getHttpServer())
+                .put(`/blogger/users/${userId2}/ban`)
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .send({
+                    isBanned: true,
+                    banReason: "stringstringstringst",
+                    blogId: blogId1,
+                })
+                .expect(204);
         });
     });
-    // describe("POST -> /sa/users/", () => {
-    //     it("3.Should return status 401 (/post) ", async () => {
-    //         const correctBlog = createBlogForTests(10, 5, true);
-    //         await request(app.getHttpServer()).post("blogger/blogs").send(correctBlog).expect(401);
-    //     });
-    // });
 });
 // it("4.Should return status 400 and array with error in websiteUrl (/post)", async () => {
 //     const notCorrectBlog = createBlogForTests(11, 7, false);

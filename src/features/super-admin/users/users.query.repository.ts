@@ -1,5 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { UserPaginationClass } from "./entities/users.entity";
+import {
+    UserForBannedUsersByBloggerPaginationClass,
+    UserPaginationClass,
+    UserViewModelForBannedUsersByBloggerClass,
+} from "./entities/users.entity";
 import { ModelForGettingAllBannedUsersForBlog, ModelForGettingAllUsers } from "./dto/users.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
@@ -63,7 +67,10 @@ export class UsersQueryRepository {
         return new UserPaginationClass(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
     }
 
-    async GetAllBannedUsersForBlog(dto: ModelForGettingAllBannedUsersForBlog): Promise<UserPaginationClass> {
+    async GetAllBannedUsersForBlog(
+        dto: ModelForGettingAllBannedUsersForBlog,
+        blogId: string,
+    ): Promise<UserForBannedUsersByBloggerPaginationClass> {
         const {
             searchLoginTerm = null,
             pageNumber = 1,
@@ -88,28 +95,40 @@ export class UsersQueryRepository {
             query.login = { login: { $regex: searchLoginTerm, $options: "i" } };
         }
         // Retrieve the documents from the UsersAccountModelClass collection, applying the query, sort, skip, and limit options
+        console.log(await this.usersAccountModelClass.find({}).lean());
         const cursor = await this.usersAccountModelClass
             .find(
-                { $and: [query, { "banInfoForBlogs.isBanned": true }] },
+                { $and: [query, { "banInfoForBlogs.blogId": blogId }] },
                 {
                     _id: 0,
-                    id: 1,
-                    login: 1,
-                    banInfoForBlogs: 1,
                 },
             )
             .sort(sortObj)
             .skip(skips)
             .limit(pageSize)
             .lean();
-
+        cursor.filter((user) => user.banInfoForBlogs.blogId === blogId);
+        const correctCursor = cursor.map((user) => {
+            const banData = {
+                isBanned: user.banInfoForBlogs[0].isBanned,
+                banDate: user.banInfoForBlogs[0].banDate,
+                banReason: user.banInfoForBlogs[0].banReason,
+            };
+            return new UserViewModelForBannedUsersByBloggerClass(user.id, user.login, banData);
+        });
         // Count the total number of documents that match the query
         const totalCount = await this.usersAccountModelClass.count({
-            $and: [query, { "banInfoForBlogs.isBanned": true }],
+            $and: [query, { "banInfoForBlogs.blogId": blogId }],
         });
 
         // Return a new UserDBClassPagination object with the calculated pagination information and the retrieved documents
-        return new UserPaginationClass(Math.ceil(totalCount / pageSize), pageNumber, pageSize, totalCount, cursor);
+        return new UserForBannedUsersByBloggerPaginationClass(
+            Math.ceil(totalCount / pageSize),
+            pageNumber,
+            pageSize,
+            totalCount,
+            correctCursor,
+        );
     }
 
     async getUserById(id: string): Promise<UserAccountClass | null> {
@@ -125,7 +144,6 @@ export class UsersQueryRepository {
                 banInfo: 1,
             },
         );
-
         if (user) {
             return user;
         } else {

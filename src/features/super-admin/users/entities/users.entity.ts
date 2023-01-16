@@ -1,4 +1,4 @@
-import { BanInfoClass, UserAccountClass } from "../users.schema";
+import { BanInfoClass } from "../users.schema";
 
 export class UserPaginationClass {
     constructor(
@@ -6,7 +6,17 @@ export class UserPaginationClass {
         public page: number,
         public pageSize: number,
         public totalCount: number,
-        public items: UserAccountClass[],
+        public items: UserViewModelClass[],
+    ) {}
+}
+
+export class UserForBannedUsersByBloggerPaginationClass {
+    constructor(
+        public pagesCount: number,
+        public page: number,
+        public pageSize: number,
+        public totalCount: number,
+        public items: UserViewModelForBannedUsersByBloggerClass[],
     ) {}
 }
 
@@ -18,4 +28,8 @@ export class UserViewModelClass {
         public createdAt: Date,
         public banInfo: BanInfoClass,
     ) {}
+}
+
+export class UserViewModelForBannedUsersByBloggerClass {
+    constructor(public id: string, public login: string, public banInfo: BanInfoClass) {}
 }

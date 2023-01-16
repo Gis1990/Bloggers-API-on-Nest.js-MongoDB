@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
 import { UsersRepository } from "../users.repository";
-import { GetBlogByIdCommand } from "../../../blogs/use-cases/queries/get-blog-by-id-query";
 import { HttpException } from "@nestjs/common";
+import { GetBlogByIdForBanUnbanOperationCommand } from "../../../blogs/use-cases/queries/get-blog-by-id-for-ban-unban-operation-query";
 
-export class BanUnbanUserByBloggerForBlog {
+export class BanUnbanUserByBloggerForBlogCommand {
     constructor(
         public isBanned: boolean,
         public banReason: string,
@@ -13,12 +13,12 @@ export class BanUnbanUserByBloggerForBlog {
     ) {}
 }
 
-@CommandHandler(BanUnbanUserByBloggerForBlog)
-export class BanUnbanUserByBloggerForBlogUseCase implements ICommandHandler<BanUnbanUserByBloggerForBlog> {
+@CommandHandler(BanUnbanUserByBloggerForBlogCommand)
+export class BanUnbanUserByBloggerForBlogUseCase implements ICommandHandler<BanUnbanUserByBloggerForBlogCommand> {
     constructor(private usersRepository: UsersRepository, private queryBus: QueryBus) {}
 
-    async execute(command: BanUnbanUserByBloggerForBlog): Promise<boolean> {
-        const blog = await this.queryBus.execute(new GetBlogByIdCommand(command.blogOwnerUserId));
+    async execute(command: BanUnbanUserByBloggerForBlogCommand): Promise<boolean> {
+        const blog = await this.queryBus.execute(new GetBlogByIdForBanUnbanOperationCommand(command.blogId));
         if (blog.blogOwnerInfo.userId !== command.blogOwnerUserId) throw new HttpException("Access denied", 403);
         return this.usersRepository.banUnbanUserByBloggerForBlog(
             command.isBanned,

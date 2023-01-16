@@ -5,11 +5,11 @@ import { GetBlogByIdForBanUnbanOperationCommand } from "../../../blogs/use-cases
 
 export class BanUnbanUserByBloggerForBlogCommand {
     constructor(
-        public isBanned: boolean,
-        public banReason: string,
-        public blogId: string,
-        public userId: string,
-        public blogOwnerUserId: string,
+        public readonly isBanned: boolean,
+        public readonly banReason: string,
+        public readonly blogId: string,
+        public readonly userId: string,
+        public readonly blogOwnerUserId: string,
     ) {}
 }
 

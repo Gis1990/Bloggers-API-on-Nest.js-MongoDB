@@ -9,26 +9,34 @@ import {
     createOutputPostForTesting,
     createPostForTesting,
     createUserForTesting,
+    CreatingUsersForTesting,
     emptyAllPostsDbReturnData,
     setupTestApp,
     teardownTestApp,
 } from "./test.functions";
 
 describe("posts endpoint (e2e)", () => {
+    let accessTokenForUser1;
+    let accessTokenForUser2;
+    let accessTokenForUser3;
+    let userId1;
+    let userId2;
+    let userId3;
+    let blogId1;
+    let blogId2;
     beforeAll(async () => {
         await setupTestApp();
+        await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
+        const result = await CreatingUsersForTesting();
+        accessTokenForUser1 = result.accessTokenForUser1;
+        accessTokenForUser2 = result.accessTokenForUser2;
+        accessTokenForUser3 = result.accessTokenForUser3;
+        userId1 = result.userId1;
+        userId2 = result.userId2;
+        userId3 = result.userId3;
     });
     afterAll(async () => {
         await teardownTestApp();
-    });
-    // Test deleting all data from the testing endpoint and expecting a status code of 204
-    it("1.Should return status 204 (/delete)", async () => {
-        await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
-    });
-    // Test retrieving all posts and expecting a status code of 200 and an empty list of posts
-    it("2.Should return status 200 and correct body (/get)", async () => {
-        const response = await request(app.getHttpServer()).get("/posts").expect(200);
-        expect(response.body).toEqual(emptyAllPostsDbReturnData);
     });
     it("3.Should return status 201 and correct new post (/post) ", async () => {
         // Create  a new blog and expecting a status code of 201

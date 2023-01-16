@@ -127,12 +127,12 @@ export async function CheckingDbEmptiness() {
 
 export async function CreatingUsersForTesting() {
     const correctUser1 = createUserForTesting(6, 2, 10);
-    const response = await request(app.getHttpServer())
+    const response1 = await request(app.getHttpServer())
         .post("/sa/users")
         .set("authorization", "Basic YWRtaW46cXdlcnR5")
         .send(correctUser1)
         .expect(201);
-    expect(response.body).toStrictEqual({
+    expect(response1.body).toStrictEqual({
         id: expect.any(String),
         login: correctUser1.login,
         email: correctUser1.email,
@@ -143,40 +143,54 @@ export async function CreatingUsersForTesting() {
             banDate: null,
         },
     });
+    const userId1 = response1.body.id;
+    const userLogin1 = response1.body.login;
+
     const correctUser2 = createUserForTesting(6, 2, 10);
-    await request(app.getHttpServer())
+    const response2 = await request(app.getHttpServer())
         .post("/sa/users")
         .set("authorization", "Basic YWRtaW46cXdlcnR5")
         .send(correctUser2)
         .expect(201);
+    const userId2 = response2.body.id;
+    const userLogin2 = response2.body.login;
+
     const correctUser3 = createUserForTesting(6, 2, 10);
-    await request(app.getHttpServer())
+    const response3 = await request(app.getHttpServer())
         .post("/sa/users")
         .set("authorization", "Basic YWRtaW46cXdlcnR5")
         .send(correctUser3)
         .expect(201);
-    const response2 = await request(app.getHttpServer())
+    const userId3 = response3.body.id;
+
+    const response4 = await request(app.getHttpServer())
         .post("/auth/login")
         .send({ loginOrEmail: correctUser1.login, password: correctUser1.password })
         .expect(200);
-    const accessTokenForUser1 = response2.body.accessToken;
-    const response3 = await request(app.getHttpServer())
+    const accessTokenForUser1 = response4.body.accessToken;
+    const userLogin3 = response4.body.login;
+
+    const response5 = await request(app.getHttpServer())
         .post("/auth/login")
         .send({ loginOrEmail: correctUser2.login, password: correctUser2.password })
         .expect(200);
-    const accessTokenForUser2 = response3.body.accessToken;
-    const response4 = await request(app.getHttpServer())
+    const accessTokenForUser2 = response5.body.accessToken;
+
+    const response6 = await request(app.getHttpServer())
         .post("/auth/login")
         .send({ loginOrEmail: correctUser3.login, password: correctUser3.password })
         .expect(200);
-    const accessTokenForUser3 = response4.body.accessToken;
+    const accessTokenForUser3 = response6.body.accessToken;
     return {
         accessTokenForUser1: accessTokenForUser1,
         accessTokenForUser2: accessTokenForUser2,
         accessTokenForUser3: accessTokenForUser3,
-        userId1: response.body.id,
-        userId2: response3.body.id,
-        userId3: response4.body.id,
+        userId1: userId1,
+        userId2: userId2,
+        userId3: userId3,
+        userLogin1: userLogin1,
+        userLogin2: userLogin2,
+        userLogin3: userLogin3,
     };
 }
 

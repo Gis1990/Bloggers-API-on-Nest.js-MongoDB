@@ -3,7 +3,7 @@ import { PostsQueryRepository } from "../../posts.query.repository";
 import { PostClass } from "../../posts.schema";
 
 export class GetPostByIdForLikeOperationCommand {
-    constructor(public id: string) {}
+    constructor(public readonly id: string) {}
 }
 
 @QueryHandler(GetPostByIdForLikeOperationCommand)

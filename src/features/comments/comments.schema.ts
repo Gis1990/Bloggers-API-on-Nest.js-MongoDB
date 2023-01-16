@@ -87,38 +87,6 @@ export class CommentClass {
     })
     postInfo: PostInfoClass;
 
-    async returnUsersLikeStatusForComments(userId: string): Promise<string> {
-        const isLiked = this.usersLikesInfo.usersWhoPutLike.includes(userId);
-        const isDisliked = this.usersLikesInfo.usersWhoPutDislike.includes(userId);
-
-        if (isLiked) {
-            return "Like";
-        }
-
-        if (isDisliked) {
-            return "Dislike";
-        }
-
-        return "None";
-    }
-
-    async getLikesDataInfoForComment(userId: string | undefined, bannedUsers: string[]): Promise<CommentClass> {
-        if (bannedUsers.length > 0) {
-            this.likesInfo.likesCount = this.usersLikesInfo.usersWhoPutLike.filter(
-                (elem) => !bannedUsers.includes(elem),
-            ).length;
-            this.likesInfo.dislikesCount = this.usersLikesInfo.usersWhoPutDislike.filter(
-                (elem) => !bannedUsers.includes(elem),
-            ).length;
-        }
-        if (userId) {
-            this.likesInfo.myStatus = await this.returnUsersLikeStatusForComments(userId);
-        } else {
-            this.likesInfo.myStatus = "None";
-        }
-        return this;
-    }
-
     async transformToCommentViewModelClass(): Promise<CommentViewModelClass> {
         return new CommentViewModelClass(
             this.id,
@@ -133,6 +101,5 @@ export class CommentClass {
 
 export const CommentsSchema = SchemaFactory.createForClass(CommentClass);
 CommentsSchema.methods = {
-    getLikesDataInfoForComment: CommentClass.prototype.getLikesDataInfoForComment,
-    returnUsersLikeStatusForComments: CommentClass.prototype.returnUsersLikeStatusForComments,
+    transformToCommentViewModelClass: CommentClass.prototype.transformToCommentViewModelClass,
 };

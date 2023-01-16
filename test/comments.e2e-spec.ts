@@ -2,58 +2,46 @@ import "reflect-metadata";
 import * as request from "supertest";
 import {
     app,
+    CheckingDbEmptiness,
     createBlogForTests,
     createOutputCommentForTesting,
     createPostForTesting,
-    createUserForTesting,
+    CreatingUsersForTesting,
     setupTestApp,
     teardownTestApp,
 } from "./test.functions";
 
 describe("comments endpoint (e2e)", () => {
+    let accessTokenForUser1;
+    let accessTokenForUser2;
+    let userId1;
+    let userId2;
+    let userLogin1;
+    let userLogin2;
+
     beforeAll(async () => {
         await setupTestApp();
+        await CheckingDbEmptiness();
+        const result = await CreatingUsersForTesting();
+        accessTokenForUser1 = result.accessTokenForUser1;
+        accessTokenForUser2 = result.accessTokenForUser2;
+        userId1 = result.userId1;
+        userId2 = result.userId2;
+        userLogin1 = result.userLogin1;
+        userLogin2 = result.userLogin2;
     });
     afterAll(async () => {
         await teardownTestApp();
     });
     describe("GET -> /comments/:id", () => {
-        it("1.Should return status 204 (/delete)", async () => {
-            await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
-        });
         it("2.Should return status 204  (/post)", async () => {
-            // await new Promise((res) => setTimeout(res, 10000));
-            // create a user for testing with given parameters
-            const correctUser1 = createUserForTesting(6, 2, 10);
-
-            // send a POST request to create the user and expect a 201 response
-            const response = await request(app.getHttpServer())
-                .post("/sa/users")
-                .set("authorization", "Basic YWRtaW46cXdlcnR5")
-                .send({
-                    login: correctUser1.login,
-                    email: correctUser1.email,
-                    password: correctUser1.password,
-                })
-                .expect(201);
-
-            // get the id of the created user
-            const userId1 = response.body.id;
-
-            // send a POST request to login and get the access token
-            const response1 = await request(app.getHttpServer())
-                .post("/auth/login")
-                .send({ loginOrEmail: correctUser1.login, password: correctUser1.password })
-                .expect(200);
-            const accessToken1 = response1.body.accessToken;
-
             // create a blog for testing
             const correctBlog = createBlogForTests(10, 5, true);
 
             // send a POST request to create the blog and expect a 201 response
             const response2 = await request(app.getHttpServer())
                 .post("/blogger/blogs")
-                .set("authorization", "Bearer " + accessToken1)
+                .set("authorization", "Bearer " + accessTokenForUser1)
                 .send(correctBlog)
                 .expect(201);
 
@@ -66,7 +54,7 @@ describe("comments endpoint (e2e)", () => {
             // send a POST request to create the post and expect a 201 response
             const response3 = await request(app.getHttpServer())
                 .post(`/blogger/blogs/${blogId}/posts`)
-                .set("authorization", "Bearer " + accessToken1)
+                .set("authorization", "Bearer " + accessTokenForUser1)
                 .send(correctNewPost)
                 .expect(201);
 
@@ -74,12 +62,12 @@ describe("comments endpoint (e2e)", () => {
             const postId = response3.body.id;
 
             // create a comment for testing
-            const outputComment1 = createOutputCommentForTesting(50, userId1, correctUser1.login, 0, 0, "None");
+            const outputComment1 = createOutputCommentForTesting(50, userId2, userLogin2, 0, 0, "None");
 
             // send a POST request to create the comment and expect a 201 response
             const response4 = await request(app.getHttpServer())
                 .post(`/posts/${postId}/comments`)
-                .set("authorization", "Bearer " + accessToken1)
+                .set("authorization", "Bearer " + accessTokenForUser2)
                 .send({ content: outputComment1.content })
                 .expect(201);
 
@@ -115,22 +103,22 @@ describe("comments endpoint (e2e)", () => {
 
             await request(app.getHttpServer())
                 .delete(`/blogger/blogs/5/posts/${postId}`)
-                .set("authorization", "Bearer " + accessToken1)
+                .set("authorization", "Bearer " + accessTokenForUser1)
                 .expect(404);
 
             await request(app.getHttpServer())
                 .delete(`/blogger/blogs/5/posts/1`)
-                .set("authorization", "Bearer " + accessToken1)
+                .set("authorization", "Bearer " + accessTokenForUser1)
                 .expect(404);
 
             await request(app.getHttpServer())
                 .delete(`/blogger/blogs/${blogId}/posts/${postId}`)
-                .set("authorization", "Bearer " + accessToken1)
+                .set("authorization", "Bearer " + accessTokenForUser1)
                 .expect(204);
 
             await request(app.getHttpServer())
                 .delete(`/blogger/blogs/${blogId}/posts/${postId}`)
-                .set("authorization", "Bearer " + accessToken1)
+                .set("authorization", "Bearer " + accessTokenForUser1)
                 .expect(404);
         });
 

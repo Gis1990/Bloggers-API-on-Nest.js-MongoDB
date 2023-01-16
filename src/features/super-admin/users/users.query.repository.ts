@@ -141,6 +141,7 @@ export class UsersQueryRepository {
                 userDevicesData: 1,
                 currentSession: 1,
                 banInfo: 1,
+                banInfoForBlogs: 1,
             },
         );
         if (user) {

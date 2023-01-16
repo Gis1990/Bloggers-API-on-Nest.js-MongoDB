@@ -13,7 +13,7 @@ import { GetUserByLoginOrEmailCommand } from "../use-cases/queries/get-user-by-l
 @ValidatorConstraint({ name: "IsUsersIdExist", async: true })
 @Injectable()
 export class IsUsersIdExistConstraint implements ValidatorConstraintInterface {
-    constructor(protected queryBus: QueryBus) {}
+    constructor(private queryBus: QueryBus) {}
 
     async validate(userId: string) {
         const user = await this.queryBus.execute(new GetUserByIdCommand(userId));

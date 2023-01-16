@@ -19,15 +19,13 @@ export class CreateCommentCommand {
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentUseCase implements ICommandHandler<CreateCommentCommand> {
-    constructor(protected commentsRepository: CommentsRepository, private queryBus: QueryBus) {}
+    constructor(private commentsRepository: CommentsRepository, private queryBus: QueryBus) {}
 
     async execute(command: CreateCommentCommand): Promise<CommentViewModelClass> {
         const post = await this.queryBus.execute(new GetPostByIdCommand(command.postId, command.user.id));
         const user = await this.queryBus.execute(new GetUserByIdCommand(command.user.id));
-        if (user.banInfoForBlogs.length > 0) {
-            const blogIdsWhereUserIsBanned = user.banInfoForBlogs.map((elem) => elem.blogId);
-            if (blogIdsWhereUserIsBanned.includes(user.id)) throw new HttpException("Access denied", 403);
-        }
+        const blogIdsWhereUserIsBanned = user.banInfoForBlogs?.map((elem) => elem.blogId);
+        if (blogIdsWhereUserIsBanned?.includes(post.blogId)) throw new HttpException("Access denied", 403);
         const likes: LikesInfoClass = new LikesInfoClass();
         const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass();
         const createdCommentDto: CreatedCommentDto = {

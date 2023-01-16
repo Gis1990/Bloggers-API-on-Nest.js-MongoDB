@@ -4,7 +4,7 @@ import { CommentsQueryRepository } from "../../comments.query.repository";
 import { ModelForGettingAllComments } from "../../dto/comments.dto";
 
 export class GetAllCommentsForAllPostsForBloggersBlogsCommand {
-    constructor(public dto: ModelForGettingAllComments, public userId: string) {}
+    constructor(public readonly dto: ModelForGettingAllComments, public readonly userId: string) {}
 }
 
 @QueryHandler(GetAllCommentsForAllPostsForBloggersBlogsCommand)

@@ -12,7 +12,7 @@ import { GetPostByIdCommand } from "../use-cases/queries/get-post-by-id-query";
 @ValidatorConstraint({ name: "IsPostIdExist", async: true })
 @Injectable()
 export class IsPostIdExistConstraint implements ValidatorConstraintInterface {
-    constructor(protected queryBus: QueryBus) {}
+    constructor(private queryBus: QueryBus) {}
 
     async validate(postId: string): Promise<boolean> {
         const userId = undefined;

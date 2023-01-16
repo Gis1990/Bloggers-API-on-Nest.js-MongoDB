@@ -3,7 +3,7 @@ import { UserAccountClass } from "../../users.schema";
 import { UsersQueryRepository } from "../../users.query.repository";
 
 export class GetUserByIdCommand {
-    constructor(public userId: string) {}
+    constructor(public readonly userId: string) {}
 }
 
 @QueryHandler(GetUserByIdCommand)

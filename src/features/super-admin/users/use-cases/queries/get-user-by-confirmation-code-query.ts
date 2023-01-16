@@ -3,7 +3,7 @@ import { UserAccountClass } from "../../users.schema";
 import { UsersQueryRepository } from "../../users.query.repository";
 
 export class GetUserByConfirmationCodeCommand {
-    constructor(public confirmationCode: string) {}
+    constructor(public readonly confirmationCode: string) {}
 }
 
 @QueryHandler(GetUserByConfirmationCodeCommand)

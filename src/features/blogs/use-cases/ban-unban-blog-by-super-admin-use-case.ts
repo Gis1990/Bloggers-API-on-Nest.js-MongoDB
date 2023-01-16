@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { BlogsRepository } from "../blogs.repository";
 
 export class BanUnbanBlogBySuperAdminCommand {
-    constructor(public isBanned: boolean, public blogId: string) {}
+    constructor(public readonly isBanned: boolean, public readonly blogId: string) {}
 }
 
 @CommandHandler(BanUnbanBlogBySuperAdminCommand)

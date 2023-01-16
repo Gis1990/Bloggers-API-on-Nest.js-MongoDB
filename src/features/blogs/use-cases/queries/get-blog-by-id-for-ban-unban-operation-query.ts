@@ -3,7 +3,7 @@ import { BlogsQueryRepository } from "../../blogs.query.repository";
 import { BlogClass } from "../../blogs.schema";
 
 export class GetBlogByIdForBanUnbanOperationCommand {
-    constructor(public id: string) {}
+    constructor(public readonly id: string) {}
 }
 
 @QueryHandler(GetBlogByIdForBanUnbanOperationCommand)

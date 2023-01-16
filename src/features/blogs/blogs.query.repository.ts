@@ -4,14 +4,14 @@ import { ModelForGettingAllBlogs } from "./dto/blogs.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { BlogClass } from "./blogs.schema";
-import { createQueryForBlogs } from "./helpers/blogs.query.repository.helpers";
+import { createQuery } from "../../helpers/helpers.for.query.repositories";
 
 @Injectable()
 export class BlogsQueryRepository {
     constructor(@InjectModel(BlogClass.name) private blogsModelClass: Model<BlogClass>) {}
 
     async getAllBlogs(dto: ModelForGettingAllBlogs): Promise<BlogClassPagination> {
-        const result = await createQueryForBlogs(dto);
+        const result = await createQuery(dto);
         const cursor = await this.blogsModelClass
             .find({ $and: [result.query, { "banInfo.isBanned": false }] }, { _id: 0, blogOwnerInfo: 0, banInfo: 0 })
             .sort(result.sortObj)
@@ -30,7 +30,7 @@ export class BlogsQueryRepository {
     }
 
     async getAllBlogsForAuthorizedUser(dto: ModelForGettingAllBlogs, userId: string): Promise<BlogClassPagination> {
-        const result = await createQueryForBlogs(dto);
+        const result = await createQuery(dto);
         const cursor = await this.blogsModelClass
             .find(
                 { $and: [result.query, { "blogOwnerInfo.userId": userId }, { "banInfo.isBanned": false }] },
@@ -52,7 +52,7 @@ export class BlogsQueryRepository {
     }
 
     async getAllBlogsForSuperAdmin(dto: ModelForGettingAllBlogs): Promise<BlogClassPagination> {
-        const result = await createQueryForBlogs(dto);
+        const result = await createQuery(dto);
         const cursor = await this.blogsModelClass
             .find(result.query, { _id: 0 })
             .sort(result.sortObj)

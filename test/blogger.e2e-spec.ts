@@ -55,6 +55,42 @@ describe("blogger endpoint users  /blogger/users (e2e)", () => {
                 })
                 .expect(204);
         });
+        it("should return status 204 and ban user 3 for blog ", async () => {
+            await request(app.getHttpServer())
+                .put(`/blogger/users/${userId3}/ban`)
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .send({
+                    isBanned: true,
+                    banReason: "stringstringstringst",
+                    blogId: blogId1,
+                })
+                .expect(204);
+        });
+        it("should return status 204 and banned users for blog ", async () => {
+            const response = await request(app.getHttpServer())
+                .get(`/blogger/users/blog/${blogId1}`)
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .expect(200);
+            expect(response.body.items.length).toBe(2);
+        });
+        it("should return status 204 and unban user 3 for blog ", async () => {
+            await request(app.getHttpServer())
+                .put(`/blogger/users/${userId3}/ban`)
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .send({
+                    isBanned: false,
+                    banReason: "stringstringstringst",
+                    blogId: blogId1,
+                })
+                .expect(204);
+        });
+        it("should return status 204 and banned user for blog ", async () => {
+            const response = await request(app.getHttpServer())
+                .get(`/blogger/users/blog/${blogId1}`)
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .expect(200);
+            expect(response.body.items.length).toBe(1);
+        });
     });
 });
 // it("4.Should return status 400 and array with error in websiteUrl (/post)", async () => {

@@ -7,9 +7,9 @@ import { HttpException } from "@nestjs/common";
 
 export class GetAllBannedUsersForBlogCommand {
     constructor(
-        public dto: ModelForGettingAllBannedUsersForBlog,
-        public blogId: string,
-        public blogOwnerUserId: string,
+        public readonly dto: ModelForGettingAllBannedUsersForBlog,
+        public readonly blogId: string,
+        public readonly blogOwnerUserId: string,
     ) {}
 }
 

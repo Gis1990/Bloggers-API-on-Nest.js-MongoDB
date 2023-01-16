@@ -3,7 +3,7 @@ import { UserAccountClass } from "../../users.schema";
 import { UsersQueryRepository } from "../../users.query.repository";
 
 export class GetUserByRecoveryCodeCommand {
-    constructor(public recoveryCode: string) {}
+    constructor(public readonly recoveryCode: string) {}
 }
 
 @QueryHandler(GetUserByRecoveryCodeCommand)

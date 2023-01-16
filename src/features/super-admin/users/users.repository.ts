@@ -158,7 +158,6 @@ export class UsersRepository {
         const blogIsAlreadyBanned = await this.usersAccountModelClass.findOne({
             $and: [{ id: userId }, { "banInfoForBlogs.blogId": blogId }, { "banInfoForBlogs.isBanned": true }],
         });
-        console.log(blogIsAlreadyBanned);
         if (blogIsAlreadyBanned) {
             return true;
         }

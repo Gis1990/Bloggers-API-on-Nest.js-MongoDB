@@ -24,7 +24,7 @@ export class CreateCommentUseCase implements ICommandHandler<CreateCommentComman
     async execute(command: CreateCommentCommand): Promise<CommentViewModelClass> {
         const post = await this.queryBus.execute(new GetPostByIdCommand(command.postId, command.user.id));
         const user = await this.queryBus.execute(new GetUserByIdCommand(command.user.id));
-        const blogIdsWhereUserIsBanned = user.map((elem) => elem.banInfoForBlogs.blogId);
+        const blogIdsWhereUserIsBanned = user.banInfoForBlogs.map((elem) => elem.blogId);
         if (blogIdsWhereUserIsBanned.includes(user.id)) throw new HttpException("Access denied", 403);
         const likes: LikesInfoClass = new LikesInfoClass();
         const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass();

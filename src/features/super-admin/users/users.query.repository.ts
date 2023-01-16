@@ -95,7 +95,6 @@ export class UsersQueryRepository {
             query.login = { login: { $regex: searchLoginTerm, $options: "i" } };
         }
         // Retrieve the documents from the UsersAccountModelClass collection, applying the query, sort, skip, and limit options
-        console.log(await this.usersAccountModelClass.find({}).lean());
         const cursor = await this.usersAccountModelClass
             .find(
                 { $and: [query, { "banInfoForBlogs.blogId": blogId }] },

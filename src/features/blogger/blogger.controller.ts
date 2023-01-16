@@ -150,7 +150,8 @@ export class BloggerController {
         params: BlogsIdValidationModelWhenBlogIsBanned,
         @Query()
         dto: ModelForGettingAllBannedUsersForBlog,
+        @CurrentUser() user: CurrentUserModel,
     ): Promise<UserPaginationClass> {
-        return await this.queryBus.execute(new GetAllBannedUsersForBlogCommand(dto, params.id));
+        return await this.queryBus.execute(new GetAllBannedUsersForBlogCommand(dto, params.id, user.id));
     }
 }

@@ -10,15 +10,6 @@ export async function createQuery(dto: any) {
     return { query, skips, sortObj, pageSize, pageNumber };
 }
 
-export async function getBannedUsersIdsBySuperAdmin() {
-    let bannedUsersIds = [];
-    const bannedUsersInDB = await this.userAccountClass.find({ "banInfo.isBanned": true });
-    if (bannedUsersInDB) {
-        bannedUsersIds = bannedUsersInDB.map((elem) => elem.id);
-    }
-    return bannedUsersIds;
-}
-
 export async function getBannedBlogsIds(bannedUsersIdsBySuperAdmin: string[]) {
     let bannedBlogsIds = [];
     const bannedBlogsInDB = await this.blogsModelClass.find({

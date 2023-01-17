@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
 import { Request } from "express";
-import { CheckCredentialsCommand } from "../../features/auth/use-cases/check-credentials-use-case";
+import { CheckCredentialsCommand } from "../../commands/auth/check-credentials-use-case";
 import { CommandBus } from "@nestjs/cqrs";
 
 @Injectable()

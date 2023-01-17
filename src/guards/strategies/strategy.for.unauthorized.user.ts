@@ -2,7 +2,7 @@ import { ConfigService } from "@nestjs/config";
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { GetUserByIdCommand } from "../../features/super-admin/users/use-cases/queries/get-user-by-id-query";
+import { GetUserByIdCommand } from "../../queries/users/get-user-by-id-query";
 import { QueryBus } from "@nestjs/cqrs";
 
 @Injectable()

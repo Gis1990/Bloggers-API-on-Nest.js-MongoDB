@@ -18,10 +18,10 @@ import {
     UserDevicesDataClass,
     UserDevicesDataSchema,
     UsersAccountSchema,
-} from "../src/features/super-admin/users/users.schema";
-import { BlogClass, BlogsSchema } from "../src/features/blogs/blogs.schema";
-import { CommentClass, CommentsSchema } from "../src/features/comments/comments.schema";
-import { NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema } from "../src/features/posts/posts.schema";
+} from "../src/schemas/users.schema";
+import { BlogClass, BlogsSchema } from "../src/schemas/blogs.schema";
+import { CommentClass, CommentsSchema } from "../src/schemas/comments.schema";
+import { NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema } from "../src/schemas/posts.schema";
 import * as request from "supertest";
 
 export const BlogsModelClass = mongoose.connection.collection("blogclasses");

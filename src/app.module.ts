@@ -2,19 +2,19 @@ import { Module } from "@nestjs/common";
 import { config } from "./config/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { BlogsModule } from "./features/blogs/blogs.module";
-import { PostsModule } from "./features/posts/posts.module";
-import { AuthModule } from "./features/auth/auth.module";
+import { BlogsModule } from "./modules/blogs/blogs.module";
+import { PostsModule } from "./modules/posts/posts.module";
+import { AuthModule } from "./modules/auth/auth.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { CommentsModule } from "./features/comments/comments.module";
-import { TestingModule } from "../test/testing(delete all)/testing.module";
-import { SecurityModule } from "./features/security/security.module";
+import { CommentsModule } from "./modules/comments/comments.module";
+import { TestingModule } from "./modules/testing(delete all)/testing.module";
+import { SecurityModule } from "./modules/security/security.module";
 import { MongooseModule } from "@nestjs/mongoose";
 import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { CqrsModule } from "@nestjs/cqrs";
-import { BloggerModule } from "./features/blogger/blogger.module";
-import { SuperAdminModule } from "./features/super-admin/super.admin.module";
+import { BloggerModule } from "./modules/blogger/blogger.module";
+import { SuperAdminModule } from "./modules/super-admin/super.admin.module";
 
 @Module({
     imports: [

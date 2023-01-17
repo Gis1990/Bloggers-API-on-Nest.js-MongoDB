@@ -14,6 +14,9 @@ export class GetPostByIdQuery implements IQueryHandler<GetPostByIdCommand> {
 
     async execute(query: GetPostByIdCommand): Promise<PostViewModelClass | null> {
         const result = await this.postsQueryRepository.getPostById(query.id);
+        if (!result) {
+            return null;
+        }
         const post = await HelperForPosts.getLikesDataInfoForPost(
             query.userId,
             result.bannedUsersIdsBySuperAdmin,

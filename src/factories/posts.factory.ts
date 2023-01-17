@@ -19,9 +19,11 @@ export class PostsFactory {
     static async createPostViewModelClassPagination(
         dto: PostClassPaginationDto,
     ): Promise<PostViewModelClassPagination> {
-        dto.items.map((elem) => {
-            return PostsFactory.createPostViewModelClass(elem);
-        });
-        return new PostViewModelClassPagination(dto.pagesCount, dto.page, dto.pageSize, dto.totalCount, dto.items);
+        const result = await Promise.all(
+            dto.items.map((elem) => {
+                return PostsFactory.createPostViewModelClass(elem);
+            }),
+        );
+        return new PostViewModelClassPagination(dto.pagesCount, dto.page, dto.pageSize, dto.totalCount, result);
     }
 }

@@ -29,7 +29,7 @@ export class PostsQueryRepository {
             bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.id);
         }
         const cursor = await this.postsModelClass
-            .find({ blogId: { $nin: bannedBlogsIds } })
+            .find({ blogId: { $nin: bannedBlogsIds } }, { _id: 0 })
             .sort(queryDtoForPosts.sortObj)
             .skip(queryDtoForPosts.skips)
             .limit(queryDtoForPosts.pageSize);
@@ -58,7 +58,7 @@ export class PostsQueryRepository {
             bannedBlogsIds = bannedBlogsInDB.map((elem) => elem.id);
         }
         const cursor = await this.postsModelClass
-            .find({ $and: [{ blogId: blogId }, { blogId: { $nin: bannedBlogsIds } }] })
+            .find({ $and: [{ blogId: blogId }, { blogId: { $nin: bannedBlogsIds } }] }, { _id: 0 })
             .sort(queryDtoForPosts.sortObj)
             .skip(queryDtoForPosts.skips)
             .limit(queryDtoForPosts.pageSize);

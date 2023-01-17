@@ -1,4 +1,4 @@
-Hello,this is my pet-project/project for study.It's made according to [this](https://api-swagger.it-incubator.ru/swagger/index.html?urls.primaryName=h16%20API) swagger documentation. Used framework: Nest.js. Used database: MongoDB
+Hello,this is my pet-project/study project.It's made according to [this](https://api-swagger.it-incubator.ru/swagger/index.html?urls.primaryName=h16%20API) swagger documentation. Used framework: Nest.js. Used database: MongoDB
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>

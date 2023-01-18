@@ -2,7 +2,7 @@ import { IsString, Length, IsIn, IsNotEmpty, IsNumber, IsOptional } from "class-
 import { IsCommentsIdExist } from "../decorators/comments/comments.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import { UsersLikesInfoClass } from "../schemas/posts.schema";
-import { LikesInfoClass, PostInfoClass } from "../schemas/comments.schema";
+import { CommentClass, LikesInfoClass, PostInfoClass } from "../schemas/comments.schema";
 import { OwnerInfoClass } from "../schemas/blogs.schema";
 
 const listOfCorrectLikeStatus = ["Like", "Dislike", "None"];
@@ -11,11 +11,11 @@ export class ModelForGettingAllComments {
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    public PageNumber: number;
+    public pageNumber: number;
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
-    public PageSize: number;
+    public pageSize: number;
     @IsString()
     @IsOptional()
     public sortBy: string;
@@ -61,4 +61,12 @@ export class CreatedCommentDto {
     public usersLikesInfo: UsersLikesInfoClass;
     public commentatorInfo: OwnerInfoClass;
     public postInfo: PostInfoClass;
+}
+
+export class CommentClassPaginationDto {
+    public pagesCount: number;
+    public page: number;
+    public pageSize: number;
+    public totalCount: number;
+    public items: CommentClass[];
 }

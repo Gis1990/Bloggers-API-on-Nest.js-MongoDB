@@ -1,7 +1,7 @@
 import { LikesInfoClass, PostInfoClass } from "../schemas/comments.schema";
 import { OwnerInfoClass } from "../schemas/blogs.schema";
 
-export class CommentPaginationClass {
+export class CommentViewModelPaginationClass {
     constructor(
         public pagesCount: number,
         public page: number,
@@ -11,7 +11,7 @@ export class CommentPaginationClass {
     ) {}
 }
 
-export class CommentForBloggerPaginationClass {
+export class CommentViewModelForBloggerPaginationClass {
     constructor(
         public pagesCount: number,
         public page: number,

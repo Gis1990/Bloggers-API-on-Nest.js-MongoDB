@@ -29,9 +29,10 @@ import {
     ModelForGettingAllBannedUsersForBlog,
     UsersIdValidationModel,
 } from "../../dtos/users.dto";
-import { UserPaginationClass } from "../../entities/users.entity";
+import { UserViewModelForBannedUsersByBloggerPaginationClass } from "../../entities/users.entity";
 import { GetAllBannedUsersForBlogCommand } from "../../queries/users/get-all-banned-users-for-blog-query";
 import { BanUnbanUserByBloggerForBlogCommand } from "../../commands/users/ban-unban-user-by-blogger-for-blog-use-case";
+import { CommentViewModelForBloggerPaginationClass } from "../../entities/comments.entity";
 
 @SkipThrottle()
 @Controller("blogger")
@@ -44,7 +45,7 @@ export class BloggerController {
         @Query()
         dto: ModelForGettingAllComments,
         @CurrentUser() user: CurrentUserModel,
-    ): Promise<BlogViewModelClassPagination> {
+    ): Promise<CommentViewModelForBloggerPaginationClass> {
         return await this.queryBus.execute(new GetAllCommentsForAllPostsForBloggersBlogsCommand(dto, user.id));
     }
 
@@ -137,7 +138,7 @@ export class BloggerController {
         @Body()
         dto: InputModelForBanUnbanUserByBloggerForBlog,
         @CurrentUser() user: CurrentUserModel,
-    ): Promise<UserPaginationClass> {
+    ): Promise<boolean> {
         return await this.commandBus.execute(
             new BanUnbanUserByBloggerForBlogCommand(dto.isBanned, dto.banReason, dto.blogId, params.id, user.id),
         );
@@ -151,7 +152,7 @@ export class BloggerController {
         @Query()
         dto: ModelForGettingAllBannedUsersForBlog,
         @CurrentUser() user: CurrentUserModel,
-    ): Promise<UserPaginationClass> {
+    ): Promise<UserViewModelForBannedUsersByBloggerPaginationClass> {
         return await this.queryBus.execute(new GetAllBannedUsersForBlogCommand(dto, params.id, user.id));
     }
 }

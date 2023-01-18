@@ -3,7 +3,7 @@ import { ModelForGettingAllPosts, PostsIdValidationModel } from "../../dtos/post
 import { CurrentUser, CurrentUserId } from "../../decorators/auth/auth.custom.decorators";
 import { PostViewModelClassPagination, PostViewModelClass } from "../../entities/posts.entity";
 import { ModelForCreatingNewComment, ModelForGettingAllComments, ModelForLikeStatus } from "../../dtos/comments.dto";
-import { CommentPaginationClass, CommentViewModelClass } from "../../entities/comments.entity";
+import { CommentViewModelClass, CommentViewModelPaginationClass } from "../../entities/comments.entity";
 import { CurrentUserModel } from "../../dtos/auth.dto";
 import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
 import { strategyForUnauthorizedUser } from "../../guards/strategy-for-unauthorized-user-guard";
@@ -35,7 +35,7 @@ export class PostsController {
         @Param() params: PostsIdValidationModel,
         @Query() model: ModelForGettingAllComments,
         @CurrentUserId() userId: string,
-    ): Promise<CommentPaginationClass> {
+    ): Promise<CommentViewModelPaginationClass> {
         return await this.queryBus.execute(new GetAllCommentsForSpecificPostCommand(model, params.postId, userId));
     }
 

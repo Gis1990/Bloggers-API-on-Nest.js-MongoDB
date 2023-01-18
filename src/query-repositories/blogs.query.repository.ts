@@ -67,6 +67,12 @@ export class BlogsQueryRepository {
         };
     }
 
+    async getAllBannedBlogs(bannedUsersIdsBySuperAdmin: string[]): Promise<BlogClass[]> {
+        return this.blogsModelClass.find({
+            $or: [{ "blogOwnerInfo.userId": { $in: bannedUsersIdsBySuperAdmin } }, { "banInfo.isBanned": true }],
+        });
+    }
+
     async getBlogById(id: string): Promise<BlogClass | null> {
         return this.blogsModelClass.findOne({ $and: [{ id: id }, { "banInfo.isBanned": false }] });
     }

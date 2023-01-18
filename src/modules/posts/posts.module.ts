@@ -24,6 +24,8 @@ import { GetPostByIdQuery } from "../../queries/posts/get-post-by-id-query";
 import { GetPostByIdForLikeOperationQuery } from "../../queries/posts/get-post-by-id-for-like-opertation-query";
 import { GetUserByIdQuery } from "../../queries/users/get-user-by-id-query";
 import { UsersQueryRepository } from "../../query-repositories/users.query.repository";
+import { GetAllBannedUsersBySuperAdminQuery } from "../../queries/users/get-all-banned-users-by-super-admin-query";
+import { GetAllBannedBlogsQuery } from "../../queries/blogs/get-all-banned-blogs-query";
 
 const useCases = [UpdatePostUseCase, DeletePostUseCase, LikeOperationForPostUseCase, CreateCommentUseCase];
 const queries = [
@@ -33,6 +35,8 @@ const queries = [
     GetPostByIdQuery,
     GetPostByIdForLikeOperationQuery,
     GetUserByIdQuery,
+    GetAllBannedUsersBySuperAdminQuery,
+    GetAllBannedBlogsQuery,
 ];
 
 @Module({

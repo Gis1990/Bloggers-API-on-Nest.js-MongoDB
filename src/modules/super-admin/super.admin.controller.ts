@@ -15,7 +15,7 @@ import {
     UsersIdValidationModel,
 } from "../../dtos/users.dto";
 import { BindUserWithBlogCommand } from "../../commands/users/bind-user-with-blog-use-case";
-import { UserViewModelClass, UserPaginationClass } from "../../entities/users.entity";
+import { UserViewModelClass, UserViewModelClassPagination } from "../../entities/users.entity";
 import { CreateUserWithoutConfirmationEmailCommand } from "../../commands/auth/create-user-without-confirmation-email-use-case";
 import { DeleteUserCommand } from "../../commands/users/delete-user-use-case";
 import { BanUnbanUserBySuperAdminCommand } from "../../commands/users/ban-unban-user-by-super-admin-use-case";
@@ -75,7 +75,7 @@ export class SuperAdminController {
     async getAllUsers(
         @Query()
         dto: ModelForGettingAllUsers,
-    ): Promise<UserPaginationClass> {
+    ): Promise<UserViewModelClassPagination> {
         return await this.queryBus.execute(new GetAllUsersCommand(dto));
     }
 

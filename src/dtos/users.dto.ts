@@ -7,6 +7,7 @@ import {
     UserDevicesDataClass,
     EmailRecoveryCodeClass,
     BanInfoClass,
+    UserAccountClass,
 } from "../schemas/users.schema";
 import { IsBlogsIdExistInTheRequestBody } from "../decorators/blogs/blogs.custom.decorators";
 
@@ -127,4 +128,12 @@ export class BanDataForUserDto {
     public isBanned: boolean;
     public banDate: Date;
     public banReason: string;
+}
+
+export class UsersClassPaginationDto {
+    public pagesCount: number;
+    public page: number;
+    public pageSize: number;
+    public totalCount: number;
+    public items: UserAccountClass[];
 }

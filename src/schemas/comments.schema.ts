@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { UsersLikesInfoClass, UsersLikesInfoSchema } from "./posts.schema";
-import { CommentViewModelClass } from "../entities/comments.entity";
 import { OwnerInfoClass, OwnerInfoSchema } from "./blogs.schema";
 
 @Schema({ versionKey: false })
@@ -86,20 +85,6 @@ export class CommentClass {
         _id: false,
     })
     postInfo: PostInfoClass;
-
-    async transformToCommentViewModelClass(): Promise<CommentViewModelClass> {
-        return new CommentViewModelClass(
-            this.id,
-            this.content,
-            this.commentatorInfo.userId,
-            this.commentatorInfo.userLogin,
-            this.createdAt,
-            this.likesInfo,
-        );
-    }
 }
 
 export const CommentsSchema = SchemaFactory.createForClass(CommentClass);
-CommentsSchema.methods = {
-    transformToCommentViewModelClass: CommentClass.prototype.transformToCommentViewModelClass,
-};

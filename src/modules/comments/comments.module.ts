@@ -18,6 +18,10 @@ import { GetAllCommentsForSpecificPostQuery } from "../../queries/comments/get-a
 import { GetCommentForIdValidationQuery } from "../../queries/comments/get-comment-for-id-validation-query";
 import { BlogClass, BlogsSchema } from "../../schemas/blogs.schema";
 import { UserAccountClass, UsersAccountSchema } from "../../schemas/users.schema";
+import { GetAllBannedBlogsQuery } from "../../queries/blogs/get-all-banned-blogs-query";
+import { GetAllBannedUsersBySuperAdminQuery } from "../../queries/users/get-all-banned-users-by-super-admin-query";
+import { BlogsQueryRepository } from "../../query-repositories/blogs.query.repository";
+import { UsersQueryRepository } from "../../query-repositories/users.query.repository";
 
 const useCases = [CreateCommentUseCase, UpdateCommentUseCase, DeleteCommentUseCase, LikeOperationForCommentUseCase];
 
@@ -26,6 +30,8 @@ const queries = [
     GetCommentByIdForLikeOperationQuery,
     GetAllCommentsForSpecificPostQuery,
     GetCommentForIdValidationQuery,
+    GetAllBannedBlogsQuery,
+    GetAllBannedUsersBySuperAdminQuery,
 ];
 
 @Module({
@@ -52,6 +58,14 @@ const queries = [
         ]),
     ],
     controllers: [CommentsController],
-    providers: [CommentsRepository, CommentsQueryRepository, IsCommentsIdExistConstraint, ...useCases, ...queries],
+    providers: [
+        CommentsRepository,
+        CommentsQueryRepository,
+        BlogsQueryRepository,
+        UsersQueryRepository,
+        IsCommentsIdExistConstraint,
+        ...useCases,
+        ...queries,
+    ],
 })
 export class CommentsModule {}

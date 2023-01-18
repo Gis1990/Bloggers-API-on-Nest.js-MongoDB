@@ -1,6 +1,6 @@
 import { BanInfoClass } from "../schemas/users.schema";
 
-export class UserPaginationClass {
+export class UserViewModelClassPagination {
     constructor(
         public pagesCount: number,
         public page: number,
@@ -10,7 +10,7 @@ export class UserPaginationClass {
     ) {}
 }
 
-export class UserForBannedUsersByBloggerPaginationClass {
+export class UserViewModelForBannedUsersByBloggerPaginationClass {
     constructor(
         public pagesCount: number,
         public page: number,

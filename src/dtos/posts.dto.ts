@@ -89,10 +89,4 @@ export class PostClassPaginationDto {
     public pageSize: number;
     public totalCount: number;
     public items: PostClass[];
-    public bannedUsersIdsBySuperAdmin: string[];
-}
-
-export class GetPostIdDto {
-    public post: PostClass;
-    public bannedUsersIdsBySuperAdmin: string[];
 }

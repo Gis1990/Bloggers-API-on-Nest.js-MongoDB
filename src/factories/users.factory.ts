@@ -27,14 +27,15 @@ export class UsersFactory {
         dto: UsersClassPaginationDto,
         blogId: string,
     ): Promise<UserViewModelForBannedUsersByBloggerPaginationClass> {
-        const result = dto.items.filter((user) => user.banInfoForBlogs.blogId === blogId);
-        const correctCursor = result.map((user) => {
+        dto.items.filter((user) => user.banInfoForBlogs.blogId === blogId);
+        const correctCursor = [];
+        dto.items.forEach((user) => {
             const banData = {
                 isBanned: user.banInfoForBlogs[0].isBanned,
                 banDate: user.banInfoForBlogs[0].banDate,
                 banReason: user.banInfoForBlogs[0].banReason,
             };
-            return new UserViewModelForBannedUsersByBloggerClass(user.id, user.login, banData);
+            correctCursor.push(new UserViewModelForBannedUsersByBloggerClass(user.id, user.login, banData));
         });
         return new UserViewModelForBannedUsersByBloggerPaginationClass(
             dto.pagesCount,

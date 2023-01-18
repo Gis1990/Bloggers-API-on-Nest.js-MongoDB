@@ -45,7 +45,6 @@ export class UsersQueryRepository {
         const totalCount = await this.userAccountClass.count({
             $and: [queryAllBannedUsersForBlog.query, { "banInfoForBlogs.blogId": blogId }],
         });
-
         return {
             pagesCount: Math.ceil(totalCount / queryAllBannedUsersForBlog.pageSize),
             page: queryAllBannedUsersForBlog.pageNumber,

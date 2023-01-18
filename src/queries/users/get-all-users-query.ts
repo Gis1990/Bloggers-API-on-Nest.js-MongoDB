@@ -14,7 +14,7 @@ export class GetAllUsersQuery implements IQueryHandler<GetAllUsersCommand> {
     constructor(private usersQueryRepository: UsersQueryRepository) {}
 
     async execute(query: GetAllUsersCommand): Promise<UserViewModelClassPagination> {
-        const dto = await HelperForUsers.createQuery(query.dto);
+        const dto = await HelperForUsers.createQueryForGettingAllusers(query.dto);
         const users = await this.usersQueryRepository.getAllUsers(dto);
         return await UsersFactory.createUserViewModelPaginationClass(users);
     }

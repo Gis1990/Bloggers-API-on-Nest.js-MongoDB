@@ -5,20 +5,15 @@ import { app, createBlogForTests, CreatingUsersForTesting, setupTestApp, teardow
 describe("blogger endpoint users  /blogger/users (e2e)", () => {
     let accessTokenForUser1;
     let accessTokenForUser2;
-    let accessTokenForUser3;
-    let userId1;
     let userId2;
     let userId3;
     let blogId1;
-    let blogId2;
     beforeAll(async () => {
         await setupTestApp();
         await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
         const result = await CreatingUsersForTesting();
         accessTokenForUser1 = result.accessTokenForUser1;
         accessTokenForUser2 = result.accessTokenForUser2;
-        accessTokenForUser3 = result.accessTokenForUser3;
-        userId1 = result.userId1;
         userId2 = result.userId2;
         userId3 = result.userId3;
     });
@@ -37,12 +32,11 @@ describe("blogger endpoint users  /blogger/users (e2e)", () => {
         });
         it("should return status 201 and return created blog by user 1", async () => {
             const correctBlog = createBlogForTests(10, 5, true);
-            const response = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .post("/blogger/blogs")
                 .set("authorization", "Bearer " + accessTokenForUser2)
                 .send(correctBlog)
                 .expect(201);
-            blogId2 = response.body.id;
         });
         it("should return status 204 and ban user 2 for blog ", async () => {
             await request(app.getHttpServer())
@@ -93,67 +87,98 @@ describe("blogger endpoint users  /blogger/users (e2e)", () => {
         });
     });
 });
-// it("4.Should return status 400 and array with error in websiteUrl (/post)", async () => {
-//     const notCorrectBlog = createBlogForTests(11, 7, false);
-//     const response = await request(app.getHttpServer())
-//         .post("/blogs")
-//         .set("authorization", "Basic YWRtaW46cXdlcnR5")
-//         .send(notCorrectBlog)
-//         .expect(400);
-//     expect(response.body).toEqual({ errorsMessages: [{ field: "websiteUrl", message: expect.any(String) }] });
-// });
-// it("5.Should return status 400 and array with errors in name and websiteUrl (/post)", async () => {
-//     const notCorrectBlog = createBlogForTests(20, 7, false);
-//     const response = await request(app.getHttpServer())
-//         .post("/blogs")
-//         .set("authorization", "Basic YWRtaW46cXdlcnR5")
-//         .send(notCorrectBlog)
-//         .expect(400);
-//     expect(response.body).toEqual({
-//         errorsMessages: [
-//             {
-//                 field: "name",
-//                 message: expect.any(String),
-//             },
-//             { field: "websiteUrl", message: expect.any(String) },
-//         ],
-//     });
-// });
-// it("6.Should return status 400 and array with error in name (/post)", async () => {
-//     const notCorrectBlog = createBlogForTests(30, 5, true);
-//     const response = await request(app.getHttpServer())
-//         .post("/blogs")
-//         .set("authorization", "Basic YWRtaW46cXdlcnR5")
-//         .send(notCorrectBlog)
-//         .expect(400);
-//     expect(response.body).toEqual({ errorsMessages: [{ field: "name", message: expect.any(String) }] });
-// });
-// it("7.Should return status 400 and array with error in name (/post)", async () => {
-//     const notCorrectBlog = createBlogForTests(0, 5, true);
-//     const response = await request(app.getHttpServer())
-//         .post("/blogs")
-//         .set("authorization", "Basic YWRtaW46cXdlcnR5")
-//         .send(notCorrectBlog)
-//         .expect(400);
-//     expect(response.body).toEqual({ errorsMessages: [{ field: "name", message: expect.any(String) }] });
-// });
-// it("8.Should return status 400 and array with errors in name and websiteUrl (/post)", async () => {
-//     const notCorrectBlog = createBlogForTests(0, 10, false);
-//     const response = await request(app.getHttpServer())
-//         .post("/blogs")
-//         .set("authorization", "Basic YWRtaW46cXdlcnR5")
-//         .send(notCorrectBlog)
-//         .expect(400);
-//     expect(response.body).toEqual({
-//         errorsMessages: [
-//             {
-//                 field: "name",
-//                 message: expect.any(String),
-//             },
-//             { field: "websiteUrl", message: expect.any(String) },
-//         ],
-//     });
-// });
+describe("blogger endpoint blogs  /blogger/blogs (e2e)", () => {
+    let accessTokenForUser1;
+    let accessTokenForUser2;
+    let userId2;
+    let userId3;
+    let blogId1;
+    beforeAll(async () => {
+        await setupTestApp();
+        await request(app.getHttpServer()).delete("/testing/all-data").expect(204);
+        const result = await CreatingUsersForTesting();
+        accessTokenForUser1 = result.accessTokenForUser1;
+        accessTokenForUser2 = result.accessTokenForUser2;
+        userId2 = result.userId2;
+        userId3 = result.userId3;
+    });
+    afterAll(async () => {
+        await teardownTestApp();
+    });
+    describe("POSt/GET -> /blogger/blogs", () => {
+        it("should return status 201 and return created blog by user 1", async () => {
+            const correctBlog = createBlogForTests(10, 5, true);
+            const response = await request(app.getHttpServer())
+                .post("/blogger/blogs")
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .send(correctBlog)
+                .expect(201);
+            blogId1 = response.body.id;
+        });
+        it("should return status 400 and array with error in websiteUrl (/post)", async () => {
+            const notCorrectBlog = createBlogForTests(11, 7, false);
+            const response = await request(app.getHttpServer())
+                .post("/blogger/blogs")
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .send(notCorrectBlog)
+                .expect(400);
+            expect(response.body).toEqual({ errorsMessages: [{ field: "websiteUrl", message: expect.any(String) }] });
+        });
+        it("should return status 400 and array with errors in name and websiteUrl (/post)", async () => {
+            const notCorrectBlog = createBlogForTests(20, 7, false);
+            const response = await request(app.getHttpServer())
+                .post("/blogger/blogs")
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .send(notCorrectBlog)
+                .expect(400);
+            expect(response.body).toEqual({
+                errorsMessages: [
+                    {
+                        field: "name",
+                        message: expect.any(String),
+                    },
+                    { field: "websiteUrl", message: expect.any(String) },
+                ],
+            });
+        });
+        it("should return status 400 and array with error in name (/post)", async () => {
+            const notCorrectBlog = createBlogForTests(30, 5, true);
+            const response = await request(app.getHttpServer())
+                .post("/blogger/blogs")
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .send(notCorrectBlog)
+                .expect(400);
+            expect(response.body).toEqual({ errorsMessages: [{ field: "name", message: expect.any(String) }] });
+        });
+        it("should return status 400 and array with error in name (/post)", async () => {
+            const notCorrectBlog = createBlogForTests(0, 5, true);
+            const response = await request(app.getHttpServer())
+                .post("/blogger/blogs")
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .send(notCorrectBlog)
+                .expect(400);
+            expect(response.body).toEqual({ errorsMessages: [{ field: "name", message: expect.any(String) }] });
+        });
+        it("should return status 400 and array with errors in name and websiteUrl (/post)", async () => {
+            const notCorrectBlog = createBlogForTests(0, 10, false);
+            const response = await request(app.getHttpServer())
+                .post("/blogger/blogs")
+                .set("authorization", "Bearer " + accessTokenForUser1)
+                .send(notCorrectBlog)
+                .expect(400);
+            expect(response.body).toEqual({
+                errorsMessages: [
+                    {
+                        field: "name",
+                        message: expect.any(String),
+                    },
+                    { field: "websiteUrl", message: expect.any(String) },
+                ],
+            });
+        });
+    });
+});
+
 // it("9.should create and retrieve blogs", async () => {
 //     // Create blog1
 //     const correctBlog1 = createBlogForTests(10, 5, true);

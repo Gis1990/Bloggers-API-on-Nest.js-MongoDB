@@ -15,7 +15,6 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { CqrsModule } from "@nestjs/cqrs";
 import { BloggerModule } from "./modules/blogger/blogger.module";
 import { SuperAdminModule } from "./modules/super-admin/super.admin.module";
-import { BlogsQueryRepository } from "./query-repositories/blogs.query.repository";
 
 @Module({
     imports: [

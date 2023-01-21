@@ -14,9 +14,7 @@ import {
 describe("comments endpoint (e2e)", () => {
     let accessTokenForUser1;
     let accessTokenForUser2;
-    let userId1;
     let userId2;
-    let userLogin1;
     let userLogin2;
 
     beforeAll(async () => {
@@ -25,9 +23,7 @@ describe("comments endpoint (e2e)", () => {
         const result = await CreatingUsersForTesting();
         accessTokenForUser1 = result.accessTokenForUser1;
         accessTokenForUser2 = result.accessTokenForUser2;
-        userId1 = result.userId1;
         userId2 = result.userId2;
-        userLogin1 = result.userLogin1;
         userLogin2 = result.userLogin2;
     });
     afterAll(async () => {
@@ -78,7 +74,7 @@ describe("comments endpoint (e2e)", () => {
             const commentId = response4.body.id;
             // Ban the user
             const response5 = await request(app.getHttpServer())
-                .put(`/sa/users/${userId1}/ban`)
+                .put(`/sa/users/${userId2}/ban`)
                 .set("authorization", "Basic YWRtaW46cXdlcnR5")
                 .send({
                     isBanned: true,
@@ -90,7 +86,7 @@ describe("comments endpoint (e2e)", () => {
             await request(app.getHttpServer()).get(`/comments/${commentId}`).expect(404);
             // UnBan the user
             const response6 = await request(app.getHttpServer())
-                .put(`/sa/users/${userId1}/ban`)
+                .put(`/sa/users/${userId2}/ban`)
                 .set("authorization", "Basic YWRtaW46cXdlcnR5")
                 .send({
                     isBanned: false,

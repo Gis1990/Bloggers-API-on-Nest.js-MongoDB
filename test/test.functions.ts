@@ -24,10 +24,8 @@ import { CommentClass, CommentsSchema } from "../src/schemas/comments.schema";
 import { NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema } from "../src/schemas/posts.schema";
 import * as request from "supertest";
 
-export const BlogsModelClass = mongoose.connection.collection("blogclasses");
-
 export let app: INestApplication;
-export let mongoServer: MongoMemoryServer;
+let mongoServer: MongoMemoryServer;
 
 export const testValidationPipeSettings = {
     transform: true,
@@ -48,8 +46,8 @@ export const testValidationPipeSettings = {
 };
 
 export async function setupTestApp() {
-    mongoose.set("strictQuery", false);
-    const mongoServer = await MongoMemoryServer.create();
+    mongoose.set("strictQuery", true);
+    mongoServer = await MongoMemoryServer.create();
     const mongoUri = mongoServer.getUri();
     await mongoose.connect(mongoUri);
 
@@ -105,6 +103,12 @@ export async function setupTestApp() {
     app.use(cookieParser());
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
     await app.init();
+}
+
+export async function teardownTestApp() {
+    await mongoose.disconnect();
+    await mongoServer.stop();
+    await app.close();
 }
 
 export async function CheckingDbEmptiness() {
@@ -192,11 +196,6 @@ export async function CreatingUsersForTesting() {
         userLogin2: userLogin2,
         userLogin3: userLogin3,
     };
-}
-
-export async function teardownTestApp() {
-    await mongoose.disconnect();
-    await app.close();
 }
 
 export const randomString = (length: number) => {

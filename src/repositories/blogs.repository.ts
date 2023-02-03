@@ -42,12 +42,10 @@ export class BlogsRepository {
         dtoForBanUnbanBlogBySuperAdmin: ForBanUnbanBlogBySuperAdminDto,
         blogId: string,
     ): Promise<boolean> {
-        let result;
-        if (dtoForBanUnbanBlogBySuperAdmin.isBanned) {
-            result = await this.blogsModelClass.updateOne({ id: blogId }, { banInfo: dtoForBanUnbanBlogBySuperAdmin });
-        } else {
-            result = await this.blogsModelClass.updateOne({ id: blogId }, { banInfo: dtoForBanUnbanBlogBySuperAdmin });
-        }
+        const result = await this.blogsModelClass.updateOne(
+            { id: blogId },
+            { banInfo: dtoForBanUnbanBlogBySuperAdmin },
+        );
         return result.matchedCount === 1;
     }
 }

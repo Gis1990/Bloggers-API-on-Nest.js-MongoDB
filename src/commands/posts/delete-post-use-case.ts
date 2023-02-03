@@ -5,7 +5,7 @@ import { GetBlogByIdCommand } from "../../queries/blogs/get-blog-by-id-query";
 import { BlogClass } from "../../schemas/blogs.schema";
 
 export class DeletePostCommand {
-    constructor(public blogId: string, public postId: string, public userId: string) {}
+    constructor(public readonly blogId: string, public readonly postId: string, public readonly userId: string) {}
 }
 
 @CommandHandler(DeletePostCommand)

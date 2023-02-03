@@ -5,7 +5,7 @@ import { GetBlogByIdCommand } from "../../queries/blogs/get-blog-by-id-query";
 import { GetUserByIdCommand } from "../../queries/users/get-user-by-id-query";
 
 export class BindUserWithBlogCommand {
-    constructor(public blogId: string, public userId: string) {}
+    constructor(public readonly blogId: string, public readonly userId: string) {}
 }
 
 @CommandHandler(BindUserWithBlogCommand)

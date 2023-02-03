@@ -31,6 +31,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
             blogId: command.dto.blogId,
             blogName: blogName,
             createdAt: new Date(),
+            postOwnerId: command.user.id,
             extendedLikesInfo: extendedLikesInfo,
             usersLikesInfo: usersLikes,
         };

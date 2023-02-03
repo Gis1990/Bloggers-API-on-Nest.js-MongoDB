@@ -50,8 +50,10 @@ export class PostsQueryRepository {
         };
     }
 
-    async getPostById(id: string): Promise<PostClass | null> {
-        const post = await this.postsModelClass.findOne({ id });
+    async getPostById(id: string, bannedUsersIdsBySuperAdmin: string[]): Promise<PostClass | null> {
+        const post = await this.postsModelClass.findOne({
+            $and: [{ id: id }, { postOwnerId: { $nin: bannedUsersIdsBySuperAdmin } }],
+        });
         if (!post) return null;
         return post;
     }

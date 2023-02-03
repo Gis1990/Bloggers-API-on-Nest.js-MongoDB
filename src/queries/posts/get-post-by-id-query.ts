@@ -20,7 +20,7 @@ export class GetPostByIdQuery implements IQueryHandler<GetPostByIdCommand> {
 
     async execute(query: GetPostByIdCommand): Promise<PostViewModelClass | null> {
         const bannedUsersIdsBySuperAdmin = await this.queryBus.execute(new GetAllBannedUsersBySuperAdminCommand());
-        const post = await this.postsQueryRepository.getPostById(query.id);
+        const post = await this.postsQueryRepository.getPostById(query.id, bannedUsersIdsBySuperAdmin);
         if (!post) {
             return null;
         }

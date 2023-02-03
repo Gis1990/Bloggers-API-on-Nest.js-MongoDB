@@ -1,13 +1,13 @@
-import { HttpException, Injectable } from "@nestjs/common";
+import { HttpException } from "@nestjs/common";
 import { UsersRepository } from "../../repositories/users.repository";
-import { ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
 import { GetUserByConfirmationCodeCommand } from "../../queries/users/get-user-by-confirmation-code-query";
 
 export class ConfirmEmailCommand {
     constructor(public readonly code: string) {}
 }
 
-@Injectable()
+@CommandHandler(ConfirmEmailCommand)
 export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand> {
     constructor(private queryBus: QueryBus, private usersRepository: UsersRepository) {}
 

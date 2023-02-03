@@ -93,6 +93,10 @@ export class PostClass {
     })
     createdAt: Date;
     @Prop({
+        required: true,
+    })
+    postOwnerId: string;
+    @Prop({
         type: ExtendedLikesInfoSchema,
         required: true,
         default: ExtendedLikesInfoClass,

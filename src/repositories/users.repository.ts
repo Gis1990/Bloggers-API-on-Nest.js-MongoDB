@@ -117,9 +117,6 @@ export class UsersRepository {
     }
 
     async createUser(newUser: CreatedNewUserDto): Promise<UserAccountClass> {
-        if (newUser.banInfo.isBanned) {
-            await this.usersAccountModelClass.updateOne({ id: newUser.id }, { $set: { userId: newUser.id } });
-        }
         const user = new this.usersAccountModelClass(newUser);
         await user.save();
         return user;

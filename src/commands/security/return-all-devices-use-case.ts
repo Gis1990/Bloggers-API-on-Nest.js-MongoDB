@@ -4,7 +4,7 @@ import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
 import { GetUserByIdCommand } from "../../queries/users/get-user-by-id-query";
 
 export class ReturnAllDevicesCommand {
-    constructor(public userWithDeviceData: CurrentUserWithDevicesDataModel) {}
+    constructor(public readonly userWithDeviceData: CurrentUserWithDevicesDataModel) {}
 }
 
 @CommandHandler(ReturnAllDevicesCommand)

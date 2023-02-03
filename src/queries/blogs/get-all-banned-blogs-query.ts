@@ -2,7 +2,7 @@ import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { BlogsQueryRepository } from "../../query-repositories/blogs.query.repository";
 
 export class GetAllBannedBlogsCommand {
-    constructor(public bannedUsersIdsBySuperAdmin: string[]) {}
+    constructor(public readonly bannedUsersIdsBySuperAdmin: string[]) {}
 }
 
 @QueryHandler(GetAllBannedBlogsCommand)

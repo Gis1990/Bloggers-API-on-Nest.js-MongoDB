@@ -20,7 +20,7 @@ export class CreateQuestionUseCase implements ICommandHandler<CreateQuestionComm
             correctAnswers: command.dto.correctAnswers,
             published: false,
             createdAt: correctDate,
-            updatedAt: correctDate,
+            updatedAt: null,
         };
         const createdQuestion = await this.questionsRepository.createQuestion(createdNewQuestionDto);
         return QuestionsFactory.createQuestionViewModelClass(createdQuestion);

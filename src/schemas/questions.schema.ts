@@ -26,7 +26,7 @@ export class QuestionClass {
     @Prop({
         required: true,
     })
-    updatedAt: Date;
+    updatedAt: Date | null;
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(QuestionClass);

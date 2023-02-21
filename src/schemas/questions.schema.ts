@@ -23,9 +23,7 @@ export class QuestionClass {
         required: true,
     })
     createdAt: Date;
-    @Prop({
-        required: true,
-    })
+    @Prop()
     updatedAt: Date | null;
 }
 

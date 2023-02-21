@@ -216,6 +216,17 @@ export const createUserForTesting = (loginLen: number, emailLen: number, passwor
     };
 };
 
+export const createQuestionForTesting = (body: number, correctAnswersLen: number) => {
+    const answers = [];
+    for (let i = 0; i < Math.floor(Math.random() * 3) + 1; i++) {
+        answers.push(randomString(correctAnswersLen));
+    }
+    return {
+        body: randomString(body),
+        correctAnswers: answers,
+    };
+};
+
 export const createPostForTesting = (
     titleLen: number,
     shortDescriptionLen: number,

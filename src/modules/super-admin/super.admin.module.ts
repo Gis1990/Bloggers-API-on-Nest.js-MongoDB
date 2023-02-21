@@ -42,6 +42,16 @@ import { GetAllBlogsForSuperAdminQuery } from "../../queries/blogs/get-all-blogs
 import { GetUserByIdQuery } from "../../queries/users/get-user-by-id-query";
 import { BanUnbanBlogBySuperAdminUseCase } from "../../commands/blogs/ban-unban-blog-by-super-admin-use-case";
 import { GetBlogByIdForBanUnbanOperationQuery } from "../../queries/blogs/get-blog-by-id-for-ban-unban-operation-query";
+import { QuestionClass, QuestionSchema } from "../../schemas/questions.schema";
+import { CreateQuestionUseCase } from "../../commands/quiz/create-question-use-case";
+import { GetAllQuestionsQuery } from "../../queries/quiz/get-all-questions-query";
+import { GetQuestionByIdQuery } from "../../queries/quiz/get-question-by-id-query";
+import { QuizRepository } from "../../repositories/quiz.repository";
+import { QuizQueryRepository } from "../../query-repositories/quiz.query.repository";
+import { IsQuestionIdExistConstraint } from "../../decorators/quiz/questions.custom.decorators";
+import { DeleteQuestionUseCase } from "../../commands/quiz/delete-question-use-case";
+import { UpdateQuestionUseCase } from "../../commands/quiz/update-question-use-case";
+import { PublishUnpublishQuestionUseCase } from "../../commands/quiz/publish-unpublish-question-use-case";
 
 const useCases = [
     BindUserWithBlogUseCase,
@@ -50,9 +60,19 @@ const useCases = [
     CreateUserWithoutConfirmationEmailUseCase,
     BanUnbanUserBySuperAdminUseCase,
     BanUnbanBlogBySuperAdminUseCase,
+    CreateQuestionUseCase,
+    DeleteQuestionUseCase,
+    UpdateQuestionUseCase,
+    PublishUnpublishQuestionUseCase,
 ];
 
-const queries = [GetAllBlogsForSuperAdminQuery, GetUserByIdQuery, GetBlogByIdForBanUnbanOperationQuery];
+const queries = [
+    GetAllBlogsForSuperAdminQuery,
+    GetUserByIdQuery,
+    GetBlogByIdForBanUnbanOperationQuery,
+    GetAllQuestionsQuery,
+    GetQuestionByIdQuery,
+];
 
 @Module({
     imports: [
@@ -90,6 +110,10 @@ const queries = [GetAllBlogsForSuperAdminQuery, GetUserByIdQuery, GetBlogByIdFor
                 name: BanInfoClass.name,
                 schema: BanInfoSchema,
             },
+            {
+                name: QuestionClass.name,
+                schema: QuestionSchema,
+            },
         ]),
     ],
     controllers: [SuperAdminController],
@@ -100,11 +124,14 @@ const queries = [GetAllBlogsForSuperAdminQuery, GetUserByIdQuery, GetBlogByIdFor
         BlogsQueryRepository,
         UsersQueryRepository,
         UsersRepository,
+        QuizRepository,
+        QuizQueryRepository,
         IsBlogsIdExistConstraint,
         IsUsersIdExistConstraint,
         IsBlogsIdExistForBanUnbanOperationConstraint,
         IsLoginExistConstraint,
         IsEmailExistConstraint,
+        IsQuestionIdExistConstraint,
         ...useCases,
         ...queries,
     ],

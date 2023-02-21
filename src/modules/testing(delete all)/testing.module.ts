@@ -5,6 +5,7 @@ import { BlogClass, BlogsSchema } from "../../schemas/blogs.schema";
 import { PostClass, PostsSchema } from "../../schemas/posts.schema";
 import { CommentClass, CommentsSchema } from "../../schemas/comments.schema";
 import { UserAccountClass, UsersAccountSchema } from "../../schemas/users.schema";
+import { QuestionClass, QuestionSchema } from "../../schemas/questions.schema";
 
 @Module({
     imports: [
@@ -24,6 +25,10 @@ import { UserAccountClass, UsersAccountSchema } from "../../schemas/users.schema
             {
                 name: UserAccountClass.name,
                 schema: UsersAccountSchema,
+            },
+            {
+                name: QuestionClass.name,
+                schema: QuestionSchema,
             },
         ]),
     ],

@@ -130,7 +130,7 @@ export class BanDataForUserDto {
     public banReason: string;
 }
 
-export class UsersClassPaginationDto {
+export class UsersPaginationDto {
     public pagesCount: number;
     public page: number;
     public pageSize: number;

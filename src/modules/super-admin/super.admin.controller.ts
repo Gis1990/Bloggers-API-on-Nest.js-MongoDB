@@ -23,6 +23,18 @@ import { GetAllBlogsForSuperAdminCommand } from "../../queries/blogs/get-all-blo
 import { GetAllUsersCommand } from "../../queries/users/get-all-users-query";
 import { BanUnbanBlogBySuperAdminCommand } from "../../commands/blogs/ban-unban-blog-by-super-admin-use-case";
 import { BlogViewModelClassPagination } from "../../entities/blogs.entity";
+import {
+    InputModelForCreatingAndUpdatingQuestion,
+    InputModelForPublishUnpublishQuestion,
+    ModelForGettingAllQuestions,
+    QuestionIdValidationModel,
+} from "../../dtos/questions.dto";
+import { CreateQuestionCommand } from "../../commands/quiz/create-question-use-case";
+import { QuestionViewModelClass, QuestionViewModelPaginationClass } from "../../entities/quez.entity";
+import { GetAllQuestionsCommand } from "../../queries/quiz/get-all-questions-query";
+import { DeleteQuestionCommand } from "../../commands/quiz/delete-question-use-case";
+import { UpdateQuestionCommand } from "../../commands/quiz/update-question-use-case";
+import { PublishUnpublishQuestionCommand } from "../../commands/quiz/publish-unpublish-question-use-case";
 
 @SkipThrottle()
 @Controller("sa")
@@ -90,5 +102,49 @@ export class SuperAdminController {
     @HttpCode(204)
     async deleteUser(@Param() param: UsersIdValidationModel): Promise<boolean> {
         return await this.commandBus.execute(new DeleteUserCommand(param.id));
+    }
+
+    //QuizQuestions
+
+    @UseGuards(BasicAuthGuard)
+    @Get("/quiz/questions")
+    async getAllQuestions(
+        @Query()
+        dto: ModelForGettingAllQuestions,
+    ): Promise<QuestionViewModelPaginationClass> {
+        return await this.queryBus.execute(new GetAllQuestionsCommand(dto));
+    }
+
+    @UseGuards(BasicAuthGuard)
+    @Post("/quiz/questions")
+    async createQuestion(@Body() dto: InputModelForCreatingAndUpdatingQuestion): Promise<QuestionViewModelClass> {
+        return await this.commandBus.execute(new CreateQuestionCommand(dto));
+    }
+
+    @UseGuards(BasicAuthGuard)
+    @Delete("/quiz/questions/:id")
+    @HttpCode(204)
+    async deleteQuestion(@Param() param: QuestionIdValidationModel): Promise<boolean> {
+        return await this.commandBus.execute(new DeleteQuestionCommand(param.id));
+    }
+
+    @UseGuards(BasicAuthGuard)
+    @Put("/quiz/questions/:id")
+    @HttpCode(204)
+    async updateQuestion(
+        @Body() dto: InputModelForCreatingAndUpdatingQuestion,
+        @Param() param: QuestionIdValidationModel,
+    ): Promise<boolean> {
+        return await this.commandBus.execute(new UpdateQuestionCommand(dto, param.id));
+    }
+
+    @UseGuards(BasicAuthGuard)
+    @Put("/quiz/questions/:id/publish")
+    @HttpCode(204)
+    async publishUnpublishQuestion(
+        @Body() dto: InputModelForPublishUnpublishQuestion,
+        @Param() param: QuestionIdValidationModel,
+    ): Promise<boolean> {
+        return await this.commandBus.execute(new PublishUnpublishQuestionCommand(dto, param.id));
     }
 }

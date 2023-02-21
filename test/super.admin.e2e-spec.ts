@@ -4,6 +4,7 @@ import {
     app,
     CheckingDbEmptiness,
     createBlogForTests,
+    createQuestionForTesting,
     createUserForTesting,
     CreatingUsersForTesting,
     setupTestApp,
@@ -258,6 +259,48 @@ describe("super admin endpoint blogs /sa/blogs (e2e)", () => {
                 pageSize: 10,
                 totalCount: 2,
                 items: items,
+            });
+        });
+    });
+});
+describe("super admin endpoint quiz /sa/quiz (e2e)", () => {
+    const items = [];
+    beforeAll(async () => {
+        await setupTestApp();
+        await CheckingDbEmptiness();
+    });
+    afterAll(async () => {
+        await teardownTestApp();
+    });
+    describe("POST -> /sa/quiz/questions", () => {
+        it("should return status 201 and correct body when creating question", async () => {
+            const correctQuestion = createQuestionForTesting(10, 5);
+            const response1 = await request(app.getHttpServer())
+                .post("/sa/quiz/questions")
+                .set("authorization", "Basic YWRtaW46cXdlcnR5")
+                .send(correctQuestion)
+                .expect(201);
+            expect(response1.body).toStrictEqual({
+                id: expect.any(String),
+                body: correctQuestion.body,
+                correctAnswers: correctQuestion.correctAnswers,
+                published: false,
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+            });
+            items.push(response1.body);
+        });
+        it("should return status 200 and question", async () => {
+            const response = await request(app.getHttpServer())
+                .get(`/sa/quiz/questions`)
+                .set("authorization", "Basic YWRtaW46cXdlcnR5")
+                .expect(200);
+            expect(response.body).toStrictEqual({
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [items[0]],
             });
         });
     });

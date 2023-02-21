@@ -5,16 +5,14 @@ import {
     UserViewModelForBannedUsersByBloggerClass,
     UserViewModelForBannedUsersByBloggerPaginationClass,
 } from "../entities/users.entity";
-import { UsersClassPaginationDto } from "../dtos/users.dto";
+import { UsersPaginationDto } from "../dtos/users.dto";
 
 export class UsersFactory {
     static async createUserViewModelClass(user: UserAccountClass): Promise<UserViewModelClass> {
         return new UserViewModelClass(user.id, user.login, user.email, user.createdAt, user.banInfo);
     }
 
-    static async createUserViewModelPaginationClass(
-        dto: UsersClassPaginationDto,
-    ): Promise<UserViewModelClassPagination> {
+    static async createUserViewModelPaginationClass(dto: UsersPaginationDto): Promise<UserViewModelClassPagination> {
         const result = await Promise.all(
             dto.items.map((elem) => {
                 return UsersFactory.createUserViewModelClass(elem);
@@ -24,7 +22,7 @@ export class UsersFactory {
     }
 
     static async createUserViewModelForBannedUsersByBloggerPaginationClass(
-        dto: UsersClassPaginationDto,
+        dto: UsersPaginationDto,
         blogId: string,
     ): Promise<UserViewModelForBannedUsersByBloggerPaginationClass> {
         dto.items.filter((user) => user.banInfoForBlogs.blogId === blogId);

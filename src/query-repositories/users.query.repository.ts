@@ -3,13 +3,13 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { UserAccountClass } from "../schemas/users.schema";
 import { QueryDto } from "../dtos/blogs.dto";
-import { UsersClassPaginationDto } from "../dtos/users.dto";
+import { UsersPaginationDto } from "../dtos/users.dto";
 
 @Injectable()
 export class UsersQueryRepository {
     constructor(@InjectModel(UserAccountClass.name) private userAccountClass: Model<UserAccountClass>) {}
 
-    async getAllUsers(queryForUsers: QueryDto): Promise<UsersClassPaginationDto> {
+    async getAllUsers(queryForUsers: QueryDto): Promise<UsersPaginationDto> {
         const cursor = await this.userAccountClass
             .find(queryForUsers.query, { _id: 0, id: 1, login: 1, email: 1, createdAt: 1, banInfo: 1 })
             .sort(queryForUsers.sortObj)
@@ -27,10 +27,7 @@ export class UsersQueryRepository {
         };
     }
 
-    async GetAllBannedUsersForBlog(
-        queryAllBannedUsersForBlog: QueryDto,
-        blogId: string,
-    ): Promise<UsersClassPaginationDto> {
+    async GetAllBannedUsersForBlog(queryAllBannedUsersForBlog: QueryDto, blogId: string): Promise<UsersPaginationDto> {
         const cursor = await this.userAccountClass
             .find(
                 { $and: [queryAllBannedUsersForBlog.query, { "banInfoForBlogs.blogId": blogId }] },

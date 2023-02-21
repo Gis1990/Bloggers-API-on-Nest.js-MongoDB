@@ -31,7 +31,8 @@ export class QuizRepository {
 
     async publishUnpublishQuestion(id: string, dto: InputModelForPublishUnpublishQuestion): Promise<boolean> {
         const published = dto.published;
-        const result = await this.questionModelClass.updateOne({ id: id }, { $set: { published } });
+        const updatedAt = new Date();
+        const result = await this.questionModelClass.updateOne({ id: id }, { $set: { published, updatedAt } });
         return result.modifiedCount === 1;
     }
 

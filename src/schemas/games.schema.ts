@@ -69,13 +69,11 @@ export class GamesClass {
     firstPlayerProgress: PlayerProgressClass;
     @Prop({
         type: PlayerProgressSchema,
-        required: true,
         _id: false,
     })
     secondPlayerProgress: PlayerProgressClass | null;
     @Prop({
         type: [QuestionsForGameSchema],
-        required: true,
         _id: false,
     })
     questions: QuestionsForGameClass[] | null;
@@ -87,13 +85,9 @@ export class GamesClass {
         required: true,
     })
     pairCreatedDate: Date;
-    @Prop({
-        required: true,
-    })
+    @Prop()
     startGameDate: Date | null;
-    @Prop({
-        required: true,
-    })
+    @Prop()
     finishGameDate: Date | null;
 }
 

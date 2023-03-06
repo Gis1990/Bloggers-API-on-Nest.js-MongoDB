@@ -7,6 +7,7 @@ import { PostClass } from "../../schemas/posts.schema";
 import { CommentClass } from "../../schemas/comments.schema";
 import { UserAccountClass } from "../../schemas/users.schema";
 import { QuestionClass } from "../../schemas/questions.schema";
+import { GamesClass } from "../../schemas/games.schema";
 
 @SkipThrottle()
 @Controller("testing")
@@ -17,6 +18,7 @@ export class TestingController {
         @InjectModel(CommentClass.name) private commentsModelClass: Model<CommentClass>,
         @InjectModel(UserAccountClass.name) private userAccountModelClass: Model<UserAccountClass>,
         @InjectModel(QuestionClass.name) private questionModelClass: Model<QuestionClass>,
+        @InjectModel(GamesClass.name) private gamesModelClass: Model<GamesClass>,
     ) {}
 
     @Delete("/all-data")
@@ -27,6 +29,7 @@ export class TestingController {
         await this.commentsModelClass.deleteMany({});
         await this.userAccountModelClass.deleteMany({});
         await this.questionModelClass.deleteMany({});
+        await this.gamesModelClass.deleteMany({});
         return true;
     }
 }

@@ -50,7 +50,7 @@ export class QuizRepository {
     async createGame(newGame: CreatedNewGameDto): Promise<GamesClass> {
         const game = new this.gamesModelClass(newGame);
         await game.save();
-        return game;
+        return this.gamesModelClass.findOne({ id: game.id }, { _id: 0 });
     }
 
     async updateNewCreatedGame(dto: UpdatedGameDto): Promise<GamesClass> {

@@ -28,7 +28,7 @@ import {
     InputModelForPublishUnpublishQuestion,
     ModelForGettingAllQuestions,
     QuestionIdValidationModel,
-} from "../../dtos/questions.dto";
+} from "../../dtos/quiz.dto";
 import { CreateQuestionCommand } from "../../commands/quiz/create-question-use-case";
 import { QuestionViewModelClass, QuestionViewModelPaginationClass } from "../../entities/quez.entity";
 import { GetAllQuestionsCommand } from "../../queries/quiz/get-all-questions-query";

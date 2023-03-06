@@ -15,6 +15,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { CqrsModule } from "@nestjs/cqrs";
 import { BloggerModule } from "./modules/blogger/blogger.module";
 import { SuperAdminModule } from "./modules/super-admin/super.admin.module";
+import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
 
 @Module({
     imports: [
@@ -39,6 +40,7 @@ import { SuperAdminModule } from "./modules/super-admin/super.admin.module";
         SecurityModule,
         BloggerModule,
         SuperAdminModule,
+        QuizGameModule,
     ],
     controllers: [AppController],
     providers: [

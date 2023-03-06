@@ -7,9 +7,9 @@ export class DeleteQuestionCommand {
 
 @CommandHandler(DeleteQuestionCommand)
 export class DeleteQuestionUseCase implements ICommandHandler<DeleteQuestionCommand> {
-    constructor(private questionsRepository: QuizRepository) {}
+    constructor(private quizRepository: QuizRepository) {}
 
     async execute(command: DeleteQuestionCommand): Promise<boolean> {
-        return this.questionsRepository.deleteQuestionById(command.id);
+        return this.quizRepository.deleteQuestionById(command.id);
     }
 }

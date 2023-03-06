@@ -1,8 +1,8 @@
 import { QuestionViewModelClass, QuestionViewModelPaginationClass } from "../entities/quez.entity";
 import { QuestionClass } from "../schemas/questions.schema";
-import { QuestionsPaginationDtoClass } from "../dtos/questions.dto";
+import { QuestionsPaginationDtoClass } from "../dtos/quiz.dto";
 
-export class QuestionsFactory {
+export class QuizFactory {
     static async createQuestionViewModelClass(question: QuestionClass): Promise<QuestionViewModelClass> {
         return new QuestionViewModelClass(
             question.id,
@@ -19,7 +19,7 @@ export class QuestionsFactory {
     ): Promise<QuestionViewModelPaginationClass> {
         const result = await Promise.all(
             dto.items.map((elem) => {
-                return QuestionsFactory.createQuestionViewModelClass(elem);
+                return QuizFactory.createQuestionViewModelClass(elem);
             }),
         );
         return new QuestionViewModelPaginationClass(dto.pagesCount, dto.page, dto.pageSize, dto.totalCount, result);

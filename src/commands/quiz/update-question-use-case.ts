@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { InputModelForCreatingAndUpdatingQuestion } from "../../dtos/questions.dto";
+import { InputModelForCreatingAndUpdatingQuestion } from "../../dtos/quiz.dto";
 import { QuizRepository } from "../../repositories/quiz.repository";
 
 export class UpdateQuestionCommand {
@@ -8,9 +8,9 @@ export class UpdateQuestionCommand {
 
 @CommandHandler(UpdateQuestionCommand)
 export class UpdateQuestionUseCase implements ICommandHandler<UpdateQuestionCommand> {
-    constructor(private questionsRepository: QuizRepository) {}
+    constructor(private quizRepository: QuizRepository) {}
 
     async execute(command: UpdateQuestionCommand): Promise<boolean> {
-        return this.questionsRepository.updateQuestionById(command.id, command.dto);
+        return this.quizRepository.updateQuestionById(command.id, command.dto);
     }
 }

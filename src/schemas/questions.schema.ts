@@ -28,3 +28,18 @@ export class QuestionClass {
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(QuestionClass);
+
+@Schema({ versionKey: false })
+export class QuestionsForGameClass {
+    @Prop({
+        required: true,
+    })
+    id: string;
+
+    @Prop({
+        required: true,
+    })
+    body: string;
+}
+
+export const QuestionsForGameSchema = SchemaFactory.createForClass(QuestionsForGameClass);

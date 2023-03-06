@@ -1,5 +1,5 @@
 import { QueryDto } from "../../dtos/blogs.dto";
-import { ModelForGettingAllQuestions } from "../../dtos/questions.dto";
+import { ModelForGettingAllQuestions } from "../../dtos/quiz.dto";
 
 export class HelperForQuestions {
     static async createQueryForGettingAllQuestions(dto: ModelForGettingAllQuestions): Promise<QueryDto> {

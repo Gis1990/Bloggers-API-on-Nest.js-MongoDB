@@ -3,11 +3,15 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { QueryDto } from "../dtos/blogs.dto";
 import { QuestionClass } from "../schemas/questions.schema";
-import { QuestionsPaginationDtoClass } from "../dtos/questions.dto";
+import { QuestionsPaginationDtoClass } from "../dtos/quiz.dto";
+import { GamesClass } from "../schemas/games.schema";
 
 @Injectable()
 export class QuizQueryRepository {
-    constructor(@InjectModel(QuestionClass.name) private questionModelClass: Model<QuestionClass>) {}
+    constructor(
+        @InjectModel(QuestionClass.name) private questionModelClass: Model<QuestionClass>,
+        @InjectModel(GamesClass.name) private gamesModelClass: Model<GamesClass>,
+    ) {}
 
     async getAllQuestions(queryForQuestions: QueryDto): Promise<QuestionsPaginationDtoClass> {
         const cursor = await this.questionModelClass
@@ -36,6 +40,59 @@ export class QuizQueryRepository {
         );
         if (question) {
             return question;
+        } else {
+            return null;
+        }
+    }
+
+    async getPendingGame(): Promise<GamesClass | null> {
+        const game = await this.gamesModelClass.findOne({ status: "PendingSecondPlayer" }, { _id: 0 });
+        if (game) {
+            return game;
+        } else {
+            return null;
+        }
+    }
+
+    async getQuestionsForTheGame(): Promise<QuestionClass[]> {
+        const allQuestions = await this.questionModelClass.find({ published: true }, { _id: 0 });
+        const shuffledAllQuestions = allQuestions.sort(() => 0.5 - Math.random());
+        return shuffledAllQuestions.slice(0, 5);
+    }
+
+    async getUserInGame(userId: string): Promise<boolean> {
+        const user = await this.gamesModelClass.findOne({
+            $or: [{ "firstPlayerProgress.player.id": userId }, { "secondPlayerProgress.player.id": userId }],
+        });
+        return !!user;
+    }
+
+    async getGameById(id: string): Promise<GamesClass | null> {
+        const game = await this.gamesModelClass.findOne(
+            { id: id },
+            {
+                _id: 0,
+            },
+        );
+        if (game) {
+            return game;
+        } else {
+            return null;
+        }
+    }
+
+    async getGameByUserId(userId: string): Promise<GamesClass | null> {
+        const game = await this.gamesModelClass.findOne(
+            {
+                $or: [{ "firstPlayerProgress.player.id": userId }, { "secondPlayerProgress.player.id": userId }],
+                status: { $in: ["PendingSecondPlayer", "Active"] },
+            },
+            {
+                _id: 0,
+            },
+        );
+        if (game) {
+            return game;
         } else {
             return null;
         }

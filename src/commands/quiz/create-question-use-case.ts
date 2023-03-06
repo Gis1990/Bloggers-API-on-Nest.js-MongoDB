@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { CreatedNewQuestionDto, InputModelForCreatingAndUpdatingQuestion } from "../../dtos/questions.dto";
+import { CreatedNewQuestionDto, InputModelForCreatingAndUpdatingQuestion } from "../../dtos/quiz.dto";
 import { QuizRepository } from "../../repositories/quiz.repository";
-import { QuestionsFactory } from "../../factories/questions.factory";
+import { QuizFactory } from "../../factories/quiz.factory";
 import { QuestionViewModelClass } from "../../entities/quez.entity";
 
 export class CreateQuestionCommand {
@@ -10,7 +10,7 @@ export class CreateQuestionCommand {
 
 @CommandHandler(CreateQuestionCommand)
 export class CreateQuestionUseCase implements ICommandHandler<CreateQuestionCommand> {
-    constructor(private questionsRepository: QuizRepository) {}
+    constructor(private quizRepository: QuizRepository) {}
 
     async execute(command: CreateQuestionCommand): Promise<QuestionViewModelClass> {
         const correctDate = new Date();
@@ -22,7 +22,7 @@ export class CreateQuestionUseCase implements ICommandHandler<CreateQuestionComm
             createdAt: correctDate,
             updatedAt: null,
         };
-        const createdQuestion = await this.questionsRepository.createQuestion(createdNewQuestionDto);
-        return QuestionsFactory.createQuestionViewModelClass(createdQuestion);
+        const createdQuestion = await this.quizRepository.createQuestion(createdNewQuestionDto);
+        return QuizFactory.createQuestionViewModelClass(createdQuestion);
     }
 }

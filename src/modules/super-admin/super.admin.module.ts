@@ -48,10 +48,11 @@ import { GetAllQuestionsQuery } from "../../queries/quiz/get-all-questions-query
 import { GetQuestionByIdQuery } from "../../queries/quiz/get-question-by-id-query";
 import { QuizRepository } from "../../repositories/quiz.repository";
 import { QuizQueryRepository } from "../../query-repositories/quiz.query.repository";
-import { IsQuestionIdExistConstraint } from "../../decorators/quiz/questions.custom.decorators";
+import { IsQuestionIdExistConstraint } from "../../decorators/quiz/quiz.custom.decorators";
 import { DeleteQuestionUseCase } from "../../commands/quiz/delete-question-use-case";
 import { UpdateQuestionUseCase } from "../../commands/quiz/update-question-use-case";
 import { PublishUnpublishQuestionUseCase } from "../../commands/quiz/publish-unpublish-question-use-case";
+import { GamesClass, GamesSchema } from "../../schemas/games.schema";
 
 const useCases = [
     BindUserWithBlogUseCase,
@@ -113,6 +114,10 @@ const queries = [
             {
                 name: QuestionClass.name,
                 schema: QuestionSchema,
+            },
+            {
+                name: GamesClass.name,
+                schema: GamesSchema,
             },
         ]),
     ],

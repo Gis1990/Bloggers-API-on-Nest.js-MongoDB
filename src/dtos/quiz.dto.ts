@@ -10,8 +10,9 @@ import {
     IsBoolean,
 } from "class-validator";
 import { Transform, TransformFnParams, Type } from "class-transformer";
-import { QuestionClass } from "../schemas/questions.schema";
-import { IsQuestionIdExist } from "../decorators/quiz/questions.custom.decorators";
+import { QuestionClass, QuestionsForGameClass } from "../schemas/questions.schema";
+import { IsGameIdExist, IsQuestionIdExist } from "../decorators/quiz/quiz.custom.decorators";
+import { PlayerProgressClass } from "../schemas/games.schema";
 
 const listOfCorrectPublishedStatuses = ["all", "published", "notPublished"];
 
@@ -76,8 +77,34 @@ export class QuestionIdValidationModel {
     public id: string;
 }
 
+export class GameIdValidationModel {
+    @IsString()
+    @IsNotEmpty()
+    @IsGameIdExist()
+    public id: string;
+}
+
 export class InputModelForPublishUnpublishQuestion {
     @IsBoolean()
     @IsNotEmpty()
     public published: boolean;
+}
+
+export class CreatedNewGameDto {
+    public id: string;
+    public firstPlayerProgress: PlayerProgressClass;
+    public secondPlayerProgress: PlayerProgressClass | null;
+    public questions: QuestionsForGameClass[] | null;
+    public status: string;
+    public pairCreatedDate: Date;
+    public startGameDate: Date | null;
+    public finishGameDate: Date | null;
+}
+
+export class UpdatedGameDto {
+    public id: string;
+    public secondPlayerProgress: PlayerProgressClass;
+    public questions: QuestionsForGameClass[];
+    public status: string;
+    public startGameDate: Date;
 }

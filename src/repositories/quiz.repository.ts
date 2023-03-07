@@ -58,7 +58,7 @@ export class QuizRepository {
         const questions = dto.questions;
         const status = dto.status;
         const startGameDate = dto.startGameDate;
-        await this.questionModelClass.updateOne(
+        await this.gamesModelClass.updateOne(
             { id: dto.id },
             {
                 $set: {

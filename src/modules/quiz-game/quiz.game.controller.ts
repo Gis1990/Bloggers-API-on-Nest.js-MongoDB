@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Post, UseGuards } from "@nestjs/common";
 import { CurrentUser, CurrentUserId } from "../../decorators/auth/auth.custom.decorators";
 import { SkipThrottle } from "@nestjs/throttler";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
@@ -33,12 +33,14 @@ export class QuizGameController {
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Post("/connection")
+    @HttpCode(200)
     async createGame(@CurrentUser() user: CurrentUserModel): Promise<GamesClass> {
         return await this.commandBus.execute(new CreateGameCommand(user));
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Post("/my-current/answers")
+    @HttpCode(200)
     async sendAnswer(@Body() answer: string, @CurrentUserId() userId: string): Promise<AnswersClass> {
         return await this.commandBus.execute(new SendAnswerCommand(answer, userId));
     }

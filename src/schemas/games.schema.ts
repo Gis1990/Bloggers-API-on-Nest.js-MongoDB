@@ -42,7 +42,7 @@ export class PlayerProgressClass {
     })
     answers: AnswersClass[];
     @Prop({
-        type: [PlayerForTheGameSchema],
+        type: PlayerForTheGameSchema,
         required: true,
         _id: false,
     })

@@ -8,7 +8,6 @@ import { GetGameByIdQuery } from "../../queries/quiz/get-game-by-id-query";
 import { QuizQueryRepository } from "../../query-repositories/quiz.query.repository";
 import { QuizRepository } from "../../repositories/quiz.repository";
 import { QuestionClass, QuestionSchema } from "../../schemas/questions.schema";
-import { IsGameIdExistConstraint } from "../../decorators/quiz/quiz.custom.decorators";
 import { GetCurrentUnfinishedGameQuery } from "../../queries/quiz/get-current-unfinished-game-by-id-query";
 import { SendAnswerUseCase } from "../../commands/quiz/send-answer-use-case";
 
@@ -30,7 +29,7 @@ const queries = [GetGameByIdQuery, GetCurrentUnfinishedGameQuery];
         ]),
     ],
     controllers: [QuizGameController],
-    providers: [QuizRepository, QuizQueryRepository, IsGameIdExistConstraint, ...useCases, ...queries],
+    providers: [QuizRepository, QuizQueryRepository, ...useCases, ...queries],
     exports: [],
 })
 export class QuizGameModule {}

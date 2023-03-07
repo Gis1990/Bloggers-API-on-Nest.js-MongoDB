@@ -18,17 +18,17 @@ export class QuizGameController {
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Get("/my-current")
-    async getCurrentUnfinishedGame(@CurrentUserId() userId: string): Promise<GamesClass | null> {
-        return await this.queryBus.execute(new GetCurrentUnfinishedGameCommand(userId));
+    async getCurrentUnfinishedGame(@CurrentUser() user: CurrentUserModel): Promise<GamesClass | null> {
+        return await this.queryBus.execute(new GetCurrentUnfinishedGameCommand(user.id));
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Get("/:id")
     async getGameById(
         @Param() params: GameIdValidationModel,
-        @CurrentUser() @CurrentUserId() userId: string,
+        @CurrentUser() user: CurrentUserModel,
     ): Promise<GamesClass | null> {
-        return await this.queryBus.execute(new GetGameByIdCommand(params.id, userId));
+        return await this.queryBus.execute(new GetGameByIdCommand(params.id, user.id));
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)

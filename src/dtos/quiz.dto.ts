@@ -11,8 +11,8 @@ import {
 } from "class-validator";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import { QuestionClass, QuestionsForGameClass } from "../schemas/questions.schema";
-import { IsGameIdExist, IsQuestionIdExist } from "../decorators/quiz/quiz.custom.decorators";
 import { PlayerProgressClass } from "../schemas/games.schema";
+import { IsQuestionIdExist } from "../decorators/quiz/quiz.custom.decorators";
 
 const listOfCorrectPublishedStatuses = ["all", "published", "notPublished"];
 
@@ -80,7 +80,6 @@ export class QuestionIdValidationModel {
 export class GameIdValidationModel {
     @IsString()
     @IsNotEmpty()
-    @IsGameIdExist()
     public id: string;
 }
 

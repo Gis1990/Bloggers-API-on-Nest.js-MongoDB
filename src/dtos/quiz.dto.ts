@@ -8,6 +8,7 @@ import {
     IsArray,
     ArrayNotEmpty,
     IsBoolean,
+    IsUUID,
 } from "class-validator";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import { QuestionClass, QuestionsForGameClass } from "../schemas/questions.schema";
@@ -78,7 +79,7 @@ export class QuestionIdValidationModel {
 }
 
 export class GameIdValidationModel {
-    @IsString()
+    @IsUUID()
     @IsNotEmpty()
     public id: string;
 }
@@ -106,4 +107,10 @@ export class UpdatedGameDto {
     public questions: QuestionsForGameClass[];
     public status: string;
     public startGameDate: Date;
+}
+
+export class InputModelForAnswers {
+    @IsString()
+    @IsNotEmpty()
+    public answer: string;
 }

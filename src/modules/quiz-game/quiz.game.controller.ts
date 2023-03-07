@@ -7,7 +7,7 @@ import { CreateGameCommand } from "../../commands/quiz/create-game-use-case";
 import { CurrentUserModel } from "../../dtos/auth.dto";
 import { AnswersClass, GamesClass } from "../../schemas/games.schema";
 import { GetGameByIdCommand } from "../../queries/quiz/get-game-by-id-query";
-import { GameIdValidationModel } from "../../dtos/quiz.dto";
+import { GameIdValidationModel, InputModelForAnswers } from "../../dtos/quiz.dto";
 import { GetCurrentUnfinishedGameCommand } from "../../queries/quiz/get-current-unfinished-game-by-id-query";
 import { SendAnswerCommand } from "../../commands/quiz/send-answer-use-case";
 
@@ -41,7 +41,7 @@ export class QuizGameController {
     @UseGuards(JwtAccessTokenAuthGuard)
     @Post("/my-current/answers")
     @HttpCode(200)
-    async sendAnswer(@Body() answer: string, @CurrentUserId() userId: string): Promise<AnswersClass> {
-        return await this.commandBus.execute(new SendAnswerCommand(answer, userId));
+    async sendAnswer(@Body() dto: InputModelForAnswers, @CurrentUserId() userId: string): Promise<AnswersClass> {
+        return await this.commandBus.execute(new SendAnswerCommand(dto.answer, userId));
     }
 }

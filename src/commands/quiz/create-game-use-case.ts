@@ -5,6 +5,7 @@ import { GamesClass } from "../../schemas/games.schema";
 import { QuizQueryRepository } from "../../query-repositories/quiz.query.repository";
 import { UpdatedGameDto } from "../../dtos/quiz.dto";
 import { HttpException } from "@nestjs/common";
+import { v4 as uuidv4 } from "uuid";
 
 export class CreateGameCommand {
     constructor(public readonly user: CurrentUserModel) {}
@@ -36,7 +37,7 @@ export class CreateGameUseCase implements ICommandHandler<CreateGameCommand> {
             const playerOneData = { id: command.user.id, login: command.user.login };
             const firstPlayer = { answers: [], player: playerOneData, score: 0 };
             const createdNewGameDto = {
-                id: Number(new Date()).toString(),
+                id: uuidv4(),
                 firstPlayerProgress: firstPlayer,
                 secondPlayerProgress: null,
                 questions: null,

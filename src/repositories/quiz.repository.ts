@@ -79,7 +79,7 @@ export class QuizRepository {
 
     async checkAnswerCorrectness(id: string, answer: string): Promise<boolean> {
         const correctAnswer = await this.questionModelClass.findOne(
-            { id: id, correctAnswers: { $in: [answer] } },
+            { id: id, correctAnswers: { $in: [[answer]] } },
             { _id: 0 },
         );
         return !!correctAnswer;

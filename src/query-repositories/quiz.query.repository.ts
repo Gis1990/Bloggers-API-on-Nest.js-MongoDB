@@ -60,13 +60,6 @@ export class QuizQueryRepository {
         return shuffledAllQuestions.slice(0, 5);
     }
 
-    async getUserInGame(userId: string): Promise<boolean> {
-        const user = await this.gamesModelClass.findOne({
-            $or: [{ "firstPlayerProgress.player.id": userId }, { "secondPlayerProgress.player.id": userId }],
-        });
-        return !!user;
-    }
-
     async getGameById(id: string): Promise<GamesClass | null> {
         const game = await this.gamesModelClass.findOne(
             { id: id },

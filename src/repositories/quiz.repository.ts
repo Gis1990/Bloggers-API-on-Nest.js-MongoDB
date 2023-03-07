@@ -54,7 +54,7 @@ export class QuizRepository {
     }
 
     async updateNewCreatedGame(dto: UpdatedGameDto): Promise<GamesClass> {
-        const secondPlayer = dto.secondPlayerProgress;
+        const secondPlayerProgress = dto.secondPlayerProgress;
         const questions = dto.questions;
         const status = dto.status;
         const startGameDate = dto.startGameDate;
@@ -62,7 +62,7 @@ export class QuizRepository {
             { id: dto.id },
             {
                 $set: {
-                    secondPlayer,
+                    secondPlayerProgress,
                     questions,
                     status,
                     startGameDate,

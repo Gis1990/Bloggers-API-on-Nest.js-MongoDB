@@ -17,8 +17,8 @@ export class CreateGameUseCase implements ICommandHandler<CreateGameCommand> {
     async execute(command: CreateGameCommand): Promise<GamesClass> {
         const pendingGame: GamesClass = await this.quizQueryRepository.getPendingGame();
         const questionsForTheGame = await this.quizQueryRepository.getQuestionsForTheGame();
-        const isUserAlreadyInGame = await this.quizQueryRepository.getUserInGame(command.user.id);
-        if (isUserAlreadyInGame) {
+        const game = await this.quizQueryRepository.getGameByUserId(command.user.id);
+        if (game) {
             throw new HttpException("Access denied", 403);
         }
         if (pendingGame) {

@@ -51,6 +51,8 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             if (isAnswerCorrect) {
                 answerStatusForUpdate = "Correct";
                 score += 1;
+            } else {
+                answerStatusForUpdate = "Incorrect";
             }
             oppositePlayerScore = oppositePlayerProgress.answers.map((a) => a.answerStatus).includes("Correct")
                 ? oppositePlayerProgress.score + 1
@@ -74,7 +76,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             id = game.questions[numOfAnswers].id;
             isAnswerCorrect = await this.quizRepository.checkAnswerCorrectness(id, command.answer);
             answerStatusForUpdate = isAnswerCorrect ? "Correct" : "Incorrect";
-            score = isAnswerCorrect ? score + 1 : score + 0;
+            score = isAnswerCorrect ? (score += 1) : (score += 0);
             dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = score;
             update = {
                 $push: {

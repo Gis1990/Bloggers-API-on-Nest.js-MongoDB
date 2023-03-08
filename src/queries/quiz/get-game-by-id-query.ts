@@ -16,7 +16,7 @@ export class GetGameByIdQuery implements IQueryHandler<GetGameByIdCommand> {
         if (!game) {
             throw new HttpException("Game not found", 404);
         }
-        if (!game.firstPlayerProgress || !game.secondPlayerProgress) {
+        if (!game.firstPlayerProgress) {
             throw new HttpException("Access denied", 403);
         }
         if (

@@ -53,8 +53,8 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             } else {
                 answerStatusForUpdate = "Incorrect";
                 oppositePlayerScore = oppositePlayerProgress.answers.map((a) => a.answerStatus).includes("Correct")
-                    ? score + 1
-                    : score;
+                    ? oppositePlayerProgress.score + 1
+                    : oppositePlayerProgress.score;
             }
             dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = score;
             dataForUpdateInSet[`${stringForOppositePlayerUpdate}.score`] = oppositePlayerScore;

@@ -44,22 +44,21 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         const numOfAnswers = playerProgress.answers.length;
 
         if (oppositePlayerProgress.answers.length === 5 && playerProgress.answers.length === 4) {
+            console.log(playerProgress.score);
             score = playerProgress.score;
             id = game.questions[4].id;
             isAnswerCorrect = await this.quizRepository.checkAnswerCorrectness(id, command.answer);
             if (isAnswerCorrect) {
                 answerStatusForUpdate = "Correct";
-                score++;
-            } else {
-                answerStatusForUpdate = "Incorrect";
-                oppositePlayerScore = oppositePlayerProgress.answers.map((a) => a.answerStatus).includes("Correct")
-                    ? oppositePlayerProgress.score + 1
-                    : oppositePlayerProgress.score;
+                score += 1;
             }
-            dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = score;
+            oppositePlayerScore = oppositePlayerProgress.answers.map((a) => a.answerStatus).includes("Correct")
+                ? oppositePlayerProgress.score + 1
+                : oppositePlayerProgress.score;
             dataForUpdateInSet[`${stringForOppositePlayerUpdate}.score`] = oppositePlayerScore;
             dataForUpdateInSet["finishGameDate"] = dateOfAnswer;
             dataForUpdateInSet["status"] = "Finished";
+            dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = score;
             update = {
                 $push: {
                     [`${stringForPlayerUpdate}.answers`]: {
@@ -70,23 +69,24 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
                 },
                 $set: dataForUpdateInSet,
             };
-        } else score = playerProgress.score;
-        id = game.questions[numOfAnswers].id;
-        isAnswerCorrect = await this.quizRepository.checkAnswerCorrectness(id, command.answer);
-        answerStatusForUpdate = isAnswerCorrect ? "Correct" : "Incorrect";
-        score = isAnswerCorrect ? score + 1 : score + 0;
-        dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = score;
-        update = {
-            $push: {
-                [`${stringForPlayerUpdate}.answers`]: {
-                    questionId: id,
-                    answerStatus: answerStatusForUpdate,
-                    addedAt: dateOfAnswer,
+        } else {
+            score = playerProgress.score;
+            id = game.questions[numOfAnswers].id;
+            isAnswerCorrect = await this.quizRepository.checkAnswerCorrectness(id, command.answer);
+            answerStatusForUpdate = isAnswerCorrect ? "Correct" : "Incorrect";
+            score = isAnswerCorrect ? score + 1 : score + 0;
+            dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = score;
+            update = {
+                $push: {
+                    [`${stringForPlayerUpdate}.answers`]: {
+                        questionId: id,
+                        answerStatus: answerStatusForUpdate,
+                        addedAt: dateOfAnswer,
+                    },
                 },
-            },
-            $set: dataForUpdateInSet,
-        };
-        console.log(update);
+                $set: dataForUpdateInSet,
+            };
+        }
         await this.quizRepository.updateGameById(game.id, update);
         return {
             questionId: id,

@@ -24,18 +24,20 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         const dataForUpdateInSet = {};
         const dateOfAnswer = new Date();
         let score;
+        let oppositePlayerScore;
         let answerStatusForUpdate;
         let id;
         let isAnswerCorrect;
-        let finishedGameDate;
-        const stringForPlayerUpdate =
-            game.firstPlayerProgress.player.id === command.userId ? "firstPlayerProgress" : "secondPlayerProgress";
         const playerProgress =
             game.firstPlayerProgress.player.id === command.userId
                 ? game.firstPlayerProgress
                 : game.secondPlayerProgress;
         const oppositePlayerProgress =
             playerProgress === game.firstPlayerProgress ? game.secondPlayerProgress : game.firstPlayerProgress;
+        const stringForPlayerUpdate =
+            playerProgress === game.firstPlayerProgress ? "firstPlayerProgress" : "secondPlayerProgress";
+        const stringForOppositePlayerUpdate =
+            playerProgress === game.firstPlayerProgress ? "secondPlayerProgress" : "firstPlayerProgress";
         if (playerProgress.answers.length === 5) {
             throw new HttpException("Access denied", 403);
         }
@@ -43,29 +45,20 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
 
         if (oppositePlayerProgress.answers.length === 5 && playerProgress.answers.length === 4) {
             score = playerProgress.score;
-            const oppProgress =
-                playerProgress === game.firstPlayerProgress ? game.secondPlayerProgress : game.firstPlayerProgress;
             id = game.questions[4].id;
             isAnswerCorrect = await this.quizRepository.checkAnswerCorrectness(id, command.answer);
-            answerStatusForUpdate = isAnswerCorrect ? "Correct" : "Incorrect";
             if (isAnswerCorrect) {
                 answerStatusForUpdate = "Correct";
-                score = oppProgress.answers.length !== 5 ? score + 1 : score + 0;
+                score++;
             } else {
                 answerStatusForUpdate = "Incorrect";
-                score =
-                    playerProgress.answers.map((a) => a.answerStatus).includes("Correct") &&
-                    oppProgress.answers.length !== 5
-                        ? score + 2
-                        : score + 1;
+                oppositePlayerScore = oppositePlayerProgress.answers.map((a) => a.answerStatus).includes("Correct")
+                    ? score + 1
+                    : score;
             }
             dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = score;
-            if (oppProgress.answers.length === 5) {
-                finishedGameDate = dateOfAnswer;
-            } else {
-                finishedGameDate = game.finishGameDate;
-            }
-            dataForUpdateInSet["finishGameDate"] = finishedGameDate;
+            dataForUpdateInSet[`${stringForOppositePlayerUpdate}.score`] = oppositePlayerScore;
+            dataForUpdateInSet["finishGameDate"] = dateOfAnswer;
             dataForUpdateInSet["status"] = "Finished";
             update = {
                 $push: {

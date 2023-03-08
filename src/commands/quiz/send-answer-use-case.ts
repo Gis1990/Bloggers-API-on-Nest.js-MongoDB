@@ -50,14 +50,14 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             answerStatusForUpdate = isAnswerCorrect ? "Correct" : "Incorrect";
             if (isAnswerCorrect) {
                 answerStatusForUpdate = "Correct";
-                score = oppProgress.answers.length !== 5 ? score + 2 : score + 1;
+                score = oppProgress.answers.length !== 5 ? score + 1 : score + 0;
             } else {
                 answerStatusForUpdate = "Incorrect";
                 score =
                     playerProgress.answers.map((a) => a.answerStatus).includes("Correct") &&
                     oppProgress.answers.length !== 5
-                        ? score + 1
-                        : score + 0;
+                        ? score + 2
+                        : score + 1;
             }
             dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = score;
             if (oppProgress.answers.length === 5) {

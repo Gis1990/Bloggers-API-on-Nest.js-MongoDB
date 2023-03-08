@@ -1,8 +1,8 @@
-import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { QuizRepository } from "../../repositories/quiz.repository";
 import { AnswersClass } from "../../schemas/games.schema";
 import { HttpException } from "@nestjs/common";
-import { GetCurrentUnfinishedGameCommand } from "../../queries/quiz/get-current-unfinished-game-by-id-query";
+import { QuizQueryRepository } from "../../query-repositories/quiz.query.repository";
 
 export class SendAnswerCommand {
     constructor(public readonly answer: string, public readonly userId: string) {}
@@ -10,11 +10,14 @@ export class SendAnswerCommand {
 
 @CommandHandler(SendAnswerCommand)
 export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
-    constructor(private quizRepository: QuizRepository, private queryBus: QueryBus) {}
+    constructor(private quizRepository: QuizRepository, private quizQueryRepository: QuizQueryRepository) {}
 
     async execute(command: SendAnswerCommand): Promise<AnswersClass> {
-        const game = await this.queryBus.execute(new GetCurrentUnfinishedGameCommand(command.userId));
-        if (!game || game.status !== "Active") {
+        const game = await this.quizQueryRepository.getGameByUserId(command.userId);
+        if (!game) {
+            throw new HttpException("Not Found", 404);
+        }
+        if (game.status !== "Active") {
             throw new HttpException("Access denied", 403);
         }
         if (game.firstPlayerProgress.answers.length === 5 || game.secondPlayerProgress.answers.length === 5) {

@@ -37,7 +37,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         const stringForPlayerUpdate =
             playerProgress === game.firstPlayerProgress ? "firstPlayerProgress" : "secondPlayerProgress";
         const stringForOppositePlayerUpdate =
-            playerProgress === game.firstPlayerProgress ? "secondPlayerProgress" : "firstPlayerProgress";
+            stringForPlayerUpdate === "firstPlayerProgress" ? "secondPlayerProgress" : "firstPlayerProgress";
         if (playerProgress.answers.length === 5) {
             throw new HttpException("Access denied", 403);
         }
@@ -86,7 +86,6 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             },
             $set: dataForUpdateInSet,
         };
-        console.log(update);
         await this.quizRepository.updateGameById(game.id, update);
         return {
             questionId: id,

@@ -86,7 +86,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             },
             $set: dataForUpdateInSet,
         };
-
+        console.log(update);
         await this.quizRepository.updateGameById(game.id, update);
         return {
             questionId: id,

@@ -21,12 +21,15 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             throw new HttpException("Access denied", 403);
         }
         let update = {};
+        const dataForUpdateInSet = {};
         const dateOfAnswer = new Date();
         let score;
         let answerStatusForUpdate;
         let id;
         let isAnswerCorrect;
-        let finishGameDate;
+        let finishedGameDate;
+        const stringPlayerForUpdate =
+            game.firstPlayerProgress.player.id === command.userId ? "firstPlayerProgress" : "secondPlayerProgress";
         const playerProgress =
             game.firstPlayerProgress.player.id === command.userId
                 ? game.firstPlayerProgress
@@ -39,17 +42,16 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             isAnswerCorrect = await this.quizRepository.checkAnswerCorrectness(id, command.answer);
             answerStatusForUpdate = isAnswerCorrect ? "Correct" : "Incorrect";
             score = isAnswerCorrect ? +1 : +0;
+            dataForUpdateInSet[`${stringPlayerForUpdate}.score`] = score;
             update = {
                 $push: {
-                    [`${playerProgress}.answers`]: {
+                    [`${stringPlayerForUpdate}.answers`]: {
                         questionId: id,
                         answerStatus: answerStatusForUpdate,
                         addedAt: dateOfAnswer,
                     },
                 },
-                $set: {
-                    score,
-                },
+                $set: dataForUpdateInSet,
             };
         } else {
             score = playerProgress.score;
@@ -69,23 +71,22 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
                         ? +1
                         : +0;
             }
+            dataForUpdateInSet[`${stringPlayerForUpdate}.score`] = score;
             if (oppProgress.answers.length === 5) {
-                finishGameDate = dateOfAnswer;
+                finishedGameDate = dateOfAnswer;
             } else {
-                finishGameDate = game.finishGameDate;
+                finishedGameDate = game.finishGameDate;
             }
+            dataForUpdateInSet["finishGameDate"] = finishedGameDate;
             update = {
                 $push: {
-                    [`${playerProgress}.answers`]: {
+                    [`${stringPlayerForUpdate}.answers`]: {
                         questionId: id,
                         answerStatus: answerStatusForUpdate,
                         addedAt: dateOfAnswer,
                     },
                 },
-                $set: {
-                    score,
-                    finishGameDate,
-                },
+                $set: dataForUpdateInSet,
             };
         }
         await this.quizRepository.updateGameById(game.id, update);

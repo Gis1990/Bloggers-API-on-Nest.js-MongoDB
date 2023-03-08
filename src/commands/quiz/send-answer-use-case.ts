@@ -14,10 +14,14 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
 
     async execute(command: SendAnswerCommand): Promise<AnswersClass> {
         const game = await this.quizQueryRepository.getGameByUserId(command.userId);
-        if (!game || game.status !== "Active") {
-            throw new HttpException("Access denied", 403);
+        if (!game) {
+            throw new HttpException("Access denied", 404);
         }
-        if (game.firstPlayerProgress.answers.length === 5 || game.secondPlayerProgress.answers.length === 5) {
+        if (
+            game.firstPlayerProgress.answers.length === 5 ||
+            game.secondPlayerProgress.answers.length === 5 ||
+            game.status !== "Active"
+        ) {
             throw new HttpException("Access denied", 403);
         }
         let update = {};

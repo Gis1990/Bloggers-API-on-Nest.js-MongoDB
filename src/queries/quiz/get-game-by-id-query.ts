@@ -12,19 +12,14 @@ export class GetGameByIdQuery implements IQueryHandler<GetGameByIdCommand> {
     constructor(private quizQueryRepository: QuizQueryRepository) {}
 
     async execute(query: GetGameByIdCommand): Promise<GamesClass | null> {
-        const game = await this.quizQueryRepository.getGameById(query.gameId);
-        if (!game) {
+        const gameByGameId = await this.quizQueryRepository.getGameById(query.gameId);
+        const gameByUserId = await this.quizQueryRepository.getGameByUserId(query.userId);
+        if (!gameByGameId) {
             throw new HttpException("Game not found", 404);
         }
-        if (!game.firstPlayerProgress) {
+        if (!gameByUserId) {
             throw new HttpException("Access denied", 403);
         }
-        if (
-            game.firstPlayerProgress.player.id !== query.userId &&
-            game.secondPlayerProgress.player.id !== query.userId
-        ) {
-            throw new HttpException("Access denied", 403);
-        }
-        return game;
+        return gameByGameId;
     }
 }

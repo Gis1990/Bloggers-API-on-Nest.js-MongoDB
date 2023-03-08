@@ -15,7 +15,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
     async execute(command: SendAnswerCommand): Promise<AnswersClass> {
         const game = await this.quizQueryRepository.getGameByUserId(command.userId);
         if (!game) {
-            throw new HttpException("Game not found", 404);
+            throw new HttpException("Game not found", 403);
         }
         if (game.status !== "Active") {
             throw new HttpException("Access denied", 403);

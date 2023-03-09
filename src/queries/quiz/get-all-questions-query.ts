@@ -1,9 +1,9 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
-import { HelperForQuestions } from "../../query-repositories/helpers/helpers.for.questions.query.repository";
+import { HelperForQuiz } from "../../query-repositories/helpers/helpers.for.quiz.query.repository";
 import { ModelForGettingAllQuestions } from "../../dtos/quiz.dto";
 import { QuizQueryRepository } from "../../query-repositories/quiz.query.repository";
 import { QuizFactory } from "../../factories/quiz.factory";
-import { QuestionViewModelPaginationClass } from "../../entities/quez.entity";
+import { QuestionViewModelPaginationClass } from "../../entities/quiz.entity";
 
 export class GetAllQuestionsCommand {
     constructor(public dto: ModelForGettingAllQuestions) {}
@@ -14,7 +14,7 @@ export class GetAllQuestionsQuery implements IQueryHandler<GetAllQuestionsComman
     constructor(private quizQueryRepository: QuizQueryRepository) {}
 
     async execute(query: GetAllQuestionsCommand): Promise<QuestionViewModelPaginationClass> {
-        const dto = await HelperForQuestions.createQueryForGettingAllQuestions(query.dto);
+        const dto = await HelperForQuiz.createQueryForGettingAllQuestions(query.dto);
         const questions = await this.quizQueryRepository.getAllQuestions(dto);
         return await QuizFactory.createQuestionViewModelPaginationClass(questions);
     }

@@ -1,3 +1,5 @@
+import { GamesClass } from "../schemas/games.schema";
+
 export class QuestionViewModelPaginationClass {
     constructor(
         public pagesCount: number,
@@ -16,5 +18,15 @@ export class QuestionViewModelClass {
         public published: boolean,
         public createdAt: Date,
         public updatedAt: Date,
+    ) {}
+}
+
+export class AllGamesViewModelClass {
+    constructor(
+        public pagesCount: number,
+        public page: number,
+        public pageSize: number,
+        public totalCount: number,
+        public items: GamesClass[],
     ) {}
 }

@@ -30,7 +30,7 @@ import {
     QuestionIdValidationModel,
 } from "../../dtos/quiz.dto";
 import { CreateQuestionCommand } from "../../commands/quiz/create-question-use-case";
-import { QuestionViewModelClass, QuestionViewModelPaginationClass } from "../../entities/quez.entity";
+import { QuestionViewModelClass, QuestionViewModelPaginationClass } from "../../entities/quiz.entity";
 import { GetAllQuestionsCommand } from "../../queries/quiz/get-all-questions-query";
 import { DeleteQuestionCommand } from "../../commands/quiz/delete-question-use-case";
 import { UpdateQuestionCommand } from "../../commands/quiz/update-question-use-case";

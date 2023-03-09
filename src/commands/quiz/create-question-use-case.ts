@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreatedNewQuestionDto, InputModelForCreatingAndUpdatingQuestion } from "../../dtos/quiz.dto";
 import { QuizRepository } from "../../repositories/quiz.repository";
 import { QuizFactory } from "../../factories/quiz.factory";
-import { QuestionViewModelClass } from "../../entities/quez.entity";
+import { QuestionViewModelClass } from "../../entities/quiz.entity";
 
 export class CreateQuestionCommand {
     constructor(public readonly dto: InputModelForCreatingAndUpdatingQuestion) {}

@@ -10,9 +10,10 @@ import { QuizRepository } from "../../repositories/quiz.repository";
 import { QuestionClass, QuestionSchema } from "../../schemas/questions.schema";
 import { GetCurrentUnfinishedGameQuery } from "../../queries/quiz/get-current-unfinished-game-by-id-query";
 import { SendAnswerUseCase } from "../../commands/quiz/send-answer-use-case";
+import { GetAllGamesForUserQuery } from "../../queries/quiz/get-all-games-for-user-query";
 
 const useCases = [CreateGameUseCase, SendAnswerUseCase];
-const queries = [GetGameByIdQuery, GetCurrentUnfinishedGameQuery];
+const queries = [GetGameByIdQuery, GetCurrentUnfinishedGameQuery, GetAllGamesForUserQuery];
 
 @Module({
     imports: [

@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { QuizQueryRepository } from "../../query-repositories/quiz.query.repository";
-import { QuestionViewModelClass } from "../../entities/quez.entity";
+import { QuestionViewModelClass } from "../../entities/quiz.entity";
 
 export class GetQuestionByIdCommand {
     constructor(public readonly questionId: string) {}

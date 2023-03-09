@@ -14,6 +14,7 @@ import { Transform, TransformFnParams, Type } from "class-transformer";
 import { QuestionClass, QuestionsForGameClass } from "../schemas/questions.schema";
 import { PlayerProgressClass } from "../schemas/games.schema";
 import { IsQuestionIdExist } from "../decorators/quiz/quiz.custom.decorators";
+import { ModelForGettingAllBlogs } from "./blogs.dto";
 
 const listOfCorrectPublishedStatuses = ["all", "published", "notPublished"];
 
@@ -113,4 +114,24 @@ export class InputModelForAnswers {
     @IsString()
     @IsNotEmpty()
     public answer: string;
+}
+
+export class ModelForGettingAllGamesForUser extends ModelForGettingAllBlogs {
+    @IsString()
+    @IsOptional()
+    public searchNameTerm: string;
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    public pageNumber: number;
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    public pageSize: number;
+    @IsString()
+    @IsOptional()
+    public sortBy: string;
+    @IsString()
+    @IsOptional()
+    public sortDirection: string;
 }

@@ -1,7 +1,7 @@
 import { QueryDto } from "../../dtos/blogs.dto";
-import { ModelForGettingAllQuestions } from "../../dtos/quiz.dto";
+import { ModelForGettingAllGamesForUser, ModelForGettingAllQuestions } from "../../dtos/quiz.dto";
 
-export class HelperForQuestions {
+export class HelperForQuiz {
     static async createQueryForGettingAllQuestions(dto: ModelForGettingAllQuestions): Promise<QueryDto> {
         const {
             publishedStatus = "all",
@@ -32,6 +32,15 @@ export class HelperForQuestions {
             }
         }
 
+        return { query, skips, sortObj, pageSize, pageNumber };
+    }
+
+    static async createQueryForGettingAllGamesForUser(dto: ModelForGettingAllGamesForUser): Promise<QueryDto> {
+        const { pageNumber = 1, pageSize = 10, sortBy = "pairCreatedDate", sortDirection = "desc" } = dto;
+        const skips = pageSize * (pageNumber - 1);
+        const sortObj: any = {};
+        sortObj[sortBy] = sortDirection === "desc" ? -1 : 1;
+        const query: any = {};
         return { query, skips, sortObj, pageSize, pageNumber };
     }
 }

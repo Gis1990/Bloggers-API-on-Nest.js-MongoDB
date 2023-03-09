@@ -5,6 +5,7 @@ import { QueryDto } from "../dtos/blogs.dto";
 import { QuestionClass } from "../schemas/questions.schema";
 import { QuestionsPaginationDtoClass } from "../dtos/quiz.dto";
 import { GamesClass } from "../schemas/games.schema";
+import { AllGamesViewModelClass } from "../entities/quiz.entity";
 
 @Injectable()
 export class QuizQueryRepository {
@@ -89,5 +90,38 @@ export class QuizQueryRepository {
         } else {
             return null;
         }
+    }
+
+    async getAllGamesForUser(queryDtoForGames: QueryDto, userId: string): Promise<AllGamesViewModelClass> {
+        const cursor = await this.gamesModelClass
+            .find(
+                {
+                    $and: [
+                        queryDtoForGames.query,
+                        {
+                            $or: [
+                                { "firstPlayerProgress.player.id": userId },
+                                { "secondPlayerProgress.player.id": userId },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    _id: 0,
+                },
+            )
+            .sort(queryDtoForGames.sortObj)
+            .skip(queryDtoForGames.skips)
+            .limit(queryDtoForGames.pageSize);
+        const totalCount = await this.gamesModelClass.count({
+            $or: [{ "firstPlayerProgress.player.id": userId }, { "secondPlayerProgress.player.id": userId }],
+        });
+        return {
+            pagesCount: Math.ceil(totalCount / queryDtoForGames.pageSize),
+            page: queryDtoForGames.pageNumber,
+            pageSize: queryDtoForGames.pageSize,
+            totalCount: totalCount,
+            items: cursor,
+        };
     }
 }

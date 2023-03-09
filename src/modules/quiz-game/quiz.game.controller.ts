@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { CurrentUser, CurrentUserId } from "../../decorators/auth/auth.custom.decorators";
 import { SkipThrottle } from "@nestjs/throttler";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
@@ -7,14 +7,26 @@ import { CreateGameCommand } from "../../commands/quiz/create-game-use-case";
 import { CurrentUserModel } from "../../dtos/auth.dto";
 import { AnswersClass, GamesClass } from "../../schemas/games.schema";
 import { GetGameByIdCommand } from "../../queries/quiz/get-game-by-id-query";
-import { GameIdValidationModel, InputModelForAnswers } from "../../dtos/quiz.dto";
+import { GameIdValidationModel, InputModelForAnswers, ModelForGettingAllGamesForUser } from "../../dtos/quiz.dto";
 import { GetCurrentUnfinishedGameCommand } from "../../queries/quiz/get-current-unfinished-game-by-id-query";
 import { SendAnswerCommand } from "../../commands/quiz/send-answer-use-case";
+import { AllGamesViewModelClass } from "../../entities/quiz.entity";
+import { GetAllGamesForUserCommand } from "../../queries/quiz/get-all-games-for-user-query";
 
 @SkipThrottle()
 @Controller("pair-game-quiz/pairs")
 export class QuizGameController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
+
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @Get("/my")
+    async getAllGamesForUser(
+        @Query()
+        dto: ModelForGettingAllGamesForUser,
+        @CurrentUser() user: CurrentUserModel,
+    ): Promise<AllGamesViewModelClass> {
+        return await this.queryBus.execute(new GetAllGamesForUserCommand(dto, user.id));
+    }
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Get("/my-current")

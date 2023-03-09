@@ -1,4 +1,4 @@
-import { QuestionViewModelClass, QuestionViewModelPaginationClass } from "../entities/quez.entity";
+import { QuestionViewModelClass, QuestionViewModelPaginationClass } from "../entities/quiz.entity";
 import { QuestionClass } from "../schemas/questions.schema";
 import { QuestionsPaginationDtoClass } from "../dtos/quiz.dto";
 

@@ -36,7 +36,11 @@ export class HelperForQuiz {
     }
 
     static async createQueryForGettingAllGamesForUser(dto: ModelForGettingAllGamesForUser): Promise<QueryDto> {
-        const { pageNumber = 1, pageSize = 10, sortBy = "pairCreatedDate", sortDirection = "desc" } = dto;
+        // eslint-disable-next-line prefer-const
+        let { pageNumber = 1, pageSize = 10, sortBy = "pairCreatedDate", sortDirection = "desc" } = dto;
+        if (sortBy === "status") {
+            sortBy = "pairCreatedDate";
+        }
         const skips = pageSize * (pageNumber - 1);
         const sortObj: any = {};
         sortObj[sortBy] = sortDirection === "desc" ? -1 : 1;

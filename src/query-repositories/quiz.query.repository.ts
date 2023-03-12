@@ -124,4 +124,16 @@ export class QuizQueryRepository {
             items: cursor,
         };
     }
+
+    async getAllGamesByUserIdForStats(userId: string): Promise<GamesClass[]> {
+        return this.gamesModelClass.find(
+            {
+                $or: [{ "firstPlayerProgress.player.id": userId }, { "secondPlayerProgress.player.id": userId }],
+                status: { $in: ["PendingSecondPlayer", "Active"] },
+            },
+            {
+                _id: 0,
+            },
+        );
+    }
 }

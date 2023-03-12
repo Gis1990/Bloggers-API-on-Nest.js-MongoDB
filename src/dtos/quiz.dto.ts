@@ -135,3 +135,12 @@ export class ModelForGettingAllGamesForUser extends ModelForGettingAllBlogs {
     @IsOptional()
     public sortDirection: string;
 }
+
+export class GameStatsViewModelDto {
+    public sumScore: number;
+    public avgScores: number;
+    public gamesCount: number;
+    public winsCount: number;
+    public lossesCount: number;
+    public drawsCount: number;
+}

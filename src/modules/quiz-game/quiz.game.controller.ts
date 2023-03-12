@@ -7,16 +7,28 @@ import { CreateGameCommand } from "../../commands/quiz/create-game-use-case";
 import { CurrentUserModel } from "../../dtos/auth.dto";
 import { AnswersClass, GamesClass } from "../../schemas/games.schema";
 import { GetGameByIdCommand } from "../../queries/quiz/get-game-by-id-query";
-import { GameIdValidationModel, InputModelForAnswers, ModelForGettingAllGamesForUser } from "../../dtos/quiz.dto";
+import {
+    GameIdValidationModel,
+    GameStatsViewModelDto,
+    InputModelForAnswers,
+    ModelForGettingAllGamesForUser,
+} from "../../dtos/quiz.dto";
 import { GetCurrentUnfinishedGameCommand } from "../../queries/quiz/get-current-unfinished-game-by-id-query";
 import { SendAnswerCommand } from "../../commands/quiz/send-answer-use-case";
 import { AllGamesViewModelClass } from "../../entities/quiz.entity";
 import { GetAllGamesForUserCommand } from "../../queries/quiz/get-all-games-for-user-query";
+import { GetGamesStatsCommand } from "../../queries/quiz/get-games-stats-for-user-query";
 
 @SkipThrottle()
 @Controller("pair-game-quiz/pairs")
 export class QuizGameController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
+
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @Get("/my-statistic")
+    async getStats(@CurrentUser() user: CurrentUserModel): Promise<GameStatsViewModelDto> {
+        return await this.queryBus.execute(new GetGamesStatsCommand(user.id));
+    }
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Get("/my")

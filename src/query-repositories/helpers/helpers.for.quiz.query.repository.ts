@@ -40,6 +40,7 @@ export class HelperForQuiz {
         let { pageNumber = 1, pageSize = 10, sortBy = "pairCreatedDate", sortDirection = "desc" } = dto;
         if (sortBy === "status") {
             sortBy = "pairCreatedDate";
+            sortDirection = "desc";
         }
         const skips = pageSize * (pageNumber - 1);
         const sortObj: any = {};

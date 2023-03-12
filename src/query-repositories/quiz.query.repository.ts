@@ -129,7 +129,7 @@ export class QuizQueryRepository {
         return this.gamesModelClass.find(
             {
                 $or: [{ "firstPlayerProgress.player.id": userId }, { "secondPlayerProgress.player.id": userId }],
-                status: { $in: ["PendingSecondPlayer", "Active"] },
+                status: { $in: ["Finished"] },
             },
             {
                 _id: 0,

@@ -20,18 +20,18 @@ import { GetAllGamesForUserCommand } from "../../queries/quiz/get-all-games-for-
 import { GetGamesStatsCommand } from "../../queries/quiz/get-games-stats-for-user-query";
 
 @SkipThrottle()
-@Controller("pair-game-quiz/pairs")
+@Controller("pair-game-quiz")
 export class QuizGameController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Get("/my-statistic")
+    @Get("/users/my-statistic")
     async getStats(@CurrentUser() user: CurrentUserModel): Promise<GameStatsViewModelDto> {
         return await this.queryBus.execute(new GetGamesStatsCommand(user.id));
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Get("/my")
+    @Get("/pairs/my")
     async getAllGamesForUser(
         @Query()
         dto: ModelForGettingAllGamesForUser,
@@ -41,13 +41,13 @@ export class QuizGameController {
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Get("/my-current")
+    @Get("/pairs/my-current")
     async getCurrentUnfinishedGame(@CurrentUser() user: CurrentUserModel): Promise<GamesClass | null> {
         return await this.queryBus.execute(new GetCurrentUnfinishedGameCommand(user.id));
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Get("/:id")
+    @Get("/pairs/:id")
     async getGameById(
         @Param() params: GameIdValidationModel,
         @CurrentUser() user: CurrentUserModel,
@@ -56,14 +56,14 @@ export class QuizGameController {
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Post("/connection")
+    @Post("/pairs/connection")
     @HttpCode(200)
     async createGame(@CurrentUser() user: CurrentUserModel): Promise<GamesClass> {
         return await this.commandBus.execute(new CreateGameCommand(user));
     }
 
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Post("/my-current/answers")
+    @Post("/pairs/my-current/answers")
     @HttpCode(200)
     async sendAnswer(@Body() dto: InputModelForAnswers, @CurrentUserId() userId: string): Promise<AnswersClass> {
         return await this.commandBus.execute(new SendAnswerCommand(dto.answer, userId));

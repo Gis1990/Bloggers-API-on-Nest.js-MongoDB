@@ -90,7 +90,15 @@ export class QuizRepository {
     async updateGameStatsForPlayer(dto: GameStatsViewModelDto, userId: string, login: string): Promise<boolean> {
         const user = await this.topUsersStatsClass.findOne({ "player.userId": userId });
         if (!user) {
-            const obj = { dto, player: { userId: userId, login: login } };
+            const obj = {
+                sumScore: dto.sumScore,
+                avgScores: dto.avgScores,
+                gamesCount: dto.gamesCount,
+                winsCount: dto.winsCount,
+                lossesCount: dto.lossesCount,
+                drawsCount: dto.drawsCount,
+                player: { id: userId, login: login },
+            };
             const result = new this.topUsersStatsClass(obj);
             await result.save();
         } else {

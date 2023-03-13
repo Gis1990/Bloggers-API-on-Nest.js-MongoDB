@@ -144,3 +144,17 @@ export class GameStatsViewModelDto {
     public lossesCount: number;
     public drawsCount: number;
 }
+
+export class ModelForGettingTopUsers {
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    public pageNumber: number;
+    @IsNumber()
+    @IsOptional()
+    @Type(() => Number)
+    public pageSize: number;
+    @IsArray()
+    @IsOptional()
+    public sort: string[];
+}

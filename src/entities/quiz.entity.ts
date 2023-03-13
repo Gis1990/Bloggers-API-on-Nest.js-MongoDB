@@ -1,4 +1,4 @@
-import { GamesClass } from "../schemas/games.schema";
+import { GamesClass, TopUsersStatsClass } from "../schemas/games.schema";
 
 export class QuestionViewModelPaginationClass {
     constructor(
@@ -28,5 +28,15 @@ export class AllGamesViewModelClass {
         public pageSize: number,
         public totalCount: number,
         public items: GamesClass[],
+    ) {}
+}
+
+export class TopUsersModelPaginationClass {
+    constructor(
+        public pagesCount: number,
+        public page: number,
+        public pageSize: number,
+        public totalCount: number,
+        public items: TopUsersStatsClass[],
     ) {}
 }

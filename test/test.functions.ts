@@ -5,7 +5,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppModule } from "../src/app.module";
 import { HttpExceptionFilter } from "../src/exception.filter";
 import { useContainer } from "class-validator";
-import * as cookieParser from "cookie-parser";
+import cookieParser from "cookie-parser";
 import { MongooseModule } from "@nestjs/mongoose";
 import {
     EmailRecoveryCodeClass,
@@ -22,7 +22,7 @@ import {
 import { BlogClass, BlogsSchema } from "../src/schemas/blogs.schema";
 import { CommentClass, CommentsSchema } from "../src/schemas/comments.schema";
 import { NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema } from "../src/schemas/posts.schema";
-import * as request from "supertest";
+import request from "supertest";
 
 export let app: INestApplication;
 let mongoServer: MongoMemoryServer;

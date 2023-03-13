@@ -4,14 +4,15 @@ import { Model } from "mongoose";
 import { QueryDto } from "../dtos/blogs.dto";
 import { QuestionClass } from "../schemas/questions.schema";
 import { QuestionsPaginationDtoClass } from "../dtos/quiz.dto";
-import { GamesClass } from "../schemas/games.schema";
-import { AllGamesViewModelClass } from "../entities/quiz.entity";
+import { GamesClass, TopUsersStatsClass } from "../schemas/games.schema";
+import { AllGamesViewModelClass, TopUsersModelPaginationClass } from "../entities/quiz.entity";
 
 @Injectable()
 export class QuizQueryRepository {
     constructor(
         @InjectModel(QuestionClass.name) private questionModelClass: Model<QuestionClass>,
         @InjectModel(GamesClass.name) private gamesModelClass: Model<GamesClass>,
+        @InjectModel(TopUsersStatsClass.name) private topUsersStatsClass: Model<TopUsersStatsClass>,
     ) {}
 
     async getAllQuestions(queryForQuestions: QueryDto): Promise<QuestionsPaginationDtoClass> {
@@ -135,5 +136,23 @@ export class QuizQueryRepository {
                 _id: 0,
             },
         );
+    }
+
+    async getTopUsers(queryForTopUsers: QueryDto): Promise<TopUsersModelPaginationClass> {
+        const cursor = await this.topUsersStatsClass
+            .find(queryForTopUsers.query, { _id: 0 })
+            .sort(queryForTopUsers.sortObj)
+            .skip(queryForTopUsers.skips)
+            .limit(queryForTopUsers.pageSize);
+
+        const totalCount = await this.questionModelClass.count(queryForTopUsers.query);
+
+        return {
+            pagesCount: Math.ceil(totalCount / queryForTopUsers.pageSize),
+            page: queryForTopUsers.pageNumber,
+            pageSize: queryForTopUsers.pageSize,
+            totalCount: totalCount,
+            items: cursor,
+        };
     }
 }

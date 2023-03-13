@@ -92,3 +92,39 @@ export class GamesClass {
 }
 
 export const GamesSchema = SchemaFactory.createForClass(GamesClass);
+
+@Schema({ versionKey: false })
+export class TopUsersStatsClass {
+    @Prop({
+        required: true,
+    })
+    sumScore: number;
+    @Prop({
+        required: true,
+    })
+    avgScores: number;
+    @Prop({
+        required: true,
+    })
+    gamesCount: number;
+    @Prop({
+        required: true,
+    })
+    winsCount: number;
+    @Prop({
+        required: true,
+    })
+    lossesCount: number;
+    @Prop({
+        required: true,
+    })
+    drawsCount: number;
+    @Prop({
+        type: PlayerForTheGameSchema,
+        required: true,
+        _id: false,
+    })
+    player: PlayerForTheGameClass;
+}
+
+export const TopUsersStatsSchema = SchemaFactory.createForClass(TopUsersStatsClass);

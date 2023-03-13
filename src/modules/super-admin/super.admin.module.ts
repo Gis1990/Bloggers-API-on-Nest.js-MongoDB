@@ -52,7 +52,7 @@ import { IsQuestionIdExistConstraint } from "../../decorators/quiz/quiz.custom.d
 import { DeleteQuestionUseCase } from "../../commands/quiz/delete-question-use-case";
 import { UpdateQuestionUseCase } from "../../commands/quiz/update-question-use-case";
 import { PublishUnpublishQuestionUseCase } from "../../commands/quiz/publish-unpublish-question-use-case";
-import { GamesClass, GamesSchema } from "../../schemas/games.schema";
+import { GamesClass, GamesSchema, TopUsersStatsClass, TopUsersStatsSchema } from "../../schemas/games.schema";
 
 const useCases = [
     BindUserWithBlogUseCase,
@@ -118,6 +118,10 @@ const queries = [
             {
                 name: GamesClass.name,
                 schema: GamesSchema,
+            },
+            {
+                name: TopUsersStatsClass.name,
+                schema: TopUsersStatsSchema,
             },
         ]),
     ],

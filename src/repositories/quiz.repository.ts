@@ -5,17 +5,19 @@ import { QuestionClass } from "../schemas/questions.schema";
 import {
     CreatedNewGameDto,
     CreatedNewQuestionDto,
+    GameStatsViewModelDto,
     InputModelForCreatingAndUpdatingQuestion,
     InputModelForPublishUnpublishQuestion,
     UpdatedGameDto,
 } from "../dtos/quiz.dto";
-import { GamesClass } from "../schemas/games.schema";
+import { GamesClass, TopUsersStatsClass } from "../schemas/games.schema";
 
 @Injectable()
 export class QuizRepository {
     constructor(
         @InjectModel(QuestionClass.name) private questionModelClass: Model<QuestionClass>,
         @InjectModel(GamesClass.name) private gamesModelClass: Model<GamesClass>,
+        @InjectModel(TopUsersStatsClass.name) private topUsersStatsClass: Model<TopUsersStatsClass>,
     ) {}
 
     async createQuestion(newQuestion: CreatedNewQuestionDto): Promise<QuestionClass> {
@@ -83,5 +85,17 @@ export class QuizRepository {
             { _id: 0 },
         );
         return !!correctAnswer;
+    }
+
+    async updateGameStatsForPlayer(dto: GameStatsViewModelDto, userId: string, login: string): Promise<boolean> {
+        const user = await this.topUsersStatsClass.findOne({ "player.userId": userId });
+        if (!user) {
+            const obj = { dto, player: { userId: userId, login: login } };
+            const result = new this.topUsersStatsClass(obj);
+            await result.save();
+        } else {
+            await this.topUsersStatsClass.updateOne({ "player.userId": userId }, dto);
+        }
+        return true;
     }
 }

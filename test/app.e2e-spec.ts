@@ -1,4 +1,4 @@
-import * as request from "supertest";
+import request from "supertest";
 import { app, setupTestApp, teardownTestApp } from "./test.functions";
 
 describe("AppController (e2e)", () => {

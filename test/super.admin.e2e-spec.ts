@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import * as request from "supertest";
+import request from "supertest";
 import {
     app,
     CheckingDbEmptiness,
@@ -286,7 +286,7 @@ describe("super admin endpoint quiz /sa/quiz (e2e)", () => {
                 correctAnswers: correctQuestion.correctAnswers,
                 published: false,
                 createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                updatedAt: null,
             });
             items.push(response1.body);
         });

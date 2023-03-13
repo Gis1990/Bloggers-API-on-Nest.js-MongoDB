@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import * as request from "supertest";
+import request from "supertest";
 import {
     app,
     createBlogForTests,

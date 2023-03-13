@@ -1,19 +1,25 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommandHandler, ICommandHandler, QueryBus } from "@nestjs/cqrs";
 import { QuizRepository } from "../../repositories/quiz.repository";
 import { AnswersClass } from "../../schemas/games.schema";
 import { HttpException } from "@nestjs/common";
 import { QuizQueryRepository } from "../../query-repositories/quiz.query.repository";
+import { CurrentUserModel } from "../../dtos/auth.dto";
+import { GetGamesStatsCommand } from "../../queries/quiz/get-games-stats-for-user-query";
 
 export class SendAnswerCommand {
-    constructor(public readonly answer: string, public readonly userId: string) {}
+    constructor(public readonly answer: string, public readonly user: CurrentUserModel) {}
 }
 
 @CommandHandler(SendAnswerCommand)
 export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
-    constructor(private quizRepository: QuizRepository, private quizQueryRepository: QuizQueryRepository) {}
+    constructor(
+        private quizRepository: QuizRepository,
+        private queryBus: QueryBus,
+        private quizQueryRepository: QuizQueryRepository,
+    ) {}
 
     async execute(command: SendAnswerCommand): Promise<AnswersClass> {
-        const game = await this.quizQueryRepository.getGameByUserId(command.userId);
+        const game = await this.quizQueryRepository.getGameByUserId(command.user.id);
         if (!game) {
             throw new HttpException("Game not found", 403);
         }
@@ -29,7 +35,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         let id;
         let isAnswerCorrect;
         const playerProgress =
-            game.firstPlayerProgress.player.id === command.userId
+            game.firstPlayerProgress.player.id === command.user.id
                 ? game.firstPlayerProgress
                 : game.secondPlayerProgress;
         const oppositePlayerProgress =
@@ -90,6 +96,8 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             };
         }
         await this.quizRepository.updateGameById(game.id, update);
+        const results = await this.queryBus.execute(new GetGamesStatsCommand(command.user.id));
+        await this.quizRepository.updateGameStatsForPlayer(results, command.user.id, command.user.login);
         return {
             questionId: id,
             answerStatus: answerStatusForUpdate,

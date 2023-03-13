@@ -1,5 +1,9 @@
 import { QueryDto } from "../../dtos/blogs.dto";
-import { ModelForGettingAllGamesForUser, ModelForGettingAllQuestions } from "../../dtos/quiz.dto";
+import {
+    ModelForGettingAllGamesForUser,
+    ModelForGettingAllQuestions,
+    ModelForGettingTopUsers,
+} from "../../dtos/quiz.dto";
 
 export class HelperForQuiz {
     static async createQueryForGettingAllQuestions(dto: ModelForGettingAllQuestions): Promise<QueryDto> {
@@ -45,6 +49,19 @@ export class HelperForQuiz {
         const skips = pageSize * (pageNumber - 1);
         const sortObj: any = {};
         sortObj[sortBy] = sortDirection === "desc" ? -1 : 1;
+        const query: any = {};
+        return { query, skips, sortObj, pageSize, pageNumber };
+    }
+
+    static async createQueryForGettingTopUsers(dto: ModelForGettingTopUsers): Promise<QueryDto> {
+        // eslint-disable-next-line prefer-const
+        let { pageNumber = 1, pageSize = 10, sort = ["avgScores desc", "sumScore desc"] } = dto;
+        const skips = pageSize * (pageNumber - 1);
+        const sortObj: any = {};
+        sort.forEach((item) => {
+            const [sortBy, sortDirection] = item.split(" ");
+            sortObj[sortBy] = sortDirection === "desc" ? -1 : 1;
+        });
         const query: any = {};
         return { query, skips, sortObj, pageSize, pageNumber };
     }

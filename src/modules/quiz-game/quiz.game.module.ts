@@ -3,7 +3,7 @@ import { QuizGameController } from "./quiz.game.controller";
 import { MongooseModule } from "@nestjs/mongoose";
 import { CqrsModule } from "@nestjs/cqrs";
 import { CreateGameUseCase } from "../../commands/quiz/create-game-use-case";
-import { GamesClass, GamesSchema } from "../../schemas/games.schema";
+import { GamesClass, GamesSchema, TopUsersStatsClass, TopUsersStatsSchema } from "../../schemas/games.schema";
 import { GetGameByIdQuery } from "../../queries/quiz/get-game-by-id-query";
 import { QuizQueryRepository } from "../../query-repositories/quiz.query.repository";
 import { QuizRepository } from "../../repositories/quiz.repository";
@@ -12,9 +12,16 @@ import { GetCurrentUnfinishedGameQuery } from "../../queries/quiz/get-current-un
 import { SendAnswerUseCase } from "../../commands/quiz/send-answer-use-case";
 import { GetAllGamesForUserQuery } from "../../queries/quiz/get-all-games-for-user-query";
 import { GetGamesStatsQuery } from "../../queries/quiz/get-games-stats-for-user-query";
+import { GetTopUsersQuery } from "../../queries/quiz/get-top-users-query";
 
 const useCases = [CreateGameUseCase, SendAnswerUseCase];
-const queries = [GetGameByIdQuery, GetCurrentUnfinishedGameQuery, GetAllGamesForUserQuery, GetGamesStatsQuery];
+const queries = [
+    GetGameByIdQuery,
+    GetCurrentUnfinishedGameQuery,
+    GetAllGamesForUserQuery,
+    GetGamesStatsQuery,
+    GetTopUsersQuery,
+];
 
 @Module({
     imports: [
@@ -27,6 +34,10 @@ const queries = [GetGameByIdQuery, GetCurrentUnfinishedGameQuery, GetAllGamesFor
             {
                 name: QuestionClass.name,
                 schema: QuestionSchema,
+            },
+            {
+                name: TopUsersStatsClass.name,
+                schema: TopUsersStatsSchema,
             },
         ]),
     ],

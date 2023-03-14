@@ -88,7 +88,7 @@ export class QuizRepository {
     }
 
     async updateGameStatsForPlayer(dto: GameStatsViewModelDto, userId: string, login: string): Promise<boolean> {
-        const user = await this.topUsersStatsClass.findOne({ "player.userId": userId });
+        const user = await this.topUsersStatsClass.findOne({ "player.id": userId });
         if (!user) {
             const obj = {
                 sumScore: dto.sumScore,
@@ -102,7 +102,7 @@ export class QuizRepository {
             const result = new this.topUsersStatsClass(obj);
             await result.save();
         } else {
-            await this.topUsersStatsClass.updateOne({ "player.userId": userId }, dto);
+            await this.topUsersStatsClass.updateOne({ "player.id": userId }, dto);
         }
         return true;
     }

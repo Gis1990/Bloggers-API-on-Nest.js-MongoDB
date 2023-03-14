@@ -91,7 +91,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             await this.quizRepository.updateGameStatsForPlayer(
                 resultsForPlayerTwo,
                 game.secondPlayerProgress.player.id,
-                game.firstPlayerProgress.player.login,
+                game.secondPlayerProgress.player.login,
             );
         } else {
             score = playerProgress.score;

@@ -50,7 +50,6 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
         const numOfAnswers = playerProgress.answers.length;
 
         if (oppositePlayerProgress.answers.length === 5 && playerProgress.answers.length === 4) {
-            console.log(playerProgress.score);
             score = playerProgress.score;
             id = game.questions[4].id;
             isAnswerCorrect = await this.quizRepository.checkAnswerCorrectness(id, command.answer);
@@ -77,6 +76,23 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
                 },
                 $set: dataForUpdateInSet,
             };
+            await this.quizRepository.updateGameById(game.id, update);
+            const resultsForPlayerOne = await this.queryBus.execute(
+                new GetGamesStatsCommand(game.firstPlayerProgress.player.id),
+            );
+            const resultsForPlayerTwo = await this.queryBus.execute(
+                new GetGamesStatsCommand(game.secondPlayerProgress.player.id),
+            );
+            await this.quizRepository.updateGameStatsForPlayer(
+                resultsForPlayerOne,
+                game.firstPlayerProgress.player.id,
+                game.firstPlayerProgress.player.login,
+            );
+            await this.quizRepository.updateGameStatsForPlayer(
+                resultsForPlayerTwo,
+                game.secondPlayerProgress.player.id,
+                game.firstPlayerProgress.player.login,
+            );
         } else {
             score = playerProgress.score;
             id = game.questions[numOfAnswers].id;
@@ -94,10 +110,8 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
                 },
                 $set: dataForUpdateInSet,
             };
+            await this.quizRepository.updateGameById(game.id, update);
         }
-        await this.quizRepository.updateGameById(game.id, update);
-        const results = await this.queryBus.execute(new GetGamesStatsCommand(command.user.id));
-        await this.quizRepository.updateGameStatsForPlayer(results, command.user.id, command.user.login);
         return {
             questionId: id,
             answerStatus: answerStatusForUpdate,

@@ -145,7 +145,7 @@ export class QuizQueryRepository {
             .skip(queryForTopUsers.skips)
             .limit(queryForTopUsers.pageSize);
 
-        const totalCount = await this.questionModelClass.count(queryForTopUsers.query);
+        const totalCount = await this.topUsersStatsClass.count(queryForTopUsers.query);
 
         return {
             pagesCount: Math.ceil(totalCount / queryForTopUsers.pageSize),

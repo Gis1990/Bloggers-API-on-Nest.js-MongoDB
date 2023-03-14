@@ -154,7 +154,6 @@ export class ModelForGettingTopUsers {
     @IsOptional()
     @Type(() => Number)
     public pageSize: number;
-    @IsArray()
     @IsOptional()
-    public sort: string[];
+    public sort: string[] | string;
 }

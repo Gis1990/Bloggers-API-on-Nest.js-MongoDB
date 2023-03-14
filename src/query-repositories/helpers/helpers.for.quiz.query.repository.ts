@@ -58,10 +58,15 @@ export class HelperForQuiz {
         let { pageNumber = 1, pageSize = 10, sort = ["avgScores desc", "sumScore desc"] } = dto;
         const skips = pageSize * (pageNumber - 1);
         const sortObj: any = {};
-        sort.forEach((item) => {
-            const [sortBy, sortDirection] = item.split(" ");
+        if (typeof sort === "string") {
+            const [sortBy, sortDirection] = sort.split(" ");
             sortObj[sortBy] = sortDirection === "desc" ? -1 : 1;
-        });
+        } else {
+            sort.forEach((item) => {
+                const [sortBy, sortDirection] = item.split(" ");
+                sortObj[sortBy] = sortDirection === "desc" ? -1 : 1;
+            });
+        }
         const query: any = {};
         return { query, skips, sortObj, pageSize, pageNumber };
     }

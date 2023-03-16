@@ -98,6 +98,12 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             id = game.questions[numOfAnswers].id;
             isAnswerCorrect = await this.quizRepository.checkAnswerCorrectness(id, command.answer);
             answerStatusForUpdate = isAnswerCorrect ? "Correct" : "Incorrect";
+            if (
+                oppositePlayerProgress.answers.length === 5 &&
+                (oppositePlayerProgress.answers[4].addedAt.getTime() - dateOfAnswer.getTime()) / 1000 > 10
+            ) {
+                answerStatusForUpdate = "Incorrect";
+            }
             score = isAnswerCorrect ? (score += 1) : (score += 0);
             dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = score;
             update = {

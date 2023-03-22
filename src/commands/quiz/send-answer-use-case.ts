@@ -116,6 +116,13 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             await this.quizRepository.updateGameById(game.id, update);
         }
         const updatedGame = await this.quizQueryRepository.getGameByUserId(command.user.id);
+        if (!updatedGame) {
+            return {
+                questionId: id,
+                answerStatus: answerStatusForUpdate,
+                addedAt: dateOfAnswer,
+            };
+        }
         const updatedPlayerProgress =
             updatedGame.firstPlayerProgress.player.id === command.user.id
                 ? updatedGame.firstPlayerProgress

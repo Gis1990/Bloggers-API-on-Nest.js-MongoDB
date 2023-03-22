@@ -131,6 +131,7 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
                 dataForUpdateInSet["status"] = "Finished";
                 const newDateForUpdate = new Date();
                 dataForUpdateInSet["finishGameDate"] = newDateForUpdate;
+                dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = updatedPlayerProgress.score + 1;
                 for (let i = updatedOppositePlayerProgress.answers.length; i < 5; i++) {
                     arrayForUpdate.push({
                         questionId: game.questions[i].id,

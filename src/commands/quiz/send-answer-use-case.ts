@@ -27,13 +27,15 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             throw new HttpException("Access denied", 403);
         }
         let update = {};
-        const dataForUpdateInSet = {};
+        let dataForUpdateInSet = {};
         const dateOfAnswer = new Date();
         let score;
         let oppositePlayerScore;
         let answerStatusForUpdate;
         let id;
         let isAnswerCorrect;
+        let dataForUpdateInPush;
+        let newUpdate;
         const playerProgress =
             game.firstPlayerProgress.player.id === command.user.id
                 ? game.firstPlayerProgress
@@ -98,25 +100,69 @@ export class SendAnswerUseCase implements ICommandHandler<SendAnswerCommand> {
             id = game.questions[numOfAnswers].id;
             isAnswerCorrect = await this.quizRepository.checkAnswerCorrectness(id, command.answer);
             answerStatusForUpdate = isAnswerCorrect ? "Correct" : "Incorrect";
-            if (
-                oppositePlayerProgress.answers.length === 5 &&
-                (oppositePlayerProgress.answers[4].addedAt.getTime() - dateOfAnswer.getTime()) / 1000 > 10
-            ) {
-                answerStatusForUpdate = "Incorrect";
-            }
             score = isAnswerCorrect ? (score += 1) : (score += 0);
             dataForUpdateInSet[`${stringForPlayerUpdate}.score`] = score;
-            update = {
-                $push: {
-                    [`${stringForPlayerUpdate}.answers`]: {
-                        questionId: id,
-                        answerStatus: answerStatusForUpdate,
-                        addedAt: dateOfAnswer,
-                    },
+            dataForUpdateInPush = {
+                [`${stringForPlayerUpdate}.answers`]: {
+                    questionId: id,
+                    answerStatus: answerStatusForUpdate,
+                    addedAt: dateOfAnswer,
                 },
+            };
+            update = {
+                $push: dataForUpdateInPush,
                 $set: dataForUpdateInSet,
             };
             await this.quizRepository.updateGameById(game.id, update);
+        }
+        const updatedGame = await this.quizQueryRepository.getGameByUserId(command.user.id);
+        const updatedPlayerProgress =
+            updatedGame.firstPlayerProgress.player.id === command.user.id
+                ? updatedGame.firstPlayerProgress
+                : updatedGame.secondPlayerProgress;
+        const updatedOppositePlayerProgress =
+            playerProgress === updatedGame.firstPlayerProgress
+                ? updatedGame.secondPlayerProgress
+                : updatedGame.firstPlayerProgress;
+        const arrayForUpdate = [];
+        if (updatedPlayerProgress.answers.length === 5) {
+            setTimeout(async () => {
+                dataForUpdateInSet = {};
+                dataForUpdateInSet["status"] = "Finished";
+                const newDateForUpdate = new Date();
+                dataForUpdateInSet["finishGameDate"] = newDateForUpdate;
+                for (let i = updatedOppositePlayerProgress.answers.length; i < 5; i++) {
+                    arrayForUpdate.push({
+                        questionId: game.questions[i].id,
+                        answerStatus: "Incorrect",
+                        addedAt: newDateForUpdate,
+                    });
+                }
+                dataForUpdateInPush = {
+                    [`${stringForOppositePlayerUpdate}.answers`]: arrayForUpdate,
+                };
+                newUpdate = {
+                    $push: dataForUpdateInPush,
+                    $set: dataForUpdateInSet,
+                };
+                await this.quizRepository.updateGameById(game.id, newUpdate);
+                const resultsForPlayerOne = await this.queryBus.execute(
+                    new GetGamesStatsCommand(game.firstPlayerProgress.player.id),
+                );
+                const resultsForPlayerTwo = await this.queryBus.execute(
+                    new GetGamesStatsCommand(game.secondPlayerProgress.player.id),
+                );
+                await this.quizRepository.updateGameStatsForPlayer(
+                    resultsForPlayerOne,
+                    game.firstPlayerProgress.player.id,
+                    game.firstPlayerProgress.player.login,
+                );
+                await this.quizRepository.updateGameStatsForPlayer(
+                    resultsForPlayerTwo,
+                    game.secondPlayerProgress.player.id,
+                    game.secondPlayerProgress.player.login,
+                );
+            }, 10000);
         }
         return {
             questionId: id,

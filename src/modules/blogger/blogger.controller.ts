@@ -1,4 +1,20 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Delete,
+    FileTypeValidator,
+    Get,
+    HttpCode,
+    MaxFileSizeValidator,
+    Param,
+    ParseFilePipe,
+    Post,
+    Put,
+    Query,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors,
+} from "@nestjs/common";
 import {
     BlogsIdValidationModel,
     BlogsIdValidationModelWhenBlogIsBanned,
@@ -33,11 +49,32 @@ import { UserViewModelForBannedUsersByBloggerPaginationClass } from "../../entit
 import { GetAllBannedUsersForBlogCommand } from "../../queries/users/get-all-banned-users-for-blog-query";
 import { BanUnbanUserByBloggerForBlogCommand } from "../../commands/users/ban-unban-user-by-blogger-for-blog-use-case";
 import { CommentViewModelForBloggerPaginationClass } from "../../entities/comments.entity";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @SkipThrottle()
 @Controller("blogger")
 export class BloggerController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
+
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @Post("/blogs/:id/images/wallpaper")
+    @UseInterceptors(FileInterceptor("file"))
+    async uploadWallpaperForBlog(
+        @Param() params: BlogsIdValidationModel,
+        @UploadedFile(
+            new ParseFilePipe({
+                validators: [
+                    new MaxFileSizeValidator({ maxSize: 1000 }),
+                    new FileTypeValidator({ fileType: "png/jpeg/jpg" }),
+                ],
+            }),
+        )
+        file: Express.Multer.File,
+        @CurrentUser()
+        user: CurrentUserModel,
+    ): Promise<any> {
+        return file;
+    }
 
     @UseGuards(JwtAccessTokenAuthGuard)
     @Get("/blogs/comments")

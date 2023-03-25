@@ -16,10 +16,16 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { BloggerModule } from "./modules/blogger/blogger.module";
 import { SuperAdminModule } from "./modules/super-admin/super.admin.module";
 import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
+import { join } from "path";
+import { ServeStaticModule } from "@nestjs/serve-static";
 
 @Module({
     imports: [
         CqrsModule,
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, "..", "swagger-static"),
+            serveRoot: process.env.NODE_ENV === "development" ? "/" : "/swagger",
+        }),
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({

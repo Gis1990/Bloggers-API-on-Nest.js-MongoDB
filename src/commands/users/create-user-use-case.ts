@@ -4,6 +4,7 @@ import { UserViewModelClass } from "../../entities/users.entity";
 import { UsersRepository } from "../../repositories/users.repository";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UsersFactory } from "../../factories/users.factory";
+import { v4 as uuidv4 } from "uuid";
 
 export class CreateUserCommand {
     constructor(
@@ -21,7 +22,7 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
 
     async execute(command: CreateUserCommand): Promise<UserViewModelClass> {
         const createdNewUserDto: CreatedNewUserDto = {
-            id: Number(new Date()).toString(),
+            id: uuidv4(),
             login: command.dto.login,
             email: command.dto.email,
             passwordHash: command.passwordHash,

@@ -18,6 +18,7 @@ import { SuperAdminModule } from "./modules/super-admin/super.admin.module";
 import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
 import { join } from "path";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { UploadsModule } from "./modules/upload/uploads.module";
 
 @Module({
     imports: [
@@ -47,6 +48,7 @@ import { ServeStaticModule } from "@nestjs/serve-static";
         BloggerModule,
         SuperAdminModule,
         QuizGameModule,
+        UploadsModule,
     ],
     controllers: [AppController],
     providers: [

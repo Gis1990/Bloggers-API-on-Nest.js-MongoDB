@@ -4,6 +4,7 @@ import { BlogsRepository } from "../../repositories/blogs.repository";
 import { CommandHandler, ICommand, ICommandHandler } from "@nestjs/cqrs";
 import { CurrentUserModel } from "../../dtos/auth.dto";
 import { BlogsFactory } from "../../factories/blogs.factory";
+import { v4 as uuidv4 } from "uuid";
 
 export class CreateBlogCommand implements ICommand {
     constructor(public readonly dto: InputModelForCreatingBlog, public readonly user: CurrentUserModel) {}
@@ -16,10 +17,12 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
     async execute(command: CreateBlogCommand): Promise<BlogViewModelClass> {
         const createdBlogDto = {
             ...command.dto,
-            id: Number(new Date()).toString(),
+            id: uuidv4(),
             createdAt: new Date(),
             blogOwnerInfo: { userId: command.user.id, userLogin: command.user.login },
             banInfo: { isBanned: false, banDate: null },
+            isMembership: false,
+            images: { wallpaper: null, main: [] },
         };
         const createdBlog = await this.blogsRepository.createBlog(createdBlogDto);
         return BlogsFactory.createBlogViewModelClass(createdBlog);

@@ -1,11 +1,17 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { ApiProperty } from "@nestjs/swagger";
+import { v4 as uuidv4 } from "uuid";
+import { ImagesForPostsClass, ImagesInfoClass, ImagesInfoSchema } from "./posts.schema";
 
 @Schema({ versionKey: false })
 export class OwnerInfoClass {
+    @ApiProperty({ example: uuidv4(), description: "The unique identifier for the user" })
     @Prop({
         required: true,
     })
     userId: string;
+
+    @ApiProperty({ example: "user1", description: "The username for the user" })
     @Prop({
         required: true,
     })
@@ -13,6 +19,15 @@ export class OwnerInfoClass {
 }
 
 export const OwnerInfoSchema = SchemaFactory.createForClass(OwnerInfoClass);
+
+@Schema({ versionKey: false })
+export class ImagesForBlogsClass extends ImagesForPostsClass {
+    @ApiProperty({ type: ImagesInfoSchema, required: true })
+    @Prop({ type: ImagesInfoSchema, _id: false })
+    wallpaper: ImagesInfoClass;
+}
+
+export const ImagesForBlogsSchema = SchemaFactory.createForClass(ImagesForBlogsClass);
 
 @Schema({ versionKey: false })
 export class BanInfoClassForBlog {
@@ -61,6 +76,16 @@ export class BlogClass {
         _id: false,
     })
     banInfo: BanInfoClassForBlog;
+    @Prop({
+        required: true,
+    })
+    isMembership: boolean;
+    @Prop({
+        required: true,
+        _id: false,
+        type: ImagesForBlogsSchema,
+    })
+    images: ImagesForBlogsClass;
 }
 
 export const BlogsSchema = SchemaFactory.createForClass(BlogClass);

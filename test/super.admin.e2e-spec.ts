@@ -189,6 +189,7 @@ describe("super admin endpoint blogs /sa/blogs (e2e)", () => {
                 name: correctBlog1.name,
                 description: correctBlog1.description,
                 websiteUrl: correctBlog1.websiteUrl,
+                isMembership: false,
                 createdAt: expect.any(String),
             });
             blogId1 = response1.body.id;
@@ -203,6 +204,7 @@ describe("super admin endpoint blogs /sa/blogs (e2e)", () => {
                 name: correctBlog2.name,
                 description: correctBlog2.description,
                 websiteUrl: correctBlog2.websiteUrl,
+                isMembership: false,
                 createdAt: expect.any(String),
             });
             items.push(response2.body);

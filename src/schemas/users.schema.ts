@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { ApiProperty } from "@nestjs/swagger";
 
 @Schema({ versionKey: false, _id: false })
 export class LoginAttemptsClass {
@@ -89,13 +90,20 @@ export const UserDevicesDataSchema = SchemaFactory.createForClass(UserDevicesDat
 
 @Schema({ versionKey: false, _id: false })
 export class BanInfoClass {
+    @ApiProperty({
+        type: Boolean,
+        example: true,
+        description: "Specifies if the user is banned or not",
+    })
     @Prop({
         required: true,
     })
     isBanned: boolean;
+    @ApiProperty({ type: Date, required: false, description: "nullable: true" })
     @Prop()
     banDate: Date;
     @Prop()
+    @ApiProperty({ type: String, required: false, description: "nullable: true" })
     banReason: string;
 }
 

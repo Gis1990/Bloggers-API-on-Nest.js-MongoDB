@@ -11,401 +11,76 @@ window.onload = function() {
   "swaggerDoc": {
     "openapi": "3.0.0",
     "paths": {
-      "/": {
-        "get": {
-          "operationId": "AppController_getHello",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/blogs": {
-        "get": {
-          "operationId": "BlogsController_getAllBlogs",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/blogs/{id}": {
-        "get": {
-          "operationId": "BlogsController_getBlogById",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/blogs/{id}/posts": {
-        "get": {
-          "operationId": "BlogsController_getAllPostsForSpecificBlog",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/posts": {
-        "get": {
-          "operationId": "PostsController_getAllPosts",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/posts/{postId}/comments": {
-        "get": {
-          "operationId": "PostsController_getAllCommentsForSpecificPost",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        },
-        "post": {
-          "operationId": "PostsController_createComment",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ModelForCreatingNewComment"
-                }
-              }
-            }
-          },
-          "responses": {
-            "201": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/posts/{postId}": {
-        "get": {
-          "operationId": "PostsController_getPost",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/posts/{postId}/like-status": {
-        "put": {
-          "operationId": "PostsController_likeOperation",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ModelForLikeStatus"
-                }
-              }
-            }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/auth/password-recovery": {
-        "post": {
-          "operationId": "AuthController_passwordRecovery",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForPasswordRecovery"
-                }
-              }
-            }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/auth/new-Password": {
-        "post": {
-          "operationId": "AuthController_newPassword",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForNewPassword"
-                }
-              }
-            }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/auth/registration-confirmation": {
-        "post": {
-          "operationId": "AuthController_confirmRegistration",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForCode"
-                }
-              }
-            }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/auth/registration": {
-        "post": {
-          "operationId": "AuthController_createBlog",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForCreatingNewUser"
-                }
-              }
-            }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/auth/registration-email-resending": {
-        "post": {
-          "operationId": "AuthController_registrationEmailResending",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForResendingEmail"
-                }
-              }
-            }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/auth/login": {
-        "post": {
-          "operationId": "AuthController_login",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/auth/refresh-token": {
-        "post": {
-          "operationId": "AuthController_refreshAllTokens",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/auth/logout": {
-        "post": {
-          "operationId": "AuthController_logout",
-          "parameters": [],
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/auth/me": {
-        "get": {
-          "operationId": "AuthController_me",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/comments/{id}": {
-        "put": {
-          "operationId": "CommentsController_updateCommentById",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ModelForUpdatingComment"
-                }
-              }
-            }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        },
-        "delete": {
-          "operationId": "CommentsController_deleteBlog",
-          "parameters": [],
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        },
-        "get": {
-          "operationId": "CommentsController_getCommentById",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/comments/{id}/like-status": {
-        "put": {
-          "operationId": "CommentsController_likeOperation",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ModelForLikeStatus"
-                }
-              }
-            }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/testing/all-data": {
-        "delete": {
-          "operationId": "TestingController_deleteBlog",
-          "parameters": [],
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/security/devices": {
-        "get": {
-          "operationId": "SecurityController_devices",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/security/{deviceId}": {
-        "delete": {
-          "operationId": "SecurityController_terminateAllDevices",
-          "parameters": [],
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/security/devices/{deviceId}": {
-        "delete": {
-          "operationId": "SecurityController_terminateSpecificDevice",
-          "parameters": [],
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/blogger/blogs/{id}/images/wallpaper": {
-        "post": {
-          "operationId": "BloggerController_uploadWallpaperForBlog",
-          "parameters": [],
-          "responses": {
-            "201": {
-              "description": ""
-            }
-          }
-        }
-      },
       "/blogger/blogs/comments": {
         "get": {
-          "operationId": "BloggerController_getAllCommentsForAllPostsForBloggersBlogs",
-          "parameters": [],
+          "operationId": "getAllCommentsForAllPostsForBloggersBlogs",
+          "summary": "Returns all comments for all posts inside all current user blogs",
+          "parameters": [
+            {
+              "name": "pageNumber",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": 1,
+                "type": "number"
+              }
+            },
+            {
+              "name": "pageSize",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": 10,
+                "type": "number"
+              }
+            },
+            {
+              "name": "sortBy",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
+              "name": "sortDirection",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "desc",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "type": "string"
+              }
+            }
+          ],
           "responses": {
             "200": {
-              "description": ""
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CommentViewModelForBloggerPaginationClass"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
-          }
+          },
+          "tags": [
+            "Blogs"
+          ]
         }
       },
-      "/blogger/blogs/{id}": {
+      "/blogger/blogs/{blogId}": {
         "put": {
-          "operationId": "BloggerController_updateBlog",
+          "operationId": "updateBlog",
+          "summary": "Update existing Blog by id with InputModel",
           "parameters": [],
           "requestBody": {
             "required": true,
@@ -419,23 +94,53 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": ""
+              "description": "No content"
+            },
+            "400": {
+              "description": "If the inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/APIErrorResult"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
-          }
+          },
+          "tags": [
+            "Blogs"
+          ]
         },
         "delete": {
-          "operationId": "BloggerController_deleteBlog",
+          "operationId": "deleteBlog",
+          "summary": "Delete blog specified by id",
           "parameters": [],
           "responses": {
             "204": {
-              "description": ""
+              "description": "No content"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Forbidden"
+            },
+            "404": {
+              "description": "Not found"
             }
-          }
+          },
+          "tags": [
+            "Blogs"
+          ]
         }
       },
       "/blogger/blogs": {
         "post": {
-          "operationId": "BloggerController_createBlog",
+          "operationId": "createBlog",
+          "summary": "Create new blog",
           "parameters": [],
           "requestBody": {
             "required": true,
@@ -449,23 +154,112 @@ window.onload = function() {
           },
           "responses": {
             "201": {
-              "description": ""
+              "description": "Returns the newly created blog",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/BlogViewModelClass"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "If the inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/APIErrorResult"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
-          }
+          },
+          "tags": [
+            "Blogs"
+          ]
         },
         "get": {
-          "operationId": "BloggerController_getAllBlogs",
-          "parameters": [],
+          "operationId": "getAllBlogs",
+          "summary": "Returns blogs (for which current user is owner) with paging",
+          "parameters": [
+            {
+              "name": "searchNameTerm",
+              "required": false,
+              "in": "query",
+              "description": "The search term for a name",
+              "schema": {
+                "default": null,
+                "type": "string"
+              }
+            },
+            {
+              "name": "pageNumber",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": 1,
+                "type": "number"
+              }
+            },
+            {
+              "name": "pageSize",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": 10,
+                "type": "number"
+              }
+            },
+            {
+              "name": "sortBy",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
+              "name": "sortDirection",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "desc",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "type": "string"
+              }
+            }
+          ],
           "responses": {
             "200": {
-              "description": ""
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/BlogViewModelClassPagination"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
-          }
+          },
+          "tags": [
+            "Blogs"
+          ]
         }
       },
-      "/blogger/blogs/{id}/posts": {
+      "/blogger/blogs/{blogId}/posts": {
         "post": {
-          "operationId": "BloggerController_createNewPostForSpecificBlog",
+          "operationId": "createNewPostForSpecificBlog",
+          "summary": "Create new post for specific blog",
           "parameters": [],
           "requestBody": {
             "required": true,
@@ -479,15 +273,62 @@ window.onload = function() {
           },
           "responses": {
             "201": {
-              "description": ""
+              "description": "Returns the newly created post",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PostViewModelClass"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "If the inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/APIErrorResult"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "If user try to add post to blog that doesn't belong to current user"
+            },
+            "404": {
+              "description": "If specific blog doesn't exists"
             }
-          }
+          },
+          "tags": [
+            "Blogs"
+          ]
         }
       },
       "/blogger/blogs/{blogId}/posts/{postId}": {
         "put": {
-          "operationId": "BloggerController_updatePostForSpecificBlog",
-          "parameters": [],
+          "operationId": "updatePostForSpecificBlog",
+          "summary": "Update existing post by id with InputModel",
+          "parameters": [
+            {
+              "name": "postId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
           "requestBody": {
             "required": true,
             "content": {
@@ -500,24 +341,87 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": ""
+              "description": "No content"
+            },
+            "400": {
+              "description": "If the inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/APIErrorResult"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "If user try to update post that belongs to blog that doesn't belong to current user"
+            },
+            "404": {
+              "description": "Not found"
             }
-          }
+          },
+          "tags": [
+            "Blogs"
+          ]
         },
         "delete": {
-          "operationId": "BloggerController_deletePost",
-          "parameters": [],
+          "operationId": "deletePost",
+          "summary": "Delete post specified by id",
+          "parameters": [
+            {
+              "name": "postId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
           "responses": {
             "204": {
-              "description": ""
+              "description": "No content"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "If user try to update post that belongs to blog that doesn't belong to current user"
+            },
+            "404": {
+              "description": "Not found"
             }
-          }
+          },
+          "tags": [
+            "Blogs"
+          ]
         }
       },
       "/blogger/users/{id}/ban": {
         "put": {
-          "operationId": "BloggerController_banUnbanUserByBloggerForBlog",
-          "parameters": [],
+          "operationId": "banUnbanUserByBloggerForBlog",
+          "summary": "Ban/unban user",
+          "parameters": [
+            {
+              "name": "id",
+              "required": true,
+              "in": "path",
+              "description": "User Id that should be banned",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
           "requestBody": {
             "required": true,
             "content": {
@@ -530,293 +434,135 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": ""
+              "description": "No content"
+            },
+            "400": {
+              "description": "If the inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/APIErrorResult"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
-          }
+          },
+          "tags": [
+            "Users"
+          ]
         }
       },
       "/blogger/users/blog/{id}": {
         "get": {
-          "operationId": "BloggerController_GetAllBannedUsersForBlog",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/sa/blogs/{id}/ban": {
-        "put": {
-          "operationId": "SuperAdminController_banUnbanBlog",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForBanUnbanBlog"
-                }
+          "operationId": "GetAllBannedUsersForBlog",
+          "summary": "Returns all banned users for blog",
+          "parameters": [
+            {
+              "name": "id",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "searchLoginTerm",
+              "required": false,
+              "in": "query",
+              "description": "The search term for a login",
+              "schema": {
+                "default": null,
+                "type": "string"
+              }
+            },
+            {
+              "name": "pageNumber",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": 1,
+                "type": "number"
+              }
+            },
+            {
+              "name": "pageSize",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": 10,
+                "type": "number"
+              }
+            },
+            {
+              "name": "sortBy",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
+              "name": "sortDirection",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "default": "desc",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "type": "string"
               }
             }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/sa/blogs": {
-        "get": {
-          "operationId": "SuperAdminController_getAllBlogsForSuperAdmin",
-          "parameters": [],
+          ],
           "responses": {
             "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/sa/{blogId}/bind-with-user/{userId}": {
-        "put": {
-          "operationId": "SuperAdminController_bindUserWithBlog",
-          "parameters": [],
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/sa/users/{id}/ban": {
-        "put": {
-          "operationId": "SuperAdminController_banUnbanUserBySuperAdmin",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForBanUnbanUser"
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserViewModelForBannedUsersByBloggerPaginationClass"
+                  }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
           },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
+          "tags": [
+            "Users"
+          ]
         }
       },
-      "/sa/users": {
+      "/blogger/blogs/{id}/images/wallpaper": {
         "get": {
-          "operationId": "SuperAdminController_getAllUsers",
+          "operationId": "getImage",
           "parameters": [],
           "responses": {
             "200": {
               "description": ""
             }
-          }
+          },
+          "tags": [
+            "Blogs"
+          ]
         },
         "post": {
-          "operationId": "SuperAdminController_createUser",
+          "operationId": "uploadWallpaperForBlog",
           "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForCreatingNewUser"
-                }
-              }
-            }
-          },
           "responses": {
             "201": {
               "description": ""
             }
-          }
-        }
-      },
-      "/sa/users/{id}": {
-        "delete": {
-          "operationId": "SuperAdminController_deleteUser",
-          "parameters": [],
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/sa/quiz/questions": {
-        "get": {
-          "operationId": "SuperAdminController_getAllQuestions",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        },
-        "post": {
-          "operationId": "SuperAdminController_createQuestion",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForCreatingAndUpdatingQuestion"
-                }
-              }
-            }
           },
-          "responses": {
-            "201": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/sa/quiz/questions/{id}": {
-        "delete": {
-          "operationId": "SuperAdminController_deleteQuestion",
-          "parameters": [],
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        },
-        "put": {
-          "operationId": "SuperAdminController_updateQuestion",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForCreatingAndUpdatingQuestion"
-                }
-              }
-            }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/sa/quiz/questions/{id}/publish": {
-        "put": {
-          "operationId": "SuperAdminController_publishUnpublishQuestion",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForPublishUnpublishQuestion"
-                }
-              }
-            }
-          },
-          "responses": {
-            "204": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/pair-game-quiz/users/top": {
-        "get": {
-          "operationId": "QuizGameController_getTopUsers",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/pair-game-quiz/users/my-statistic": {
-        "get": {
-          "operationId": "QuizGameController_getStats",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/pair-game-quiz/pairs/my": {
-        "get": {
-          "operationId": "QuizGameController_getAllGamesForUser",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/pair-game-quiz/pairs/my-current": {
-        "get": {
-          "operationId": "QuizGameController_getCurrentUnfinishedGame",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/pair-game-quiz/pairs/{id}": {
-        "get": {
-          "operationId": "QuizGameController_getGameById",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/pair-game-quiz/pairs/connection": {
-        "post": {
-          "operationId": "QuizGameController_createGame",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/pair-game-quiz/pairs/my-current/answers": {
-        "post": {
-          "operationId": "QuizGameController_sendAnswer",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputModelForAnswers"
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
+          "tags": [
+            "Blogs"
+          ]
         }
       }
     },
@@ -826,87 +572,648 @@ window.onload = function() {
       "version": "1.0",
       "contact": {}
     },
-    "tags": [
-      {
-        "name": "Bloggers",
-        "description": ""
-      }
-    ],
+    "tags": [],
     "servers": [],
     "components": {
+      "securitySchemes": {
+        "bearer": {
+          "scheme": "bearer",
+          "bearerFormat": "JWT",
+          "type": "http"
+        }
+      },
       "schemas": {
-        "ModelForCreatingNewComment": {
+        "OwnerInfoClass": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "userId": {
+              "type": "string",
+              "example": "7d252c2a-9f4a-4f6c-a9bb-0e291ca46332",
+              "description": "The unique identifier for the user"
+            },
+            "userLogin": {
+              "type": "string",
+              "example": "user1",
+              "description": "The username for the user"
+            }
+          },
+          "required": [
+            "userId",
+            "userLogin"
+          ]
         },
-        "ModelForLikeStatus": {
+        "PostInfoClass": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "9eb794a0-7ebe-42d4-b2eb-bdd816b35ebb",
+              "description": "The unique identifier for the post"
+            },
+            "title": {
+              "type": "string",
+              "example": "My post",
+              "description": "The title of the post"
+            },
+            "blogId": {
+              "type": "string",
+              "example": "7d5f1ca3-96a9-4c8b-bcb4-5ff0ddc3c9fb",
+              "description": "The unique identifier for the blog that the post belongs to"
+            },
+            "blogName": {
+              "type": "string",
+              "example": "My Blog",
+              "description": "The name of the blog that the post belongs to"
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "blogId",
+            "blogName"
+          ]
         },
-        "InputModelForPasswordRecovery": {
+        "CommentViewModelForBloggerClass": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "ab27adaf-5855-4949-ac95-339b4bdf2608",
+              "description": "The unique identifier for the comment"
+            },
+            "content": {
+              "type": "string",
+              "example": "This is a comment",
+              "description": "The content of the comment"
+            },
+            "createdAt": {
+              "format": "date-time",
+              "type": "string",
+              "example": "2023-04-09T09:16:06.686Z",
+              "description": "The date and time the comment was created"
+            },
+            "commentatorInfo": {
+              "description": "Information about the commentator",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/OwnerInfoClass"
+                }
+              ]
+            },
+            "postInfo": {
+              "description": "Information about the post the comment was made on",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/PostInfoClass"
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "content",
+            "createdAt",
+            "commentatorInfo",
+            "postInfo"
+          ]
         },
-        "InputModelForNewPassword": {
+        "CommentViewModelForBloggerPaginationClass": {
           "type": "object",
-          "properties": {}
-        },
-        "InputModelForCode": {
-          "type": "object",
-          "properties": {}
-        },
-        "InputModelForCreatingNewUser": {
-          "type": "object",
-          "properties": {}
-        },
-        "InputModelForResendingEmail": {
-          "type": "object",
-          "properties": {}
-        },
-        "ModelForUpdatingComment": {
-          "type": "object",
-          "properties": {}
+          "properties": {
+            "pagesCount": {
+              "type": "number",
+              "example": 5,
+              "description": "The total number of pages"
+            },
+            "page": {
+              "type": "number",
+              "example": 1,
+              "description": "The current page number"
+            },
+            "pageSize": {
+              "type": "number",
+              "example": 10,
+              "description": "The number of items per page"
+            },
+            "totalCount": {
+              "type": "number",
+              "example": 50,
+              "description": "The total number of items across all pages"
+            },
+            "items": {
+              "description": "The array of comments on the current page",
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/CommentViewModelForBloggerClass"
+              }
+            }
+          },
+          "required": [
+            "pagesCount",
+            "page",
+            "pageSize",
+            "totalCount",
+            "items"
+          ]
         },
         "InputModelForUpdatingBlog": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "name": {
+              "type": "string",
+              "maxLength": 15
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 500
+            },
+            "websiteUrl": {
+              "type": "string",
+              "example": "https://www.somesite.com/",
+              "maxLength": 100,
+              "pattern": "/^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$/"
+            }
+          },
+          "required": [
+            "name",
+            "description",
+            "websiteUrl"
+          ]
+        },
+        "FieldError": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "Message with error explanation for certain field",
+              "nullable": true
+            },
+            "field": {
+              "type": "string",
+              "description": "What field/property of input model has error",
+              "nullable": true
+            }
+          },
+          "required": [
+            "message",
+            "field"
+          ]
+        },
+        "APIErrorResult": {
+          "type": "object",
+          "properties": {
+            "errorsMessages": {
+              "description": "Array of error messages for specific fields/properties of input model",
+              "nullable": true,
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/FieldError"
+              }
+            }
+          },
+          "required": [
+            "errorsMessages"
+          ]
         },
         "InputModelForCreatingBlog": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "name": {
+              "type": "string",
+              "maxLength": 15
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 500
+            },
+            "websiteUrl": {
+              "type": "string",
+              "example": "https://www.somesite.com/",
+              "maxLength": 100,
+              "pattern": "/^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$/"
+            }
+          },
+          "required": [
+            "name",
+            "description",
+            "websiteUrl"
+          ]
+        },
+        "ImagesForBlogsClass": {
+          "type": "object",
+          "properties": {
+            "main": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/"
+              }
+            },
+            "wallpaper": {
+              "$ref": "#/components/schemas/"
+            }
+          },
+          "required": [
+            "main",
+            "wallpaper"
+          ]
+        },
+        "BlogViewModelClass": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "70415b96-46f7-41a8-9399-8bd352c4b6cb",
+              "description": "The Id of the blog"
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the blog",
+              "maxLength": 15
+            },
+            "description": {
+              "type": "string",
+              "description": "The description of the blog",
+              "maxLength": 500
+            },
+            "websiteUrl": {
+              "type": "string",
+              "example": "https://www.myblog.com",
+              "description": "The website URL of the blog"
+            },
+            "createdAt": {
+              "format": "date-time",
+              "type": "string",
+              "example": "2023-04-09T09:16:06.660Z",
+              "description": "The date and time the blog was created"
+            },
+            "isMembership": {
+              "type": "boolean",
+              "example": true,
+              "description": "Whether the user is a member or not"
+            },
+            "images": {
+              "description": "Images for blog",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ImagesForBlogsClass"
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "description",
+            "websiteUrl",
+            "createdAt",
+            "isMembership",
+            "images"
+          ]
         },
         "InputModelForCreatingAndUpdatingNewPostForSpecificBlog": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "The title of the post",
+              "maxLength": 30
+            },
+            "shortDescription": {
+              "type": "string",
+              "description": "The short description of the post",
+              "maxLength": 100
+            },
+            "content": {
+              "type": "string",
+              "description": "The content of the post",
+              "maxLength": 1000
+            }
+          },
+          "required": [
+            "title",
+            "shortDescription",
+            "content"
+          ]
+        },
+        "NewestLikesClass": {
+          "type": "object",
+          "properties": {
+            "addedAt": {
+              "format": "date-time",
+              "type": "string",
+              "example": "2023-04-09T09:16:06.559Z",
+              "description": "The date and time the like was added"
+            },
+            "userId": {
+              "type": "string",
+              "example": "57b05b2b-2ba2-4c19-b1e5-177374dddf32",
+              "description": "The ID of the user who added the like"
+            },
+            "login": {
+              "type": "string",
+              "description": "The login of the user who added the like"
+            }
+          },
+          "required": [
+            "addedAt",
+            "userId",
+            "login"
+          ]
+        },
+        "ExtendedLikesInfoClass": {
+          "type": "object",
+          "properties": {
+            "likesCount": {
+              "type": "number",
+              "example": 10,
+              "description": "The number of likes received by the comment or post"
+            },
+            "dislikesCount": {
+              "type": "number",
+              "example": 2,
+              "description": "The number of dislikes received by the comment or post"
+            },
+            "myStatus": {
+              "type": "string",
+              "example": "None",
+              "description": "The status of the current user in relation to the comment or post (e.g. \"Liked\", \"Disliked\", \"None\")",
+              "enum": [
+                "Liked",
+                "Disliked",
+                "None"
+              ]
+            },
+            "newestLikes": {
+              "description": "The newest likes received by the post",
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/NewestLikesClass"
+              }
+            }
+          },
+          "required": [
+            "likesCount",
+            "dislikesCount",
+            "myStatus",
+            "newestLikes"
+          ]
+        },
+        "ImagesForPostsClass": {
+          "type": "object",
+          "properties": {
+            "main": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/"
+              }
+            }
+          },
+          "required": [
+            "main"
+          ]
+        },
+        "PostViewModelClass": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "b6d89b96-a870-48a1-9320-48ab180ee874",
+              "description": "The ID of the post"
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the post"
+            },
+            "shortDescription": {
+              "type": "string",
+              "description": "The short description of the post"
+            },
+            "content": {
+              "type": "string",
+              "description": "The content of the post"
+            },
+            "blogId": {
+              "type": "string",
+              "example": "188d6a28-8800-4023-b41f-dd8ddbe83613",
+              "description": "The ID of the blog that the post belongs to"
+            },
+            "blogName": {
+              "type": "string",
+              "description": "The name of the blog that the post belongs to"
+            },
+            "createdAt": {
+              "format": "date-time",
+              "type": "string",
+              "example": "2023-04-09T09:16:06.627Z",
+              "description": "The date and time the post was created"
+            },
+            "extendedLikesInfo": {
+              "description": "Information about the likes received by the post",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ExtendedLikesInfoClass"
+                }
+              ]
+            },
+            "images": {
+              "description": "Images for post",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ImagesForPostsClass"
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "shortDescription",
+            "content",
+            "blogId",
+            "blogName",
+            "createdAt",
+            "extendedLikesInfo",
+            "images"
+          ]
+        },
+        "BlogViewModelClassPagination": {
+          "type": "object",
+          "properties": {
+            "pagesCount": {
+              "type": "integer",
+              "example": 5,
+              "description": "The total number of pages",
+              "format": "int32"
+            },
+            "page": {
+              "type": "integer",
+              "example": 1,
+              "description": "The current page number",
+              "format": "int32"
+            },
+            "pageSize": {
+              "type": "integer",
+              "example": 10,
+              "description": "The number of items per page",
+              "format": "int32"
+            },
+            "totalCount": {
+              "type": "integer",
+              "example": 50,
+              "description": "The total number of items across all pages",
+              "format": "int32"
+            },
+            "items": {
+              "description": "The array of comments on the current page",
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/BlogViewModelClass"
+              }
+            }
+          },
+          "required": [
+            "pagesCount",
+            "page",
+            "pageSize",
+            "totalCount",
+            "items"
+          ]
         },
         "InputModelForBanUnbanUserByBloggerForBlog": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "isBanned": {
+              "type": "boolean",
+              "example": true,
+              "description": "Specifies if the user is banned or not"
+            },
+            "banReason": {
+              "type": "string",
+              "description": "The reason why the user was banned",
+              "maxLength": 20
+            },
+            "blogId": {
+              "type": "string",
+              "description": "BlogId Id that should be banned"
+            }
+          },
+          "required": [
+            "isBanned",
+            "banReason",
+            "blogId"
+          ]
         },
-        "InputModelForBanUnbanBlog": {
+        "BanInfoClass": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "isBanned": {
+              "type": "boolean",
+              "example": true,
+              "description": "Specifies if the user is banned or not"
+            },
+            "banDate": {
+              "format": "date-time",
+              "type": "string",
+              "description": "nullable: true"
+            },
+            "banReason": {
+              "type": "string",
+              "description": "nullable: true"
+            }
+          },
+          "required": [
+            "isBanned"
+          ]
         },
-        "InputModelForBanUnbanUser": {
+        "UserViewModelForBannedUsersByBloggerClass": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "9a6d0f95-3be5-45e3-803f-c38ea2695675",
+              "description": "The Id of the user"
+            },
+            "login": {
+              "type": "string",
+              "description": "The login of the user"
+            },
+            "banInfo": {
+              "description": "Information about the user ban",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/BanInfoClass"
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "login",
+            "banInfo"
+          ]
         },
-        "InputModelForCreatingAndUpdatingQuestion": {
+        "UserViewModelForBannedUsersByBloggerPaginationClass": {
           "type": "object",
-          "properties": {}
-        },
-        "InputModelForPublishUnpublishQuestion": {
-          "type": "object",
-          "properties": {}
-        },
-        "InputModelForAnswers": {
-          "type": "object",
-          "properties": {}
+          "properties": {
+            "pagesCount": {
+              "type": "integer",
+              "example": 5,
+              "description": "The total number of pages",
+              "format": "int32"
+            },
+            "page": {
+              "type": "integer",
+              "example": 1,
+              "description": "The current page number",
+              "format": "int32"
+            },
+            "pageSize": {
+              "type": "integer",
+              "example": 10,
+              "description": "The number of items per page",
+              "format": "int32"
+            },
+            "totalCount": {
+              "type": "integer",
+              "example": 50,
+              "description": "The total number of items across all pages",
+              "format": "int32"
+            },
+            "items": {
+              "description": "The array of comments on the current page",
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/UserViewModelForBannedUsersByBloggerClass"
+              }
+            }
+          },
+          "required": [
+            "pagesCount",
+            "page",
+            "pageSize",
+            "totalCount",
+            "items"
+          ]
         }
       }
     }
   },
-  "customOptions": {}
+  "customOptions": {
+    "urls": [
+      {
+        "url": "http://localhost:500/swagger-json",
+        "name": "Bloggers API"
+      },
+      {
+        "url": "http://localhost:500/swagger1-json",
+        "name": "Super-admin API"
+      },
+      {
+        "url": "http://localhost:500/swagger2-json",
+        "name": "Public API"
+      }
+    ]
+  }
 };
   url = options.swaggerUrl || url
   let urls = options.swaggerUrls

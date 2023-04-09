@@ -5,9 +5,10 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
 import { CreateGameCommand } from "../../commands/quiz/create-game-use-case";
 import { CurrentUserModel } from "../../dtos/auth.dto";
-import { AnswersClass, GamesClass } from "../../schemas/games.schema";
+import { GamesClass } from "../../schemas/games.schema";
 import { GetGameByIdCommand } from "../../queries/quiz/get-game-by-id-query";
 import {
+    AnswerViewModelDto,
     GameIdValidationModel,
     GameStatsViewModelDto,
     InputModelForAnswers,
@@ -20,7 +21,9 @@ import { AllGamesViewModelClass, TopUsersModelPaginationClass } from "../../enti
 import { GetAllGamesForUserCommand } from "../../queries/quiz/get-all-games-for-user-query";
 import { GetGamesStatsCommand } from "../../queries/quiz/get-games-stats-for-user-query";
 import { GetTopUsersCommand } from "../../queries/quiz/get-top-users-query";
+import { ApiBearerAuth, ApiForbiddenResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+@ApiTags("PairQuizGame")
 @SkipThrottle()
 @Controller("pair-game-quiz")
 export class QuizGameController {
@@ -65,6 +68,14 @@ export class QuizGameController {
         return await this.queryBus.execute(new GetGameByIdCommand(params.id, user.id));
     }
 
+    @ApiOperation({
+        summary:
+            "Connect current user to existing random pending pair or create new pair which will be waiting second player",
+    })
+    @ApiResponse({ status: 200, description: "success", type: GamesClass })
+    @ApiResponse({ status: 401, description: "Unauthorized" })
+    @ApiResponse({ status: 403, description: "Current user is already participating in active pair" })
+    @ApiBearerAuth()
     @UseGuards(JwtAccessTokenAuthGuard)
     @Post("/pairs/connection")
     @HttpCode(200)
@@ -72,10 +83,18 @@ export class QuizGameController {
         return await this.commandBus.execute(new CreateGameCommand(user));
     }
 
+    @ApiOperation({ summary: "Send answer for next not answered question in active pair" })
+    @ApiResponse({ status: 200, description: "success", type: AnswerViewModelDto })
+    @ApiResponse({ status: 401, description: "Unauthorized" })
+    @ApiResponse({ status: 403, description: "Current user is already participating in active pair" })
+    @ApiBearerAuth()
     @UseGuards(JwtAccessTokenAuthGuard)
     @Post("/pairs/my-current/answers")
     @HttpCode(200)
-    async sendAnswer(@Body() dto: InputModelForAnswers, @CurrentUser() user: CurrentUserModel): Promise<AnswersClass> {
+    async sendAnswer(
+        @Body() dto: InputModelForAnswers,
+        @CurrentUser() user: CurrentUserModel,
+    ): Promise<AnswerViewModelDto> {
         return await this.commandBus.execute(new SendAnswerCommand(dto.answer, user));
     }
 }

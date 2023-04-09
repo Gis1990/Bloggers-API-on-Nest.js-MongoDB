@@ -21,6 +21,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
             response.sendStatus(status);
             return;
         }
+        if (responseBody === "Invalid image format") {
+            const errorResponse = { errorsMessages: [{ message: "Invalid image format", field: "image" }] };
+            response.status(400).json(errorResponse);
+            return;
+        }
         if (status === 406) {
             const errorResponse = { errorsMessages: [{ message: "Code is incorrect", field: "code" }] };
             response.status(400).json(errorResponse);

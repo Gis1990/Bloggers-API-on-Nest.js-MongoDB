@@ -1,21 +1,6 @@
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import {
-    Body,
-    Controller,
-    Delete,
-    FileTypeValidator,
-    Get,
-    HttpCode,
-    MaxFileSizeValidator,
-    Param,
-    ParseFilePipe,
-    Post,
-    Put,
-    Query,
-    UploadedFile,
-    UseGuards,
-    UseInterceptors,
-} from "@nestjs/common";
-import {
+    APIErrorResult,
     BlogsIdValidationModel,
     BlogsIdValidationModelWhenBlogIsBanned,
     InputModelForCreatingBlog,
@@ -49,33 +34,17 @@ import { UserViewModelForBannedUsersByBloggerPaginationClass } from "../../entit
 import { GetAllBannedUsersForBlogCommand } from "../../queries/users/get-all-banned-users-for-blog-query";
 import { BanUnbanUserByBloggerForBlogCommand } from "../../commands/users/ban-unban-user-by-blogger-for-blog-use-case";
 import { CommentViewModelForBloggerPaginationClass } from "../../entities/comments.entity";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+@ApiResponse({ status: 401, description: "Unauthorized" })
 @SkipThrottle()
 @Controller("blogger")
 export class BloggerController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
 
-    @UseGuards(JwtAccessTokenAuthGuard)
-    @Post("/blogs/:id/images/wallpaper")
-    @UseInterceptors(FileInterceptor("file"))
-    async uploadWallpaperForBlog(
-        @Param() params: BlogsIdValidationModel,
-        @UploadedFile(
-            new ParseFilePipe({
-                validators: [
-                    new MaxFileSizeValidator({ maxSize: 1000 }),
-                    new FileTypeValidator({ fileType: "png/jpeg/jpg" }),
-                ],
-            }),
-        )
-        file: Express.Multer.File,
-        @CurrentUser()
-        user: CurrentUserModel,
-    ): Promise<any> {
-        return file;
-    }
-
+    @ApiOperation({ summary: "Returns all comments for all posts inside all current user blogs" })
+    @ApiResponse({ status: 200, description: "success", type: CommentViewModelForBloggerPaginationClass })
+    @ApiTags("Blogs")
     @UseGuards(JwtAccessTokenAuthGuard)
     @Get("/blogs/comments")
     async getAllCommentsForAllPostsForBloggersBlogs(
@@ -86,8 +55,16 @@ export class BloggerController {
         return await this.queryBus.execute(new GetAllCommentsForAllPostsForBloggersBlogsCommand(dto, user.id));
     }
 
+    @ApiOperation({ summary: "Update existing Blog by id with InputModel" })
+    @ApiResponse({ status: 204, description: "No content" })
+    @ApiResponse({
+        status: 400,
+        description: "If the inputModel has incorrect values",
+        type: APIErrorResult,
+    })
+    @ApiTags("Blogs")
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Put("/blogs/:id")
+    @Put("/blogs/:blogId")
     @HttpCode(204)
     async updateBlog(
         @Param() params: BlogsIdValidationModel,
@@ -97,13 +74,26 @@ export class BloggerController {
         return await this.commandBus.execute(new UpdateBlogCommand(params.id, dto, user));
     }
 
+    @ApiOperation({ summary: "Delete blog specified by id" })
+    @ApiResponse({ status: 204, description: "No content" })
+    @ApiResponse({ status: 403, description: "Forbidden" })
+    @ApiResponse({ status: 404, description: "Not found" })
+    @ApiTags("Blogs")
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Delete("/blogs/:id")
+    @Delete("/blogs/:blogId")
     @HttpCode(204)
     async deleteBlog(@Param() params: BlogsIdValidationModel, @CurrentUser() user: CurrentUserModel): Promise<boolean> {
         return await this.commandBus.execute(new DeleteBlogCommand(params.id, user));
     }
 
+    @ApiOperation({ summary: "Create new blog" })
+    @ApiResponse({
+        status: 400,
+        description: "If the inputModel has incorrect values",
+        type: APIErrorResult,
+    })
+    @ApiResponse({ status: 201, description: "Returns the newly created blog", type: BlogViewModelClass })
+    @ApiTags("Blogs")
     @UseGuards(JwtAccessTokenAuthGuard)
     @Post("/blogs")
     async createBlog(
@@ -113,8 +103,18 @@ export class BloggerController {
         return await this.commandBus.execute(new CreateBlogCommand(dto, user));
     }
 
+    @ApiOperation({ summary: "Create new post for specific blog" })
+    @ApiResponse({ status: 201, description: "Returns the newly created post", type: PostViewModelClass })
+    @ApiResponse({
+        status: 400,
+        description: "If the inputModel has incorrect values",
+        type: APIErrorResult,
+    })
+    @ApiResponse({ status: 403, description: "If user try to add post to blog that doesn't belong to current user" })
+    @ApiResponse({ status: 404, description: "If specific blog doesn't exists" })
+    @ApiTags("Blogs")
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Post("/blogs/:id/posts")
+    @Post("/blogs/:blogId/posts")
     async createNewPostForSpecificBlog(
         @Param() params: BlogsIdValidationModel,
         @Body() model: InputModelForCreatingAndUpdatingNewPostForSpecificBlog,
@@ -124,6 +124,9 @@ export class BloggerController {
         return await this.commandBus.execute(new CreatePostCommand(dto, user));
     }
 
+    @ApiOperation({ summary: "Returns blogs (for which current user is owner) with paging" })
+    @ApiResponse({ status: 200, description: "Success", type: BlogViewModelClassPagination })
+    @ApiTags("Blogs")
     @UseGuards(JwtAccessTokenAuthGuard)
     @Get("/blogs")
     async getAllBlogs(
@@ -134,6 +137,21 @@ export class BloggerController {
         return await this.queryBus.execute(new GetAllBlogsForAuthorizedUserCommand(dto, user.id));
     }
 
+    @ApiOperation({ summary: "Update existing post by id with InputModel" })
+    @ApiTags("Blogs")
+    @ApiResponse({
+        status: 400,
+        description: "If the inputModel has incorrect values",
+        type: APIErrorResult,
+    })
+    @ApiResponse({ status: 204, description: "No content" })
+    @ApiResponse({
+        status: 403,
+        description: "If user try to update post that belongs to blog that doesn't belong to current user",
+    })
+    @ApiResponse({ status: 404, description: "Not found" })
+    @ApiParam({ name: "blogId", type: String })
+    @ApiParam({ name: "postId", type: String })
     @UseGuards(JwtAccessTokenAuthGuard)
     @Put("/blogs/:blogId/posts/:postId")
     @HttpCode(204)
@@ -155,6 +173,16 @@ export class BloggerController {
         );
     }
 
+    @ApiOperation({ summary: "Delete post specified by id" })
+    @ApiResponse({ status: 204, description: "No content" })
+    @ApiResponse({
+        status: 403,
+        description: "If user try to update post that belongs to blog that doesn't belong to current user",
+    })
+    @ApiResponse({ status: 404, description: "Not found" })
+    @ApiParam({ name: "blogId", type: String })
+    @ApiParam({ name: "postId", type: String })
+    @ApiTags("Blogs")
     @UseGuards(JwtAccessTokenAuthGuard)
     @Delete("/blogs/:blogId/posts/:postId")
     @HttpCode(204)
@@ -166,6 +194,14 @@ export class BloggerController {
         return await this.commandBus.execute(new DeletePostCommand(blogId.toString(), postId.toString(), user.id));
     }
 
+    @ApiOperation({ summary: "Ban/unban user" })
+    @ApiResponse({ status: 204, description: "No content" })
+    @ApiResponse({
+        status: 400,
+        description: "If the inputModel has incorrect values",
+        type: APIErrorResult,
+    })
+    @ApiTags("Users")
     @UseGuards(JwtAccessTokenAuthGuard)
     @Put("/users/:id/ban")
     @HttpCode(204)
@@ -181,6 +217,9 @@ export class BloggerController {
         );
     }
 
+    @ApiOperation({ summary: "Returns all banned users for blog" })
+    @ApiResponse({ status: 200, description: "Success", type: UserViewModelForBannedUsersByBloggerPaginationClass })
+    @ApiTags("Users")
     @UseGuards(JwtAccessTokenAuthGuard)
     @Get("/users/blog/:id")
     async GetAllBannedUsersForBlog(

@@ -24,8 +24,10 @@ import { CreateUserWithConfirmationEmailCommand } from "../../commands/auth/crea
 import { RegistrationEmailResendingCommand } from "../../commands/auth/registration-email-resending-use-case";
 import { RefreshAllTokensCommand } from "../../commands/auth/refresh-all-tokens-use-case";
 import { RefreshOnlyRefreshTokenCommand } from "../../commands/auth/refresh-only-refresh-token-use-case";
+import { ApiTags } from "@nestjs/swagger";
 
 @SkipThrottle()
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
     constructor(private commandBus: CommandBus) {}

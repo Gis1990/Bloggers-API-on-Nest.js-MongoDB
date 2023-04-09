@@ -1,56 +1,69 @@
 import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional, IsBoolean } from "class-validator";
-import { IsBlogsIdExist, IsBlogsIdExistForBanUnbanOperation } from "../decorators/blogs/blogs.custom.decorators";
+import { IsBlogsIdExistForBanUnbanOperation } from "../decorators/blogs/blogs.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
-import { BlogClass } from "../schemas/blogs.schema";
+import { BlogClass, ImagesForBlogsClass } from "../schemas/blogs.schema";
+import { ApiProperty } from "@nestjs/swagger";
 
 const pattern = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/;
 
 export class ModelForGettingAllBlogs {
+    @ApiProperty({ type: String, description: "The search term for a name", default: null, required: false })
     @IsString()
     @IsOptional()
     public searchNameTerm: string;
+    @ApiProperty({ default: 1, required: false })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageNumber: number;
+    @ApiProperty({ default: 10, required: false })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageSize: number;
+    @ApiProperty({ default: "createdAt", required: false })
     @IsString()
     @IsOptional()
     public sortBy: string;
+    @ApiProperty({ default: "desc", required: false, enum: ["asc", "desc"] })
     @IsString()
     @IsOptional()
     public sortDirection: string;
 }
 
 export class InputModelForCreatingBlog {
+    @ApiProperty({ type: String, maxLength: 15 })
     @IsString()
     @Length(1, 15)
-    @IsNotEmpty()
     @Transform(({ value }: TransformFnParams) => value?.trim())
     public name: string;
+    @ApiProperty({ type: String, maxLength: 500 })
     @IsString()
     @Length(1, 500)
     @IsNotEmpty()
     @Transform(({ value }: TransformFnParams) => value?.trim())
     public description: string;
+    @ApiProperty({
+        example: "https://www.somesite.com/",
+        maxLength: 100,
+        pattern: "/^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$/",
+    })
     @IsString()
     @Length(1, 100)
     @Matches(pattern)
-    @IsNotEmpty()
     public websiteUrl: string;
 }
 
 export class BlogsIdValidationModel {
-    @IsString()
-    @IsNotEmpty()
-    @IsBlogsIdExist()
+    // @ApiProperty({ required: true })
+    // @IsUUID()
+    // // @IsNotEmpty()
+    // // @IsBlogsIdExist()
     public id: string;
 }
 
 export class BlogsIdValidationModelWhenBlogIsBanned {
+    @ApiProperty({ required: true })
     @IsString()
     @IsNotEmpty()
     @IsBlogsIdExistForBanUnbanOperation()
@@ -58,26 +71,13 @@ export class BlogsIdValidationModelWhenBlogIsBanned {
 }
 
 export class InputModelForBanUnbanBlog {
+    @ApiProperty({ example: true })
     @IsBoolean()
     @IsNotEmpty()
     public isBanned: boolean;
 }
 
-export class InputModelForUpdatingBlog {
-    @IsString()
-    @Length(1, 15)
-    @Transform(({ value }: TransformFnParams) => value?.trim())
-    public name: string;
-    @IsString()
-    @Length(1, 500)
-    @IsNotEmpty()
-    @Transform(({ value }: TransformFnParams) => value?.trim())
-    public description: string;
-    @IsString()
-    @Length(1, 100)
-    @Matches(pattern)
-    public websiteUrl: string;
-}
+export class InputModelForUpdatingBlog extends InputModelForCreatingBlog {}
 
 export class CreatedBlogDto {
     public id: string;
@@ -93,6 +93,8 @@ export class CreatedBlogDto {
         isBanned: boolean;
         banDate: Date;
     };
+    public isMembership: boolean;
+    public images: ImagesForBlogsClass;
 }
 
 export class ForBanUnbanBlogBySuperAdminDto {
@@ -114,4 +116,29 @@ export class BlogClassPaginationDto {
     public pageSize: number;
     public totalCount: number;
     public items: BlogClass[];
+}
+
+export class FieldError {
+    @ApiProperty({
+        type: String,
+        description: "Message with error explanation for certain field",
+        nullable: true,
+    })
+    message: string;
+
+    @ApiProperty({
+        type: String,
+        description: "What field/property of input model has error",
+        nullable: true,
+    })
+    field: string;
+}
+
+export class APIErrorResult {
+    @ApiProperty({
+        type: [FieldError],
+        description: "Array of error messages for specific fields/properties of input model",
+        nullable: true,
+    })
+    errorsMessages: FieldError[];
 }

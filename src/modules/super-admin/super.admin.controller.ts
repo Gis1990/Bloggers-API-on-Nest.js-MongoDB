@@ -35,12 +35,15 @@ import { GetAllQuestionsCommand } from "../../queries/quiz/get-all-questions-que
 import { DeleteQuestionCommand } from "../../commands/quiz/delete-question-use-case";
 import { UpdateQuestionCommand } from "../../commands/quiz/update-question-use-case";
 import { PublishUnpublishQuestionCommand } from "../../commands/quiz/publish-unpublish-question-use-case";
+import { ApiBasicAuth, ApiTags } from "@nestjs/swagger";
 
 @SkipThrottle()
 @Controller("sa")
 export class SuperAdminController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
 
+    @ApiBasicAuth()
+    @ApiTags("Blogs")
     @UseGuards(BasicAuthGuard)
     @Put("/blogs/:id/ban")
     @HttpCode(204)
@@ -51,6 +54,8 @@ export class SuperAdminController {
         return await this.commandBus.execute(new BanUnbanBlogBySuperAdminCommand(dto.isBanned, param.id));
     }
 
+    @ApiBasicAuth()
+    @ApiTags("Blogs")
     @UseGuards(BasicAuthGuard)
     @Get("/blogs")
     async getAllBlogsForSuperAdmin(
@@ -60,6 +65,8 @@ export class SuperAdminController {
         return await this.queryBus.execute(new GetAllBlogsForSuperAdminCommand(dto));
     }
 
+    @ApiBasicAuth()
+    @ApiTags("Blogs")
     @UseGuards(BasicAuthGuard)
     @Put(":blogId/bind-with-user/:userId")
     @HttpCode(204)
@@ -70,6 +77,8 @@ export class SuperAdminController {
         return await this.commandBus.execute(new BindUserWithBlogCommand(blogId.toString(), userId.toString()));
     }
 
+    @ApiBasicAuth()
+    @ApiTags("Users")
     @UseGuards(BasicAuthGuard)
     @Put("/users/:id/ban")
     @HttpCode(204)
@@ -82,6 +91,8 @@ export class SuperAdminController {
         );
     }
 
+    @ApiBasicAuth()
+    @ApiTags("Users")
     @UseGuards(BasicAuthGuard)
     @Get("/users")
     async getAllUsers(
@@ -91,12 +102,16 @@ export class SuperAdminController {
         return await this.queryBus.execute(new GetAllUsersCommand(dto));
     }
 
+    @ApiBasicAuth()
+    @ApiTags("Users")
     @UseGuards(BasicAuthGuard)
     @Post("/users")
     async createUser(@Body() dto: InputModelForCreatingNewUser): Promise<UserViewModelClass> {
         return await this.commandBus.execute(new CreateUserWithoutConfirmationEmailCommand(dto));
     }
 
+    @ApiBasicAuth()
+    @ApiTags("Users")
     @UseGuards(BasicAuthGuard)
     @Delete("/users/:id")
     @HttpCode(204)
@@ -104,8 +119,8 @@ export class SuperAdminController {
         return await this.commandBus.execute(new DeleteUserCommand(param.id));
     }
 
-    //QuizQuestions
-
+    @ApiBasicAuth()
+    @ApiTags("QuizQuestions")
     @UseGuards(BasicAuthGuard)
     @Get("/quiz/questions")
     async getAllQuestions(
@@ -115,12 +130,16 @@ export class SuperAdminController {
         return await this.queryBus.execute(new GetAllQuestionsCommand(dto));
     }
 
+    @ApiBasicAuth()
+    @ApiTags("QuizQuestions")
     @UseGuards(BasicAuthGuard)
     @Post("/quiz/questions")
     async createQuestion(@Body() dto: InputModelForCreatingAndUpdatingQuestion): Promise<QuestionViewModelClass> {
         return await this.commandBus.execute(new CreateQuestionCommand(dto));
     }
 
+    @ApiBasicAuth()
+    @ApiTags("QuizQuestions")
     @UseGuards(BasicAuthGuard)
     @Delete("/quiz/questions/:id")
     @HttpCode(204)
@@ -128,6 +147,8 @@ export class SuperAdminController {
         return await this.commandBus.execute(new DeleteQuestionCommand(param.id));
     }
 
+    @ApiBasicAuth()
+    @ApiTags("QuizQuestions")
     @UseGuards(BasicAuthGuard)
     @Put("/quiz/questions/:id")
     @HttpCode(204)
@@ -138,6 +159,8 @@ export class SuperAdminController {
         return await this.commandBus.execute(new UpdateQuestionCommand(dto, param.id));
     }
 
+    @ApiBasicAuth()
+    @ApiTags("QuizQuestions")
     @UseGuards(BasicAuthGuard)
     @Put("/quiz/questions/:id/publish")
     @HttpCode(204)

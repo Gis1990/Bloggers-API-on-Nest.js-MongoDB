@@ -8,7 +8,9 @@ import { CommentClass } from "../../schemas/comments.schema";
 import { UserAccountClass } from "../../schemas/users.schema";
 import { QuestionClass } from "../../schemas/questions.schema";
 import { GamesClass, TopUsersStatsClass } from "../../schemas/games.schema";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("Testing")
 @SkipThrottle()
 @Controller("testing")
 export class TestingController {

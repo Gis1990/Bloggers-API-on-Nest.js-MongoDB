@@ -1,6 +1,10 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Put, UseGuards } from "@nestjs/common";
 import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
-import { CommentsIdValidationModel, ModelForLikeStatus, ModelForUpdatingComment } from "../../dtos/comments.dto";
+import {
+    CommentsIdValidationModel,
+    InputModelForLikeStatus,
+    InputModelForUpdatingComment,
+} from "../../dtos/comments.dto";
 import { CurrentUser, CurrentUserId } from "../../decorators/auth/auth.custom.decorators";
 import { strategyForUnauthorizedUser } from "../../guards/strategy-for-unauthorized-user-guard";
 import { CurrentUserModel } from "../../dtos/auth.dto";
@@ -11,7 +15,9 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { UpdateCommentCommand } from "../../commands/comments/update-comment-use-case";
 import { DeleteCommentCommand } from "../../commands/comments/delete-comment-use-case";
 import { GetCommentByIdCommand } from "../../queries/comments/get-comment-by-id-query";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("Comments")
 @SkipThrottle()
 @Controller("comments")
 export class CommentsController {
@@ -22,7 +28,7 @@ export class CommentsController {
     @HttpCode(204)
     async updateCommentById(
         @Param() params: CommentsIdValidationModel,
-        @Body() body: ModelForUpdatingComment,
+        @Body() body: InputModelForUpdatingComment,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<boolean> {
         return await this.commandBus.execute(new UpdateCommentCommand(params.id, body.content, user.id));
@@ -49,7 +55,7 @@ export class CommentsController {
     @HttpCode(204)
     async likeOperation(
         @Param() params: CommentsIdValidationModel,
-        @Body() body: ModelForLikeStatus,
+        @Body() body: InputModelForLikeStatus,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<boolean> {
         return await this.commandBus.execute(new LikeOperationForCommentCommand(params.id, user.id, body.likeStatus));

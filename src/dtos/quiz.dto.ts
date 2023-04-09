@@ -15,6 +15,8 @@ import { QuestionClass, QuestionsForGameClass } from "../schemas/questions.schem
 import { PlayerProgressClass } from "../schemas/games.schema";
 import { IsQuestionIdExist } from "../decorators/quiz/quiz.custom.decorators";
 import { ModelForGettingAllBlogs } from "./blogs.dto";
+import { ApiProperty } from "@nestjs/swagger";
+import { v4 as uuidv4 } from "uuid";
 
 const listOfCorrectPublishedStatuses = ["all", "published", "notPublished"];
 
@@ -111,6 +113,7 @@ export class UpdatedGameDto {
 }
 
 export class InputModelForAnswers {
+    @ApiProperty({ type: String })
     @IsString()
     @IsNotEmpty()
     public answer: string;
@@ -143,6 +146,15 @@ export class GameStatsViewModelDto {
     public winsCount: number;
     public lossesCount: number;
     public drawsCount: number;
+}
+
+export class AnswerViewModelDto {
+    @ApiProperty({ example: uuidv4() })
+    public questionId: string;
+    @ApiProperty({ example: "Correct", enum: ["Correct", "Incorrect"] })
+    public answerStatus: ["Correct", "Incorrect"];
+    @ApiProperty({ example: new Date() })
+    public addedAt: Date;
 }
 
 export class ModelForGettingTopUsers {

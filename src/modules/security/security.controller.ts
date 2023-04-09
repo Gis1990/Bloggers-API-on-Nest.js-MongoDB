@@ -10,7 +10,9 @@ import { ReturnAllDevicesCommand } from "../../commands/security/return-all-devi
 import { TerminateAllDevicesCommand } from "../../commands/security/terminate-all-devices-use-case";
 import { CheckAccessRightsCommand } from "../../commands/security/check-access-rights-use-case";
 import { SecurityService } from "./security.service";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("SecurityDevices")
 @SkipThrottle()
 @Controller("security")
 export class SecurityController {

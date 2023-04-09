@@ -10,6 +10,16 @@ import cookieParser from "cookie-parser";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { createWriteStream } from "fs";
 import { get } from "http";
+import { SuperAdminModule } from "./modules/super-admin/super.admin.module";
+import { TestingModule } from "./modules/testing(delete all)/testing.module";
+import { BloggerModule } from "./modules/blogger/blogger.module";
+import { BlogsModule } from "./modules/blogs/blogs.module";
+import { PostsModule } from "./modules/posts/posts.module";
+import { AuthModule } from "./modules/auth/auth.module";
+import { CommentsModule } from "./modules/comments/comments.module";
+import { SecurityModule } from "./modules/security/security.module";
+import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
+import { UploadsModule } from "./modules/upload/uploads.module";
 
 const serverUrl = "http://localhost:500";
 
@@ -45,19 +55,66 @@ export const validationPipeSettings = {
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.enableCors();
-    const config = new DocumentBuilder()
+    const configService = app.get(ConfigService);
+    // app.setGlobalPrefix("api");
+    const bloggerConfig = new DocumentBuilder()
         .setTitle("Bloggers API")
         .setDescription("The Bloggers API description")
         .setVersion("1.0")
-        .addTag("Bloggers")
+        .addBearerAuth()
         .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup("swagger", app, document);
+    const saConfig = new DocumentBuilder()
+        .setTitle("Super-admin API")
+        .setDescription("The Super-admin API description")
+        .setVersion("1.0")
+        .addBasicAuth()
+        .build();
+    const publicConfig = new DocumentBuilder()
+        .setTitle("Public API")
+        .setDescription("The Public API for bloggers description")
+        .setVersion("1.0")
+        .addBearerAuth()
+        .build();
+    const options1 = {
+        explorer: true,
+        showExtensions: true,
+        swaggerOptions: {
+            urls: [
+                {
+                    url: `${serverUrl}/swagger-json`,
+                    name: "Bloggers API",
+                },
+                {
+                    url: `${serverUrl}/swagger1-json`,
+                    name: "Super-admin API",
+                },
+                {
+                    url: `${serverUrl}/swagger2-json`,
+                    name: "Public API",
+                },
+            ],
+        },
+    };
+
+    const bloggersDocument = SwaggerModule.createDocument(app, bloggerConfig, {
+        operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+        include: [BloggerModule, UploadsModule],
+    });
+    const saDocument = SwaggerModule.createDocument(app, saConfig, {
+        operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+        include: [SuperAdminModule],
+    });
+    const publicApiDocument = SwaggerModule.createDocument(app, publicConfig, {
+        operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+        include: [BlogsModule, PostsModule, AuthModule, CommentsModule, TestingModule, SecurityModule, QuizGameModule],
+    });
+    SwaggerModule.setup("swagger", app, bloggersDocument, options1);
+    SwaggerModule.setup("swagger1", app, saDocument);
+    SwaggerModule.setup("swagger2", app, publicApiDocument);
     app.useGlobalPipes(new ValidationPipe(validationPipeSettings));
     app.useGlobalFilters(new HttpExceptionFilter());
     app.use(cookieParser());
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
-    const configService = app.get(ConfigService);
     const mongoUri = configService.get("mongo_URI");
     await runDb(mongoUri);
     await app.listen(500);
@@ -66,24 +123,18 @@ async function bootstrap() {
         // write swagger ui files
         get(`${serverUrl}/swagger/swagger-ui-bundle.js`, function (response) {
             response.pipe(createWriteStream("swagger-static/swagger-ui-bundle.js"));
-            console.log(`Swagger UI bundle file written to: '/swagger-static/swagger-ui-bundle.js'`);
         });
 
         get(`${serverUrl}/swagger/swagger-ui-init.js`, function (response) {
             response.pipe(createWriteStream("swagger-static/swagger-ui-init.js"));
-            console.log(`Swagger UI init file written to: '/swagger-static/swagger-ui-init.js'`);
         });
 
         get(`${serverUrl}/swagger/swagger-ui-standalone-preset.js`, function (response) {
             response.pipe(createWriteStream("swagger-static/swagger-ui-standalone-preset.js"));
-            console.log(
-                `Swagger UI standalone preset file written to: '/swagger-static/swagger-ui-standalone-preset.js'`,
-            );
         });
 
         get(`${serverUrl}/swagger/swagger-ui.css`, function (response) {
             response.pipe(createWriteStream("swagger-static/swagger-ui.css"));
-            console.log(`Swagger UI css file written to: '/swagger-static/swagger-ui.css'`);
         });
     }
 }

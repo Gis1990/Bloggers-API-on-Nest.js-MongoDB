@@ -2,7 +2,11 @@ import { Body, Controller, Get, HttpCode, Param, Post, Put, Query, UseGuards } f
 import { ModelForGettingAllPosts, PostsIdValidationModel } from "../../dtos/posts.dto";
 import { CurrentUser, CurrentUserId } from "../../decorators/auth/auth.custom.decorators";
 import { PostViewModelClassPagination, PostViewModelClass } from "../../entities/posts.entity";
-import { ModelForCreatingNewComment, ModelForGettingAllComments, ModelForLikeStatus } from "../../dtos/comments.dto";
+import {
+    InputModelForCreatingNewComment,
+    ModelForGettingAllComments,
+    InputModelForLikeStatus,
+} from "../../dtos/comments.dto";
 import { CommentViewModelClass, CommentViewModelPaginationClass } from "../../entities/comments.entity";
 import { CurrentUserModel } from "../../dtos/auth.dto";
 import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
@@ -14,7 +18,9 @@ import { LikeOperationForPostCommand } from "../../commands/posts/like-operation
 import { GetAllCommentsForSpecificPostCommand } from "../../queries/comments/get-all-comments-for-specific-post-query";
 import { GetAllPostsCommand } from "../../queries/posts/get-all-posts-query";
 import { GetPostByIdCommand } from "../../queries/posts/get-post-by-id-query";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("Posts")
 @SkipThrottle()
 @Controller("posts")
 export class PostsController {
@@ -43,7 +49,7 @@ export class PostsController {
     @Post("/:postId/comments")
     async createComment(
         @Param() params: PostsIdValidationModel,
-        @Body() model: ModelForCreatingNewComment,
+        @Body() model: InputModelForCreatingNewComment,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<CommentViewModelClass> {
         return await this.commandBus.execute(new CreateCommentCommand(model, params.postId, user));
@@ -63,7 +69,7 @@ export class PostsController {
     @HttpCode(204)
     async likeOperation(
         @Param() params: PostsIdValidationModel,
-        @Body() body: ModelForLikeStatus,
+        @Body() body: InputModelForLikeStatus,
         @CurrentUser() user: CurrentUserModel,
     ): Promise<boolean> {
         return await this.commandBus.execute(

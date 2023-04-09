@@ -48,4 +48,18 @@ export class BlogsRepository {
         );
         return result.matchedCount === 1;
     }
+
+    async updateDataForWallpaperImage(
+        blogId: string,
+        url: string,
+        width: number,
+        height: number,
+        fileSize: number,
+    ): Promise<boolean> {
+        const result = await this.blogsModelClass.updateOne(
+            { id: blogId },
+            { "images.wallpaper": { url: url, width: width, height: height, fileSize: fileSize } },
+        );
+        return result.matchedCount === 1;
+    }
 }

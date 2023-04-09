@@ -3,6 +3,7 @@ import { CreatedNewQuestionDto, InputModelForCreatingAndUpdatingQuestion } from 
 import { QuizRepository } from "../../repositories/quiz.repository";
 import { QuizFactory } from "../../factories/quiz.factory";
 import { QuestionViewModelClass } from "../../entities/quiz.entity";
+import { v4 as uuidv4 } from "uuid";
 
 export class CreateQuestionCommand {
     constructor(public readonly dto: InputModelForCreatingAndUpdatingQuestion) {}
@@ -15,7 +16,7 @@ export class CreateQuestionUseCase implements ICommandHandler<CreateQuestionComm
     async execute(command: CreateQuestionCommand): Promise<QuestionViewModelClass> {
         const correctDate = new Date();
         const createdNewQuestionDto: CreatedNewQuestionDto = {
-            id: Number(new Date()).toString(),
+            id: uuidv4(),
             body: command.dto.body,
             correctAnswers: command.dto.correctAnswers,
             published: false,

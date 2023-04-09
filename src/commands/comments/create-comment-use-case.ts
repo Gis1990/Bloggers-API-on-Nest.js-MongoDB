@@ -1,4 +1,4 @@
-import { CreatedCommentDto, ModelForCreatingNewComment } from "../../dtos/comments.dto";
+import { CreatedCommentDto, InputModelForCreatingNewComment } from "../../dtos/comments.dto";
 import { CurrentUserModel } from "../../dtos/auth.dto";
 import { CommentViewModelClass } from "../../entities/comments.entity";
 import { LikesInfoClass } from "../../schemas/comments.schema";
@@ -9,10 +9,11 @@ import { GetPostByIdCommand } from "../../queries/posts/get-post-by-id-query";
 import { GetUserByIdCommand } from "../../queries/users/get-user-by-id-query";
 import { HttpException } from "@nestjs/common";
 import { CommentsFactory } from "../../factories/comments.factory";
+import { v4 as uuidv4 } from "uuid";
 
 export class CreateCommentCommand {
     constructor(
-        public readonly dto: ModelForCreatingNewComment,
+        public readonly dto: InputModelForCreatingNewComment,
         public readonly postId: string,
         public readonly user: CurrentUserModel,
     ) {}
@@ -30,7 +31,7 @@ export class CreateCommentUseCase implements ICommandHandler<CreateCommentComman
         const likes: LikesInfoClass = new LikesInfoClass();
         const usersLikesInfo: UsersLikesInfoClass = new UsersLikesInfoClass();
         const createdCommentDto: CreatedCommentDto = {
-            id: Number(new Date()).toString(),
+            id: uuidv4(),
             content: command.dto.content,
             createdAt: new Date(),
             likesInfo: likes,

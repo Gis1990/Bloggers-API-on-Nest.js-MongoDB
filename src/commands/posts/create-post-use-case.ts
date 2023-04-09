@@ -7,6 +7,7 @@ import { HttpException } from "@nestjs/common";
 import { CurrentUserModel } from "../../dtos/auth.dto";
 import { GetBlogByIdCommand } from "../../queries/blogs/get-blog-by-id-query";
 import { PostsFactory } from "../../factories/posts.factory";
+import { v4 as uuidv4 } from "uuid";
 
 export class CreatePostCommand {
     constructor(public dto: InputModelForCreatingAndUpdatingPost, public user: CurrentUserModel) {}
@@ -24,7 +25,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
         const extendedLikesInfo: ExtendedLikesInfoClass = new ExtendedLikesInfoClass();
         const usersLikes: UsersLikesInfoClass = new UsersLikesInfoClass();
         const createdPostDto = {
-            id: Number(new Date()).toString(),
+            id: uuidv4(),
             title: command.dto.title,
             shortDescription: command.dto.shortDescription,
             content: command.dto.content,
@@ -34,6 +35,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
             postOwnerId: command.user.id,
             extendedLikesInfo: extendedLikesInfo,
             usersLikesInfo: usersLikes,
+            images: { main: [] },
         };
         const createdPost = await this.postsRepository.createPost(createdPostDto);
         return await PostsFactory.createPostViewModelClass(createdPost);

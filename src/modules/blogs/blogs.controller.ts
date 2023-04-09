@@ -9,7 +9,9 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { GetAllBlogsCommand } from "../../queries/blogs/get-all-blogs-query";
 import { GetBlogByIdWithCorrectViewModelCommand } from "../../queries/blogs/get-blog-by-id-with-correct-view-model-query";
 import { GetAllPostsForSpecificBlogCommand } from "../../queries/posts/get-all-posts-for-specific-blog-query";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("Blogs")
 @SkipThrottle()
 @Controller("blogs")
 export class BlogsController {

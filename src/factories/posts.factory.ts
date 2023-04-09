@@ -13,6 +13,7 @@ export class PostsFactory {
             post.blogName,
             post.createdAt,
             post.extendedLikesInfo,
+            post.images,
         );
     }
 

@@ -10,6 +10,7 @@ import {
     UserAccountClass,
 } from "../schemas/users.schema";
 import { IsBlogsIdExistInTheRequestBody } from "../decorators/blogs/blogs.custom.decorators";
+import { ApiProperty } from "@nestjs/swagger";
 
 const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const listOfCorrectBanStatus = ["all", "banned", "notBanned"];
@@ -65,9 +66,19 @@ export class InputModelForCreatingNewUser {
 }
 
 export class InputModelForBanUnbanUser {
+    @ApiProperty({
+        type: Boolean,
+        example: true,
+        description: "Specifies if the user is banned or not",
+    })
     @IsBoolean()
     @IsNotEmpty()
     public isBanned: boolean;
+    @ApiProperty({
+        type: String,
+        description: "The reason why the user was banned",
+        maxLength: 20,
+    })
     @IsNotEmpty()
     @IsString()
     @Length(20)
@@ -75,6 +86,7 @@ export class InputModelForBanUnbanUser {
 }
 
 export class InputModelForBanUnbanUserByBloggerForBlog extends InputModelForBanUnbanUser {
+    @ApiProperty({ required: true, description: "BlogId Id that should be banned" })
     @IsNotEmpty()
     @IsString()
     @IsBlogsIdExistInTheRequestBody({
@@ -84,6 +96,7 @@ export class InputModelForBanUnbanUserByBloggerForBlog extends InputModelForBanU
 }
 
 export class UsersIdValidationModel {
+    @ApiProperty({ required: true, description: "User Id that should be banned" })
     @IsString()
     @IsNotEmpty()
     @IsUsersIdExist()
@@ -91,23 +104,28 @@ export class UsersIdValidationModel {
 }
 
 export class ModelForGettingAllBannedUsersForBlog {
+    @ApiProperty({ type: String, description: "The search term for a login", default: null, required: false })
     @IsString()
     @IsOptional()
     public searchLoginTerm: string;
-    @IsString()
-    @IsOptional()
-    public sortBy: string;
-    @IsString()
-    @IsOptional()
-    public sortDirection: string;
+    @ApiProperty({ default: 1, required: false })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageNumber: number;
+    @ApiProperty({ default: 10, required: false })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageSize: number;
+    @ApiProperty({ default: "createdAt", required: false })
+    @IsString()
+    @IsOptional()
+    public sortBy: string;
+    @ApiProperty({ default: "desc", required: false, enum: ["asc", "desc"] })
+    @IsString()
+    @IsOptional()
+    public sortDirection: string;
 }
 
 export class CreatedNewUserDto {

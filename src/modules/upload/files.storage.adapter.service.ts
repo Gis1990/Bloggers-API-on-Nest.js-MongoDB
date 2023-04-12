@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectsCommand, ListObjectsCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { ConfigService } from "@nestjs/config";
 import { v4 as uuidv4 } from "uuid";
 
@@ -35,5 +35,27 @@ export class S3StorageAdapter {
         return {
             url: `https://bloggersbucket.s3.eu-central-1.amazonaws.com/${bucketParams.Key}`,
         };
+    }
+
+    public async deleteFolder(bucketName: string, folderPath: string): Promise<void> {
+        const listObjectsParams = {
+            Bucket: bucketName,
+            Prefix: folderPath,
+        };
+        const listObjectsCommand = new ListObjectsCommand(listObjectsParams);
+        const listObjectsOutput = await this.s3Client.send(listObjectsCommand);
+
+        const deleteObjectsParams = {
+            Bucket: bucketName,
+            Delete: { Objects: [] },
+        };
+
+        if (listObjectsOutput.Contents.length > 0) {
+            listObjectsOutput.Contents.forEach((content) => {
+                deleteObjectsParams.Delete.Objects.push({ Key: content.Key });
+            });
+            const deleteObjectsCommand = new DeleteObjectsCommand(deleteObjectsParams);
+            await this.s3Client.send(deleteObjectsCommand);
+        }
     }
 }

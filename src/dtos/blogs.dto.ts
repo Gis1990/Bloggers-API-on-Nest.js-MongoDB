@@ -1,5 +1,5 @@
 import { IsString, Length, Matches, IsNotEmpty, IsNumber, IsOptional, IsBoolean } from "class-validator";
-import { IsBlogsIdExistForBanUnbanOperation } from "../decorators/blogs/blogs.custom.decorators";
+import { IsBlogsIdExist, IsBlogsIdExistForBanUnbanOperation } from "../decorators/blogs/blogs.custom.decorators";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import { BlogClass, ImagesForBlogsClass } from "../schemas/blogs.schema";
 import { ApiProperty } from "@nestjs/swagger";
@@ -55,10 +55,10 @@ export class InputModelForCreatingBlog {
 }
 
 export class BlogsIdValidationModel {
-    // @ApiProperty({ required: true })
-    // @IsUUID()
-    // // @IsNotEmpty()
-    // // @IsBlogsIdExist()
+    @ApiProperty({ required: true })
+    @IsString()
+    @IsNotEmpty()
+    @IsBlogsIdExist()
     public id: string;
 }
 

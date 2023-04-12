@@ -33,27 +33,22 @@ export class SaveWallpaperForBlogUseCase implements ICommandHandler<SaveWallpape
         if (imageSize > validFileSize) {
             throw new HttpException("Image size is too large", 400);
         }
-        const resizedImageBuffer = await sharp(command.buffer)
-            .resize({
-                width: 1028,
-                height: 312,
-            })
-            .toFormat("png")
-            .toBuffer();
-        const metadataForResizedImage = await sharp(resizedImageBuffer).metadata();
+        if (metadata.width > 1028 || metadata.height > 312) {
+            throw new HttpException("Wrong picture size", 400);
+        }
+        await this.filesStorageAdapter.deleteFolder("bloggersbucket", `${command.userId}`);
         const result = await this.filesStorageAdapter.saveFile(
             command.blogId,
             command.originalName,
             command.userId,
-            resizedImageBuffer,
+            command.buffer,
         );
-        console.log(resizedImageBuffer.length);
         await this.blogsRepository.updateDataForWallpaperImage(
             command.blogId,
             result.url,
-            metadataForResizedImage.width,
-            metadataForResizedImage.height,
-            resizedImageBuffer.length,
+            metadata.width,
+            metadata.height,
+            imageSize,
         );
         return this.blogsQueryRepository.getDataAboutImages(command.blogId);
     }

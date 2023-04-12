@@ -64,7 +64,7 @@ export class BloggerController {
     })
     @ApiTags("Blogs")
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Put("/blogs/:blogId")
+    @Put("/blogs/:id")
     @HttpCode(204)
     async updateBlog(
         @Param() params: BlogsIdValidationModel,
@@ -80,7 +80,7 @@ export class BloggerController {
     @ApiResponse({ status: 404, description: "Not found" })
     @ApiTags("Blogs")
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Delete("/blogs/:blogId")
+    @Delete("/blogs/:id")
     @HttpCode(204)
     async deleteBlog(@Param() params: BlogsIdValidationModel, @CurrentUser() user: CurrentUserModel): Promise<boolean> {
         return await this.commandBus.execute(new DeleteBlogCommand(params.id, user));
@@ -114,7 +114,7 @@ export class BloggerController {
     @ApiResponse({ status: 404, description: "If specific blog doesn't exists" })
     @ApiTags("Blogs")
     @UseGuards(JwtAccessTokenAuthGuard)
-    @Post("/blogs/:blogId/posts")
+    @Post("/blogs/:id/posts")
     async createNewPostForSpecificBlog(
         @Param() params: BlogsIdValidationModel,
         @Body() model: InputModelForCreatingAndUpdatingNewPostForSpecificBlog,

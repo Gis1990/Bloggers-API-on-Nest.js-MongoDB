@@ -20,6 +20,7 @@ import { CommentsModule } from "./modules/comments/comments.module";
 import { SecurityModule } from "./modules/security/security.module";
 import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
 import { UploadsModule } from "./modules/upload/uploads.module";
+import * as process from "process";
 
 const serverUrl = "http://localhost:500";
 
@@ -56,6 +57,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.enableCors();
     const configService = app.get(ConfigService);
+    console.log(process.env.VERCEL_ENV);
     // app.setGlobalPrefix("api");
     const bloggerConfig = new DocumentBuilder()
         .setTitle("Bloggers API")

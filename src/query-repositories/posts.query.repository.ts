@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { PostClass } from "../schemas/posts.schema";
 import { QueryDto } from "../dtos/blogs.dto";
 import { PostClassPaginationDto } from "../dtos/posts.dto";
+import { BlogViewModelClass } from "../entities/blogs.entity";
 
 @Injectable()
 export class PostsQueryRepository {
@@ -60,5 +61,15 @@ export class PostsQueryRepository {
 
     async getPostByIdForOperationWithLikes(id: string): Promise<PostClass | null> {
         return this.postsModelClass.findOne({ id: id });
+    }
+
+    async getDataAboutImages(id: string): Promise<BlogViewModelClass | null> {
+        return this.postsModelClass.findOne(
+            { id: id },
+            {
+                _id: 0,
+                images: 1,
+            },
+        );
     }
 }

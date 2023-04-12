@@ -42,4 +42,18 @@ export class PostsRepository {
         const result = await this.postsModelClass.updateOne({ id: id }, update);
         return result.matchedCount === 1;
     }
+
+    async updateDataForMainImage(
+        postId: string,
+        url: string,
+        width: number,
+        height: number,
+        fileSize: number,
+    ): Promise<boolean> {
+        const result = await this.postsModelClass.updateOne(
+            { id: postId },
+            { "images.main[0]": { url: url, width: width, height: height, fileSize: fileSize } },
+        );
+        return result.matchedCount === 1;
+    }
 }

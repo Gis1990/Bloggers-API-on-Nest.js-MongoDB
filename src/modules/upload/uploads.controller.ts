@@ -9,6 +9,10 @@ import { CurrentUserModel } from "../../dtos/auth.dto";
 import { join } from "node:path";
 import { readFileAsync } from "../utils/fs/fs.utils";
 import { SaveWallpaperForBlogCommand } from "../../commands/blogs/save-wallpaper-for-blog-use-case";
+import { SaveMainImageForBlogCommand } from "../../commands/blogs/save-main-image-for-blog-use-case";
+import { ValidateBlogId, ValidatePostId } from "../../decorators/blogger/blogger.custom.decorators";
+import { PostsIdValidationModel } from "../../dtos/posts.dto";
+import { SaveMainImageForPostCommand } from "../../commands/posts/save-main-image-for-post-use-case";
 
 @ApiTags("Blogs")
 @Controller("blogger")
@@ -33,6 +37,40 @@ export class UploadsController {
     ): Promise<any> {
         return await this.commandBus.execute(
             new SaveWallpaperForBlogCommand(params.id, file.originalname, user.id, file.buffer),
+        );
+    }
+
+    @Post("/blogs/:id/images/wallpaper")
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @UseInterceptors(FileInterceptor("file"))
+    @HttpCode(201)
+    async uploadMainImageForBlog(
+        @UploadedFile()
+        file: Express.Multer.File,
+        @Param() params: BlogsIdValidationModel,
+        @CurrentUser()
+        user: CurrentUserModel,
+    ): Promise<any> {
+        return await this.commandBus.execute(
+            new SaveMainImageForBlogCommand(params.id, file.originalname, user.id, file.buffer),
+        );
+    }
+
+    @Post("blogs/:blogId/posts/:postId/images/main")
+    @UseGuards(JwtAccessTokenAuthGuard)
+    @UseInterceptors(FileInterceptor("file"))
+    @HttpCode(201)
+    async uploadMainImageForPost(
+        @ValidateBlogId() blogId: BlogsIdValidationModel,
+        @ValidatePostId() postId: PostsIdValidationModel,
+        @UploadedFile()
+        file: Express.Multer.File,
+        @Param() params: BlogsIdValidationModel,
+        @CurrentUser()
+        user: CurrentUserModel,
+    ): Promise<any> {
+        return await this.commandBus.execute(
+            new SaveMainImageForPostCommand(postId.toString(), file.originalname, user.id, file.buffer),
         );
     }
 }

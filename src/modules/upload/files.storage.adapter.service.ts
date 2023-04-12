@@ -19,10 +19,17 @@ export class S3StorageAdapter {
         });
     }
 
-    public async saveFile(blogId: string, originalName: string, userId: string, buffer: Buffer): Promise<any> {
+    public async saveFile(
+        blogId: string,
+        originalName: string,
+        typeImageDir: string,
+        userId: string,
+        buffer: Buffer,
+        image: string,
+    ): Promise<any> {
         const bucketParams = {
             Bucket: "bloggersbucket",
-            Key: `${userId}/${blogId}/${uuidv4()}`,
+            Key: `${userId}/${typeImageDir}/${blogId}/${image}/${uuidv4()}`,
             Body: buffer,
             ContentType: "image/png",
         };
@@ -49,13 +56,14 @@ export class S3StorageAdapter {
             Bucket: bucketName,
             Delete: { Objects: [] },
         };
-
-        if (listObjectsOutput.Contents.length > 0) {
-            listObjectsOutput.Contents.forEach((content) => {
-                deleteObjectsParams.Delete.Objects.push({ Key: content.Key });
-            });
-            const deleteObjectsCommand = new DeleteObjectsCommand(deleteObjectsParams);
-            await this.s3Client.send(deleteObjectsCommand);
+        if (!listObjectsOutput) {
+            if (listObjectsOutput.Contents.length > 0) {
+                listObjectsOutput.Contents.forEach((content) => {
+                    deleteObjectsParams.Delete.Objects.push({ Key: content.Key });
+                });
+                const deleteObjectsCommand = new DeleteObjectsCommand(deleteObjectsParams);
+                await this.s3Client.send(deleteObjectsCommand);
+            }
         }
     }
 }

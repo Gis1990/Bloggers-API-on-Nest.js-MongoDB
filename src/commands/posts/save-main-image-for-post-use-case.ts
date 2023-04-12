@@ -2,27 +2,27 @@ import { CommandHandler, ICommand, ICommandHandler } from "@nestjs/cqrs";
 import { S3StorageAdapter } from "../../modules/upload/files.storage.adapter.service";
 import sharp from "sharp";
 import { HttpException } from "@nestjs/common";
-import { BlogsRepository } from "../../repositories/blogs.repository";
-import { BlogsQueryRepository } from "../../query-repositories/blogs.query.repository";
+import { PostsRepository } from "../../repositories/posts.repository";
+import { PostsQueryRepository } from "../../query-repositories/posts.query.repository";
 
-export class SaveWallpaperForBlogCommand implements ICommand {
+export class SaveMainImageForPostCommand implements ICommand {
     constructor(
-        public readonly blogId: string,
+        public readonly postId: string,
         public readonly originalName: string,
         public readonly userId: string,
         public readonly buffer: Buffer,
     ) {}
 }
 
-@CommandHandler(SaveWallpaperForBlogCommand)
-export class SaveWallpaperForBlogUseCase implements ICommandHandler<SaveWallpaperForBlogCommand> {
+@CommandHandler(SaveMainImageForPostCommand)
+export class SaveMainImageForPostUseCase implements ICommandHandler<SaveMainImageForPostCommand> {
     constructor(
         private filesStorageAdapter: S3StorageAdapter,
-        private blogsRepository: BlogsRepository,
-        private blogsQueryRepository: BlogsQueryRepository,
+        private postsRepository: PostsRepository,
+        private postsQueryRepository: PostsQueryRepository,
     ) {}
 
-    async execute(command: SaveWallpaperForBlogCommand) {
+    async execute(command: SaveMainImageForPostCommand) {
         const validFileSize = 100 * 1024;
         const validFormats = ["png", "jpeg", "jpg"];
         const metadata = await sharp(command.buffer).metadata();
@@ -33,28 +33,25 @@ export class SaveWallpaperForBlogUseCase implements ICommandHandler<SaveWallpape
         if (imageSize > validFileSize) {
             throw new HttpException("Image size is too large", 400);
         }
-        if (metadata.width > 1028 || metadata.height > 312) {
+        if (metadata.width > 940 || metadata.height > 432) {
             throw new HttpException("Wrong picture size", 400);
         }
-        await this.filesStorageAdapter.deleteFolder(
-            "bloggersbucket",
-            `${command.userId}/blogs/${command.blogId}/wallpaper`,
-        );
+        await this.filesStorageAdapter.deleteFolder("bloggersbucket", `${command.userId}/posts/${command.postId}/main`);
         const result = await this.filesStorageAdapter.saveFile(
-            command.blogId,
+            command.postId,
             command.originalName,
-            "blogs",
+            "posts",
             command.userId,
             command.buffer,
-            "wallpaper",
+            "main",
         );
-        await this.blogsRepository.updateDataForWallpaperImage(
-            command.blogId,
+        await this.postsRepository.updateDataForMainImage(
+            command.postId,
             result.url,
             metadata.width,
             metadata.height,
             imageSize,
         );
-        return this.blogsQueryRepository.getDataAboutImages(command.blogId);
+        return this.postsQueryRepository.getDataAboutImages(command.postId);
     }
 }

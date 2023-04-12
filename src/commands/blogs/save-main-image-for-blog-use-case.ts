@@ -5,7 +5,7 @@ import { HttpException } from "@nestjs/common";
 import { BlogsRepository } from "../../repositories/blogs.repository";
 import { BlogsQueryRepository } from "../../query-repositories/blogs.query.repository";
 
-export class SaveWallpaperForBlogCommand implements ICommand {
+export class SaveMainImageForBlogCommand implements ICommand {
     constructor(
         public readonly blogId: string,
         public readonly originalName: string,
@@ -14,15 +14,15 @@ export class SaveWallpaperForBlogCommand implements ICommand {
     ) {}
 }
 
-@CommandHandler(SaveWallpaperForBlogCommand)
-export class SaveWallpaperForBlogUseCase implements ICommandHandler<SaveWallpaperForBlogCommand> {
+@CommandHandler(SaveMainImageForBlogCommand)
+export class SaveMainImageForBlogUseCase implements ICommandHandler<SaveMainImageForBlogCommand> {
     constructor(
         private filesStorageAdapter: S3StorageAdapter,
         private blogsRepository: BlogsRepository,
         private blogsQueryRepository: BlogsQueryRepository,
     ) {}
 
-    async execute(command: SaveWallpaperForBlogCommand) {
+    async execute(command: SaveMainImageForBlogCommand) {
         const validFileSize = 100 * 1024;
         const validFormats = ["png", "jpeg", "jpg"];
         const metadata = await sharp(command.buffer).metadata();
@@ -33,22 +33,19 @@ export class SaveWallpaperForBlogUseCase implements ICommandHandler<SaveWallpape
         if (imageSize > validFileSize) {
             throw new HttpException("Image size is too large", 400);
         }
-        if (metadata.width > 1028 || metadata.height > 312) {
+        if (metadata.width > 156 || metadata.height > 156) {
             throw new HttpException("Wrong picture size", 400);
         }
-        await this.filesStorageAdapter.deleteFolder(
-            "bloggersbucket",
-            `${command.userId}/blogs/${command.blogId}/wallpaper`,
-        );
+        await this.filesStorageAdapter.deleteFolder("bloggersbucket", `${command.userId}/blogs/${command.blogId}/main`);
         const result = await this.filesStorageAdapter.saveFile(
             command.blogId,
             command.originalName,
             "blogs",
             command.userId,
             command.buffer,
-            "wallpaper",
+            "main",
         );
-        await this.blogsRepository.updateDataForWallpaperImage(
+        await this.blogsRepository.updateDataForMainImage(
             command.blogId,
             result.url,
             metadata.width,

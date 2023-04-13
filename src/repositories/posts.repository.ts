@@ -52,7 +52,7 @@ export class PostsRepository {
     ): Promise<boolean> {
         const result = await this.postsModelClass.updateOne(
             { id: postId },
-            { "images.main[0]": { url: url, width: width, height: height, fileSize: fileSize } },
+            { $set: { "images.main.0": { url: url, width: width, height: height, fileSize: fileSize } } },
         );
         return result.matchedCount === 1;
     }

@@ -22,7 +22,7 @@ import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
 import { UploadsModule } from "./modules/upload/uploads.module";
 import * as process from "process";
 
-const serverUrl = process.env.APP_URL;
+const serverUrl = "http://blogs-api-nest-js.vercel.app/";
 
 export async function runDb(mongoUri: string) {
     try {

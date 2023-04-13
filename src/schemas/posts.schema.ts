@@ -104,7 +104,7 @@ export const ImagesInfoSchema = SchemaFactory.createForClass(ImagesInfoClass);
 @Schema({ versionKey: false })
 export class ImagesForPostsClass {
     @ApiProperty({ type: [ImagesInfoSchema], required: true })
-    @Prop({ type: [ImagesInfoSchema] })
+    @Prop({ type: [ImagesInfoSchema], _id: false })
     main: ImagesInfoClass[];
 }
 

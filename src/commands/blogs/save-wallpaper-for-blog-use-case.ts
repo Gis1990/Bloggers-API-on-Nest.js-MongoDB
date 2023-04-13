@@ -25,7 +25,12 @@ export class SaveWallpaperForBlogUseCase implements ICommandHandler<SaveWallpape
     async execute(command: SaveWallpaperForBlogCommand) {
         const validFileSize = 100 * 1024;
         const validFormats = ["png", "jpeg", "jpg"];
-        const metadata = await sharp(command.buffer).metadata();
+        let metadata;
+        try {
+            metadata = await sharp(command.buffer).metadata();
+        } catch (error) {
+            throw new HttpException("Invalid image format", 400);
+        }
         const imageSize = command.buffer.length;
         if (!validFormats.includes(metadata.format)) {
             throw new HttpException("Invalid image format", 400);

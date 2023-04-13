@@ -26,6 +26,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
             response.status(400).json(errorResponse);
             return;
         }
+        if (responseBody === "Image size is too large") {
+            const errorResponse = { errorsMessages: [{ message: "Image size is too large", field: "image" }] };
+            response.status(400).json(errorResponse);
+            return;
+        }
+        if (responseBody === "Wrong picture size") {
+            const errorResponse = { errorsMessages: [{ message: "Wrong picture size", field: "image" }] };
+            response.status(400).json(errorResponse);
+            return;
+        }
         if (status === 406) {
             const errorResponse = { errorsMessages: [{ message: "Code is incorrect", field: "code" }] };
             response.status(400).json(errorResponse);

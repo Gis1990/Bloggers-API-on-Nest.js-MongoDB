@@ -44,20 +44,6 @@ export class SaveMainImageForBlogUseCase implements ICommandHandler<SaveMainImag
         if (metadata.width > 156 || metadata.height > 156) {
             throw new HttpException("Wrong picture size", 400);
         }
-        const resizedImageBuffer1 = await sharp(command.buffer)
-            .resize({
-                width: 300,
-                height: 180,
-            })
-            .toBuffer();
-        const metadataForResizedImage1 = await sharp(resizedImageBuffer1).metadata();
-        const resizedImageBuffer2 = await sharp(command.buffer)
-            .resize({
-                width: 149,
-                height: 96,
-            })
-            .toBuffer();
-        const metadataForResizedImage2 = await sharp(resizedImageBuffer1).metadata();
         await this.filesStorageAdapter.deleteFolder("bloggersbucket", `${command.userId}/blogs/${command.blogId}/main`);
         const result1 = await this.filesStorageAdapter.saveFile(
             command.blogId,
@@ -66,36 +52,6 @@ export class SaveMainImageForBlogUseCase implements ICommandHandler<SaveMainImag
             command.userId,
             command.buffer,
             "main",
-        );
-        const result2 = await this.filesStorageAdapter.saveFile(
-            command.blogId,
-            command.originalName,
-            "blogs",
-            command.userId,
-            resizedImageBuffer1,
-            "main",
-        );
-        const result3 = await this.filesStorageAdapter.saveFile(
-            command.blogId,
-            command.originalName,
-            "blogs",
-            command.userId,
-            resizedImageBuffer2,
-            "main",
-        );
-        await this.blogsRepository.updateDataForMainImage(
-            command.blogId,
-            result2.url,
-            metadataForResizedImage1.width,
-            metadataForResizedImage1.height,
-            resizedImageBuffer1.length,
-        );
-        await this.blogsRepository.updateDataForMainImage(
-            command.blogId,
-            result3.url,
-            metadataForResizedImage2.width,
-            metadataForResizedImage2.height,
-            resizedImageBuffer2.length,
         );
         await this.blogsRepository.updateDataForMainImage(
             command.blogId,

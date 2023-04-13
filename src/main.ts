@@ -22,7 +22,7 @@ import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
 import { UploadsModule } from "./modules/upload/uploads.module";
 import * as process from "process";
 
-const serverUrl = process.env.NOW_URL;
+const serverUrl = "http://localhost:500";
 
 export async function runDb(mongoUri: string) {
     try {
@@ -82,15 +82,15 @@ async function bootstrap() {
         swaggerOptions: {
             urls: [
                 {
-                    url: `${serverUrl}/swagger-json`,
+                    url: `${process.env.NEXT_PUBLIC_URL}/swagger-json`,
                     name: "Bloggers API",
                 },
                 {
-                    url: `${serverUrl}/swagger1-json`,
+                    url: `${process.env.NEXT_PUBLIC_URL}/swagger1-json`,
                     name: "Super-admin API",
                 },
                 {
-                    url: `${serverUrl}/swagger2-json`,
+                    url: `${process.env.NEXT_PUBLIC_URL}/swagger2-json`,
                     name: "Public API",
                 },
             ],

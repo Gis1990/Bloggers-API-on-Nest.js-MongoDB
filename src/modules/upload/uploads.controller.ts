@@ -75,7 +75,13 @@ export class UploadsController {
         user: CurrentUserModel,
     ): Promise<any> {
         return await this.commandBus.execute(
-            new SaveMainImageForPostCommand(postId.toString(), file.originalname, user.id, file.buffer),
+            new SaveMainImageForPostCommand(
+                postId.toString(),
+                blogId.toString(),
+                file.originalname,
+                user.id,
+                file.buffer,
+            ),
         );
     }
 }

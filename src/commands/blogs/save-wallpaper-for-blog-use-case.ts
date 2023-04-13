@@ -23,6 +23,8 @@ export class SaveWallpaperForBlogUseCase implements ICommandHandler<SaveWallpape
     ) {}
 
     async execute(command: SaveWallpaperForBlogCommand) {
+        const blog = await this.blogsQueryRepository.getBlogById(command.blogId);
+        if (blog.blogOwnerInfo.userId !== command.userId) throw new HttpException("Access denied", 403);
         const validFileSize = 100 * 1024;
         const validFormats = ["png", "jpeg", "jpg"];
         let metadata;

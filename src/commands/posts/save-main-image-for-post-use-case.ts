@@ -4,10 +4,12 @@ import sharp from "sharp";
 import { HttpException } from "@nestjs/common";
 import { PostsRepository } from "../../repositories/posts.repository";
 import { PostsQueryRepository } from "../../query-repositories/posts.query.repository";
+import { BlogsQueryRepository } from "../../query-repositories/blogs.query.repository";
 
 export class SaveMainImageForPostCommand implements ICommand {
     constructor(
         public readonly postId: string,
+        public readonly blogId: string,
         public readonly originalName: string,
         public readonly userId: string,
         public readonly buffer: Buffer,
@@ -20,9 +22,12 @@ export class SaveMainImageForPostUseCase implements ICommandHandler<SaveMainImag
         private filesStorageAdapter: S3StorageAdapter,
         private postsRepository: PostsRepository,
         private postsQueryRepository: PostsQueryRepository,
+        private blogsQueryRepository: BlogsQueryRepository,
     ) {}
 
     async execute(command: SaveMainImageForPostCommand) {
+        const blog = await this.blogsQueryRepository.getBlogById(command.blogId);
+        if (blog.blogOwnerInfo.userId !== command.userId) throw new HttpException("Access denied", 403);
         const validFileSize = 100 * 1024;
         const validFormats = ["png", "jpeg", "jpg"];
         let metadata;
@@ -41,8 +46,22 @@ export class SaveMainImageForPostUseCase implements ICommandHandler<SaveMainImag
         if (metadata.width > 940 || metadata.height > 432) {
             throw new HttpException("Wrong picture size", 400);
         }
+        const resizedImageBuffer1 = await sharp(command.buffer)
+            .resize({
+                width: 300,
+                height: 180,
+            })
+            .toBuffer();
+        const metadataForResizedImage1 = await sharp(resizedImageBuffer1).metadata();
+        const resizedImageBuffer2 = await sharp(command.buffer)
+            .resize({
+                width: 149,
+                height: 96,
+            })
+            .toBuffer();
+        const metadataForResizedImage2 = await sharp(resizedImageBuffer1).metadata();
         await this.filesStorageAdapter.deleteFolder("bloggersbucket", `${command.userId}/posts/${command.postId}/main`);
-        const result = await this.filesStorageAdapter.saveFile(
+        const result1 = await this.filesStorageAdapter.saveFile(
             command.postId,
             command.originalName,
             "posts",
@@ -50,9 +69,40 @@ export class SaveMainImageForPostUseCase implements ICommandHandler<SaveMainImag
             command.buffer,
             "main",
         );
+        const result2 = await this.filesStorageAdapter.saveFile(
+            command.postId,
+            command.originalName,
+            "posts",
+            command.userId,
+            resizedImageBuffer1,
+            "main",
+        );
+        const result3 = await this.filesStorageAdapter.saveFile(
+            command.postId,
+            command.originalName,
+            "posts",
+            command.userId,
+            resizedImageBuffer2,
+            "main",
+        );
+
         await this.postsRepository.updateDataForMainImage(
             command.postId,
-            result.url,
+            result2.url,
+            metadataForResizedImage1.width,
+            metadataForResizedImage1.height,
+            resizedImageBuffer1.length,
+        );
+        await this.postsRepository.updateDataForMainImage(
+            command.postId,
+            result3.url,
+            metadataForResizedImage2.width,
+            metadataForResizedImage2.height,
+            resizedImageBuffer2.length,
+        );
+        await this.postsRepository.updateDataForMainImage(
+            command.postId,
+            result1.url,
             metadata.width,
             metadata.height,
             imageSize,

@@ -72,7 +72,7 @@ export class BlogsRepository {
     ): Promise<boolean> {
         const result = await this.blogsModelClass.updateOne(
             { id: blogId },
-            { $set: { "images.main.0": { url: url, width: width, height: height, fileSize: fileSize } } },
+            { $push: { "images.main": { url: url, width: width, height: height, fileSize: fileSize } } },
         );
         return result.matchedCount === 1;
     }

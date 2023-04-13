@@ -22,7 +22,7 @@ import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
 import { UploadsModule } from "./modules/upload/uploads.module";
 import * as process from "process";
 
-const serverUrl = process.env.VERCEL_ENV;
+const serverUrl = process.env.APP_URL;
 
 export async function runDb(mongoUri: string) {
     try {

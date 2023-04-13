@@ -46,7 +46,7 @@ export class UploadsController {
     }
 
     @Post("/blogs/:id/images/main")
-    // @UseGuards(JwtAccessTokenAuthGuard)
+    @UseGuards(JwtAccessTokenAuthGuard)
     @UseInterceptors(FileInterceptor("file"))
     @HttpCode(201)
     async uploadMainImageForBlog(
@@ -57,7 +57,7 @@ export class UploadsController {
         user: CurrentUserModel,
     ): Promise<any> {
         return await this.commandBus.execute(
-            new SaveMainImageForBlogCommand(params.id, file.originalname, "5", file.buffer),
+            new SaveMainImageForBlogCommand(params.id, file.originalname, user.id, file.buffer),
         );
     }
 

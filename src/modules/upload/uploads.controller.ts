@@ -40,7 +40,7 @@ export class UploadsController {
         );
     }
 
-    @Post("/blogs/:id/images/wallpaper")
+    @Post("/blogs/:id/images/main")
     @UseGuards(JwtAccessTokenAuthGuard)
     @UseInterceptors(FileInterceptor("file"))
     @HttpCode(201)

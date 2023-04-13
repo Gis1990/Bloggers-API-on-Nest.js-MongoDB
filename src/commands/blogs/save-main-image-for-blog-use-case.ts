@@ -52,6 +52,7 @@ export class SaveMainImageForBlogUseCase implements ICommandHandler<SaveMainImag
             metadata.height,
             imageSize,
         );
-        return this.blogsQueryRepository.getDataAboutImages(command.blogId);
+        const imageData = await this.blogsQueryRepository.getDataAboutImages(command.blogId);
+        return imageData.images;
     }
 }

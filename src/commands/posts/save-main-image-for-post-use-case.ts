@@ -52,6 +52,7 @@ export class SaveMainImageForPostUseCase implements ICommandHandler<SaveMainImag
             metadata.height,
             imageSize,
         );
-        return this.postsQueryRepository.getDataAboutImages(command.postId);
+        const imageData = await this.postsQueryRepository.getDataAboutImages(command.postId);
+        return imageData.images;
     }
 }

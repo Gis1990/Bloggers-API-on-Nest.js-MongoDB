@@ -55,6 +55,7 @@ export class SaveWallpaperForBlogUseCase implements ICommandHandler<SaveWallpape
             metadata.height,
             imageSize,
         );
-        return this.blogsQueryRepository.getDataAboutImages(command.blogId);
+        const imageData = await this.blogsQueryRepository.getDataAboutImages(command.blogId);
+        return imageData.images;
     }
 }

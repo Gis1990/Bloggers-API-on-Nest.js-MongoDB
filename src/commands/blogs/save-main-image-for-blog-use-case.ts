@@ -41,7 +41,7 @@ export class SaveMainImageForBlogUseCase implements ICommandHandler<SaveMainImag
         if (imageSize > validFileSize) {
             throw new HttpException("Image size is too large", 400);
         }
-        if (metadata.width > 156 || metadata.height > 156) {
+        if (metadata.width != 156 || metadata.height != 156) {
             throw new HttpException("Wrong picture size", 400);
         }
         await this.filesStorageAdapter.deleteFolder("bloggersbucket", `${command.userId}/blogs/${command.blogId}/main`);

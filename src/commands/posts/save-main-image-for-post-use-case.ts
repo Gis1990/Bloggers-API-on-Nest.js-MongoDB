@@ -43,7 +43,7 @@ export class SaveMainImageForPostUseCase implements ICommandHandler<SaveMainImag
         if (imageSize > validFileSize) {
             throw new HttpException("Image size is too large", 400);
         }
-        if (metadata.width > 940 || metadata.height > 432) {
+        if (metadata.width != 940 || metadata.height != 432) {
             throw new HttpException("Wrong picture size", 400);
         }
         const resizedImageBuffer1 = await sharp(command.buffer)

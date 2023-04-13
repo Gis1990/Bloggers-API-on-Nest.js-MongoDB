@@ -40,7 +40,7 @@ export class SaveWallpaperForBlogUseCase implements ICommandHandler<SaveWallpape
         if (imageSize > validFileSize) {
             throw new HttpException("Image size is too large", 400);
         }
-        if (metadata.width > 1028 || metadata.height > 312) {
+        if (metadata.width != 1028 || metadata.height != 312) {
             throw new HttpException("Wrong picture size", 400);
         }
         await this.filesStorageAdapter.deleteFolder(

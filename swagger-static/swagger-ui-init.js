@@ -655,18 +655,21 @@ window.onload = function() {
         }
       },
       "/blogger/blogs/{blogId}/posts/{postId}/images/main": {
+        "get": {
+          "operationId": "getImage3",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "Blogs"
+          ]
+        },
         "post": {
           "operationId": "uploadMainImageForPost",
-          "parameters": [
-            {
-              "name": "id",
-              "required": true,
-              "in": "path",
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
+          "parameters": [],
           "responses": {
             "201": {
               "description": ""
@@ -700,7 +703,7 @@ window.onload = function() {
           "properties": {
             "userId": {
               "type": "string",
-              "example": "f8f775b8-e134-471d-a471-3003b73263ca",
+              "example": "cbdea000-7b8f-4ece-986e-b713eb7e0fe9",
               "description": "The unique identifier for the user"
             },
             "userLogin": {
@@ -719,7 +722,7 @@ window.onload = function() {
           "properties": {
             "id": {
               "type": "string",
-              "example": "33d8c837-b261-47c1-8289-1d82817e0d12",
+              "example": "a1f1163a-2145-42b2-95c4-f1b8fc853574",
               "description": "The unique identifier for the post"
             },
             "title": {
@@ -729,7 +732,7 @@ window.onload = function() {
             },
             "blogId": {
               "type": "string",
-              "example": "f59594f0-7cd9-4bac-8c7e-1cf128b6237d",
+              "example": "ceabde53-af44-4833-9560-e95c649c06c1",
               "description": "The unique identifier for the blog that the post belongs to"
             },
             "blogName": {
@@ -750,7 +753,7 @@ window.onload = function() {
           "properties": {
             "id": {
               "type": "string",
-              "example": "62989a40-eb04-4a65-8034-1171ec8bcef1",
+              "example": "4b4c8d6f-4428-4de5-8fbe-db695b2252dc",
               "description": "The unique identifier for the comment"
             },
             "content": {
@@ -761,7 +764,7 @@ window.onload = function() {
             "createdAt": {
               "format": "date-time",
               "type": "string",
-              "example": "2023-04-13T17:53:44.160Z",
+              "example": "2023-04-18T18:38:51.207Z",
               "description": "The date and time the comment was created"
             },
             "commentatorInfo": {
@@ -934,7 +937,7 @@ window.onload = function() {
           "properties": {
             "id": {
               "type": "string",
-              "example": "79b22960-d4f0-46f4-9928-f5b39025fbbe",
+              "example": "0e17ece6-c604-4a0b-ace2-683092b95a76",
               "description": "The Id of the blog"
             },
             "name": {
@@ -955,7 +958,7 @@ window.onload = function() {
             "createdAt": {
               "format": "date-time",
               "type": "string",
-              "example": "2023-04-13T17:53:44.135Z",
+              "example": "2023-04-18T18:38:51.183Z",
               "description": "The date and time the blog was created"
             },
             "isMembership": {
@@ -1013,12 +1016,12 @@ window.onload = function() {
             "addedAt": {
               "format": "date-time",
               "type": "string",
-              "example": "2023-04-13T17:53:44.039Z",
+              "example": "2023-04-18T18:38:51.088Z",
               "description": "The date and time the like was added"
             },
             "userId": {
               "type": "string",
-              "example": "48d38b14-1be2-4db5-b80c-c11a015b8d7d",
+              "example": "5fb66fd9-2f9b-4ed3-a3f8-5409aeb3be4d",
               "description": "The ID of the user who added the like"
             },
             "login": {
@@ -1089,7 +1092,7 @@ window.onload = function() {
           "properties": {
             "id": {
               "type": "string",
-              "example": "85c573dc-ae9a-4aa8-893d-08b1dbad31ed",
+              "example": "d875b9b6-2f7b-4fe6-af6d-828ef8454299",
               "description": "The ID of the post"
             },
             "title": {
@@ -1106,7 +1109,7 @@ window.onload = function() {
             },
             "blogId": {
               "type": "string",
-              "example": "81955d51-1d68-48b2-ac27-973171ca0381",
+              "example": "8b2971e9-f837-4c9d-a65d-9ae01a6ba72c",
               "description": "The ID of the blog that the post belongs to"
             },
             "blogName": {
@@ -1116,7 +1119,7 @@ window.onload = function() {
             "createdAt": {
               "format": "date-time",
               "type": "string",
-              "example": "2023-04-13T17:53:44.104Z",
+              "example": "2023-04-18T18:38:51.152Z",
               "description": "The date and time the post was created"
             },
             "extendedLikesInfo": {
@@ -1242,7 +1245,7 @@ window.onload = function() {
           "properties": {
             "id": {
               "type": "string",
-              "example": "42c73ddf-3745-486f-9aa3-3be49045b81b",
+              "example": "2a33005f-3507-4b4e-8b4c-bcf6fb2714c3",
               "description": "The Id of the user"
             },
             "login": {

@@ -52,8 +52,13 @@ export class PostsRepository {
     ): Promise<boolean> {
         const result = await this.postsModelClass.updateOne(
             { id: postId },
-            { $set: { "images.main.0": { url: url, width: width, height: height, fileSize: fileSize } } },
+            { $push: { "images.main": { url: url, width: width, height: height, fileSize: fileSize } } },
         );
+        return result.matchedCount === 1;
+    }
+
+    async deletePreviousMainImage(postId: string): Promise<boolean> {
+        const result = await this.postsModelClass.updateOne({ id: postId }, { $set: { "images.main": [] } });
         return result.matchedCount === 1;
     }
 }

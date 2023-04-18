@@ -59,7 +59,7 @@ export class SaveMainImageForPostUseCase implements ICommandHandler<SaveMainImag
                 height: 96,
             })
             .toBuffer();
-        const metadataForResizedImage2 = await sharp(resizedImageBuffer1).metadata();
+        const metadataForResizedImage2 = await sharp(resizedImageBuffer2).metadata();
         await this.filesStorageAdapter.deleteFolder("bloggersbucket", `${command.userId}/posts/${command.postId}/main`);
         const result1 = await this.filesStorageAdapter.saveFile(
             command.postId,
@@ -85,7 +85,7 @@ export class SaveMainImageForPostUseCase implements ICommandHandler<SaveMainImag
             resizedImageBuffer2,
             "main",
         );
-
+        await this.postsRepository.deletePreviousMainImage(command.postId);
         await this.postsRepository.updateDataForMainImage(
             command.postId,
             result2.url,

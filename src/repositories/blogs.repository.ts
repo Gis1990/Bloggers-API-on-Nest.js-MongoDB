@@ -70,6 +70,7 @@ export class BlogsRepository {
         height: number,
         fileSize: number,
     ): Promise<boolean> {
+        await this.blogsModelClass.updateOne({ id: blogId }, { $set: { "images.main": [] } });
         const result = await this.blogsModelClass.updateOne(
             { id: blogId },
             { $push: { "images.main": { url: url, width: width, height: height, fileSize: fileSize } } },

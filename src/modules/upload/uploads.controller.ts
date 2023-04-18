@@ -29,6 +29,14 @@ export class UploadsController {
         return await readFileAsync(join("views", "wallpapers", "wallpaper.html"));
     }
 
+    @Get("blogs/:blogId/posts/:postId/images/main")
+    async getImage3(
+        @ValidateBlogId() blogId: BlogsIdValidationModel,
+        @ValidatePostId() postId: PostsIdValidationModel,
+    ): Promise<any> {
+        return await readFileAsync(join("views", "wallpapers", "wallpaper.html"));
+    }
+
     @Post("/blogs/:id/images/wallpaper")
     @UseGuards(JwtAccessTokenAuthGuard)
     @UseInterceptors(FileInterceptor("file"))
@@ -70,7 +78,6 @@ export class UploadsController {
         @ValidatePostId() postId: PostsIdValidationModel,
         @UploadedFile()
         file: Express.Multer.File,
-        @Param() params: BlogsIdValidationModel,
         @CurrentUser()
         user: CurrentUserModel,
     ): Promise<any> {

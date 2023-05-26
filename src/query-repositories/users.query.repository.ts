@@ -27,7 +27,7 @@ export class UsersQueryRepository {
         };
     }
 
-    async GetAllBannedUsersForBlog(queryAllBannedUsersForBlog: QueryDto, blogId: string): Promise<UsersPaginationDto> {
+    async getAllBannedUsersForBlog(queryAllBannedUsersForBlog: QueryDto, blogId: string): Promise<UsersPaginationDto> {
         const cursor = await this.userAccountClass
             .find(
                 { $and: [queryAllBannedUsersForBlog.query, { "banInfoForBlogs.blogId": blogId }] },
@@ -67,6 +67,7 @@ export class UsersQueryRepository {
                 currentSession: 1,
                 banInfo: 1,
                 banInfoForBlogs: 1,
+                telegramId: 1,
             },
         );
         if (user) {
@@ -101,6 +102,10 @@ export class UsersQueryRepository {
 
     async getUserByConfirmationCode(emailConfirmationCode: string): Promise<UserAccountClass | null> {
         return this.userAccountClass.findOne({ "emailConfirmation.confirmationCode": emailConfirmationCode });
+    }
+
+    async getUserByConfirmationCodeForTelegram(confirmationCodeForTelegram: string): Promise<UserAccountClass | null> {
+        return this.userAccountClass.findOne({ confirmationCodeForTelegram: confirmationCodeForTelegram });
     }
 
     async getUserByRecoveryCode(recoveryCode: string): Promise<UserAccountClass | null> {

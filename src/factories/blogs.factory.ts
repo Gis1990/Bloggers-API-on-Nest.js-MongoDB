@@ -1,4 +1,8 @@
-import { BlogViewModelClass, BlogViewModelClassPagination } from "../entities/blogs.entity";
+import {
+    BlogViewModelClass,
+    BlogViewModelClassPagination,
+    BlogViewModelForAdminPaginationClass,
+} from "../entities/blogs.entity";
 import { BlogClass } from "../schemas/blogs.schema";
 import { BlogClassPaginationDto } from "../dtos/blogs.dto";
 
@@ -19,5 +23,17 @@ export class BlogsFactory {
         dto: BlogClassPaginationDto,
     ): Promise<BlogViewModelClassPagination> {
         return new BlogViewModelClassPagination(dto.pagesCount, dto.page, dto.pageSize, dto.totalCount, dto.items);
+    }
+
+    static async createBlogViewModelForAdminPaginationClass(
+        dto: BlogClassPaginationDto,
+    ): Promise<BlogViewModelForAdminPaginationClass> {
+        return new BlogViewModelForAdminPaginationClass(
+            dto.pagesCount,
+            dto.page,
+            dto.pageSize,
+            dto.totalCount,
+            dto.items,
+        );
     }
 }

@@ -19,6 +19,8 @@ import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
 import { join } from "path";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { UploadsModule } from "./modules/upload/uploads.module";
+import { IntegrationsModule } from "./modules/integrations/integrations.module";
+import { TelegramAdapter } from "./modules/utils/telegram/telagram.adapter";
 
 @Module({
     imports: [
@@ -49,10 +51,12 @@ import { UploadsModule } from "./modules/upload/uploads.module";
         SuperAdminModule,
         QuizGameModule,
         UploadsModule,
+        IntegrationsModule,
     ],
     controllers: [AppController],
     providers: [
         AppService,
+        TelegramAdapter,
         // {
         //     provide: APP_GUARD,
         //     useClass: ThrottlerGuard,

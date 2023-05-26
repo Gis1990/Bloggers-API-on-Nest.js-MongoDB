@@ -23,6 +23,7 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
             banInfo: { isBanned: false, banDate: null },
             isMembership: false,
             images: { wallpaper: null, main: [] },
+            subscribers: [],
         };
         const createdBlog = await this.blogsRepository.createBlog(createdBlogDto);
         return BlogsFactory.createBlogViewModelClass(createdBlog);

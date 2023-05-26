@@ -55,7 +55,7 @@ export class InputModelForCreatingBlog {
 }
 
 export class BlogsIdValidationModel {
-    @ApiProperty({ required: true })
+    @ApiProperty({ required: true, description: "Id of blog for binding" })
     @IsString()
     @IsNotEmpty()
     @IsBlogsIdExist()
@@ -63,7 +63,7 @@ export class BlogsIdValidationModel {
 }
 
 export class BlogsIdValidationModelWhenBlogIsBanned {
-    @ApiProperty({ required: true })
+    @ApiProperty({ required: true, description: "Id of blog which is banned/unbanned" })
     @IsString()
     @IsNotEmpty()
     @IsBlogsIdExistForBanUnbanOperation()
@@ -95,6 +95,7 @@ export class CreatedBlogDto {
     };
     public isMembership: boolean;
     public images: ImagesForBlogsClass;
+    public subscribers: string[];
 }
 
 export class ForBanUnbanBlogBySuperAdminDto {

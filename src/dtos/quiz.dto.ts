@@ -21,36 +21,54 @@ import { v4 as uuidv4 } from "uuid";
 const listOfCorrectPublishedStatuses = ["all", "published", "notPublished"];
 
 export class ModelForGettingAllQuestions {
+    @ApiProperty({ default: "all", required: false, enum: ["all", "published", "notPublished"] })
     @IsString()
     @IsNotEmpty()
     @IsIn(listOfCorrectPublishedStatuses)
     @IsOptional()
     public publishedStatus: string;
+    @ApiProperty({ type: String, description: "The search term ", default: null, required: false })
     @IsString()
     @IsOptional()
     public bodySearchTerm: string;
+    @ApiProperty({ default: 1, required: false })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageNumber: number;
+    @ApiProperty({ default: 10, required: false })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageSize: number;
+    @ApiProperty({ default: "createdAt", required: false })
     @IsString()
     @IsOptional()
     public sortBy: string;
+    @ApiProperty({ default: "desc", required: false, enum: ["asc", "desc"] })
     @IsString()
     @IsOptional()
     public sortDirection: string;
 }
 
 export class InputModelForCreatingAndUpdatingQuestion {
+    @ApiProperty({
+        type: String,
+        example: "What is the capital of France?",
+        description: "The body or content of the question",
+        minLength: 10,
+        maxLength: 500,
+    })
     @IsString()
     @IsNotEmpty()
     @Length(10, 500)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     public body: string;
+    @ApiProperty({
+        example: ["Paris"],
+        description: "An array of strings representing the correct answer(s)",
+        type: [String],
+    })
     @IsArray()
     @IsString({ each: true })
     @ArrayNotEmpty()
@@ -75,6 +93,7 @@ export class QuestionsPaginationDtoClass {
 }
 
 export class QuestionIdValidationModel {
+    @ApiProperty({ required: true, description: "Id of the question" })
     @IsString()
     @IsNotEmpty()
     @IsQuestionIdExist()
@@ -88,6 +107,7 @@ export class GameIdValidationModel {
 }
 
 export class InputModelForPublishUnpublishQuestion {
+    @ApiProperty({ required: true, type: Boolean })
     @IsBoolean()
     @IsNotEmpty()
     public published: boolean;

@@ -72,6 +72,11 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
           "tags": [
             "Blogs"
           ]
@@ -86,6 +91,7 @@ window.onload = function() {
               "name": "id",
               "required": true,
               "in": "path",
+              "description": "Id of blog for binding",
               "schema": {
                 "type": "string"
               }
@@ -119,6 +125,11 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
           "tags": [
             "Blogs"
           ]
@@ -131,6 +142,7 @@ window.onload = function() {
               "name": "id",
               "required": true,
               "in": "path",
+              "description": "Id of blog for binding",
               "schema": {
                 "type": "string"
               }
@@ -150,6 +162,11 @@ window.onload = function() {
               "description": "Not found"
             }
           },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
           "tags": [
             "Blogs"
           ]
@@ -195,6 +212,11 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
           "tags": [
             "Blogs"
           ]
@@ -269,6 +291,11 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
           "tags": [
             "Blogs"
           ]
@@ -283,6 +310,7 @@ window.onload = function() {
               "name": "id",
               "required": true,
               "in": "path",
+              "description": "Id of blog for binding",
               "schema": {
                 "type": "string"
               }
@@ -329,6 +357,11 @@ window.onload = function() {
               "description": "If specific blog doesn't exists"
             }
           },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
           "tags": [
             "Blogs"
           ]
@@ -390,6 +423,11 @@ window.onload = function() {
               "description": "Not found"
             }
           },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
           "tags": [
             "Blogs"
           ]
@@ -429,6 +467,11 @@ window.onload = function() {
               "description": "Not found"
             }
           },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
           "tags": [
             "Blogs"
           ]
@@ -443,7 +486,7 @@ window.onload = function() {
               "name": "id",
               "required": true,
               "in": "path",
-              "description": "User Id that should be banned",
+              "description": "User Id ",
               "schema": {
                 "type": "string"
               }
@@ -477,6 +520,11 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
           "tags": [
             "Users"
           ]
@@ -491,6 +539,7 @@ window.onload = function() {
               "name": "id",
               "required": true,
               "in": "path",
+              "description": "Id of blog which is banned/unbanned",
               "schema": {
                 "type": "string"
               }
@@ -561,40 +610,26 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
           "tags": [
             "Users"
           ]
         }
       },
       "/blogger/blogs/{id}/images/wallpaper": {
-        "get": {
-          "operationId": "getImage",
-          "parameters": [
-            {
-              "name": "id",
-              "required": true,
-              "in": "path",
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          },
-          "tags": [
-            "Blogs"
-          ]
-        },
         "post": {
           "operationId": "uploadWallpaperForBlog",
+          "summary": "Upload background wallpaper for Blog (.png or .jpg (.jpeg) file (max size is 100KB, width must be 1028, height must be 312px))",
           "parameters": [
             {
               "name": "id",
               "required": true,
               "in": "path",
+              "description": "Id of blog for binding",
               "schema": {
                 "type": "string"
               }
@@ -602,43 +637,52 @@ window.onload = function() {
           ],
           "responses": {
             "201": {
-              "description": ""
+              "description": "Uploaded image information object",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ImageViewModelClass"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "If the inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/APIErrorResult"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "If user try to update image that doesn't belong to current user"
             }
           },
           "tags": [
             "Blogs"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
       "/blogger/blogs/{id}/images/main": {
-        "get": {
-          "operationId": "getImage2",
-          "parameters": [
-            {
-              "name": "id",
-              "required": true,
-              "in": "path",
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          },
-          "tags": [
-            "Blogs"
-          ]
-        },
         "post": {
           "operationId": "uploadMainImageForBlog",
+          "summary": "Upload main square image for Blog (.png or .jpg (.jpeg) file (max size is 100KB, width must be 156, height must be 156))",
           "parameters": [
             {
               "name": "id",
               "required": true,
               "in": "path",
+              "description": "Id of blog for binding",
               "schema": {
                 "type": "string"
               }
@@ -646,37 +690,72 @@ window.onload = function() {
           ],
           "responses": {
             "201": {
-              "description": ""
+              "description": "Uploaded image information object",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ImageViewModelClass"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "If the inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/APIErrorResult"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "If user try to update image that doesn't belong to current user"
             }
           },
           "tags": [
             "Blogs"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
       "/blogger/blogs/{blogId}/posts/{postId}/images/main": {
-        "get": {
-          "operationId": "getImage3",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          },
-          "tags": [
-            "Blogs"
-          ]
-        },
         "post": {
           "operationId": "uploadMainImageForPost",
+          "summary": "Upload main image for Post (.png or .jpg (.jpeg) file (max size is 100KB, width must be 940, height must be 432))",
           "parameters": [],
           "responses": {
-            "201": {
-              "description": ""
+            "400": {
+              "description": "If the inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/APIErrorResult"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "If user try to update image that doesn't belong to current user"
             }
           },
           "tags": [
             "Blogs"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       }
@@ -703,7 +782,7 @@ window.onload = function() {
           "properties": {
             "userId": {
               "type": "string",
-              "example": "cbdea000-7b8f-4ece-986e-b713eb7e0fe9",
+              "example": "8d6f2e9c-463d-428d-ad90-9f128def9bcc",
               "description": "The unique identifier for the user"
             },
             "userLogin": {
@@ -722,7 +801,7 @@ window.onload = function() {
           "properties": {
             "id": {
               "type": "string",
-              "example": "a1f1163a-2145-42b2-95c4-f1b8fc853574",
+              "example": "6379ae84-26ab-480c-8006-d3d65a8920f3",
               "description": "The unique identifier for the post"
             },
             "title": {
@@ -732,7 +811,7 @@ window.onload = function() {
             },
             "blogId": {
               "type": "string",
-              "example": "ceabde53-af44-4833-9560-e95c649c06c1",
+              "example": "27516484-ee05-4c75-8850-e38ed6a5bbaf",
               "description": "The unique identifier for the blog that the post belongs to"
             },
             "blogName": {
@@ -753,7 +832,7 @@ window.onload = function() {
           "properties": {
             "id": {
               "type": "string",
-              "example": "4b4c8d6f-4428-4de5-8fbe-db695b2252dc",
+              "example": "9e032236-03dd-480a-87d3-27dd20e91b81",
               "description": "The unique identifier for the comment"
             },
             "content": {
@@ -764,7 +843,7 @@ window.onload = function() {
             "createdAt": {
               "format": "date-time",
               "type": "string",
-              "example": "2023-04-18T18:38:51.207Z",
+              "example": "2023-05-26T19:18:02.180Z",
               "description": "The date and time the comment was created"
             },
             "commentatorInfo": {
@@ -914,17 +993,47 @@ window.onload = function() {
             "websiteUrl"
           ]
         },
+        "ImagesInfoClass": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "Photo url"
+            },
+            "width": {
+              "type": "number",
+              "example": 500,
+              "description": "Width in px"
+            },
+            "height": {
+              "type": "number",
+              "example": 500,
+              "description": "Height in px"
+            },
+            "fileSize": {
+              "type": "number",
+              "example": 500,
+              "description": "FileSize in bytes"
+            }
+          },
+          "required": [
+            "url",
+            "width",
+            "height",
+            "fileSize"
+          ]
+        },
         "ImagesForBlogsClass": {
           "type": "object",
           "properties": {
             "main": {
               "type": "array",
               "items": {
-                "$ref": "#/components/schemas/"
+                "$ref": "#/components/schemas/ImagesInfoClass"
               }
             },
             "wallpaper": {
-              "$ref": "#/components/schemas/"
+              "$ref": "#/components/schemas/ImagesInfoClass"
             }
           },
           "required": [
@@ -937,7 +1046,7 @@ window.onload = function() {
           "properties": {
             "id": {
               "type": "string",
-              "example": "0e17ece6-c604-4a0b-ace2-683092b95a76",
+              "example": "972997ff-dd0b-435f-b050-f0e942b31383",
               "description": "The Id of the blog"
             },
             "name": {
@@ -958,7 +1067,7 @@ window.onload = function() {
             "createdAt": {
               "format": "date-time",
               "type": "string",
-              "example": "2023-04-18T18:38:51.183Z",
+              "example": "2023-05-26T19:18:02.135Z",
               "description": "The date and time the blog was created"
             },
             "isMembership": {
@@ -1016,12 +1125,12 @@ window.onload = function() {
             "addedAt": {
               "format": "date-time",
               "type": "string",
-              "example": "2023-04-18T18:38:51.088Z",
+              "example": "2023-05-26T19:18:02.039Z",
               "description": "The date and time the like was added"
             },
             "userId": {
               "type": "string",
-              "example": "5fb66fd9-2f9b-4ed3-a3f8-5409aeb3be4d",
+              "example": "605ffddf-de50-4b62-9983-ec76a60c1b86",
               "description": "The ID of the user who added the like"
             },
             "login": {
@@ -1079,7 +1188,7 @@ window.onload = function() {
             "main": {
               "type": "array",
               "items": {
-                "$ref": "#/components/schemas/"
+                "$ref": "#/components/schemas/ImagesInfoClass"
               }
             }
           },
@@ -1092,7 +1201,7 @@ window.onload = function() {
           "properties": {
             "id": {
               "type": "string",
-              "example": "d875b9b6-2f7b-4fe6-af6d-828ef8454299",
+              "example": "9090c574-168e-48ec-a39d-587b093e6217",
               "description": "The ID of the post"
             },
             "title": {
@@ -1109,7 +1218,7 @@ window.onload = function() {
             },
             "blogId": {
               "type": "string",
-              "example": "8b2971e9-f837-4c9d-a65d-9ae01a6ba72c",
+              "example": "271b6de4-e1b7-492b-aaa5-3e65c38e8397",
               "description": "The ID of the blog that the post belongs to"
             },
             "blogName": {
@@ -1119,7 +1228,7 @@ window.onload = function() {
             "createdAt": {
               "format": "date-time",
               "type": "string",
-              "example": "2023-04-18T18:38:51.152Z",
+              "example": "2023-05-26T19:18:02.104Z",
               "description": "The date and time the post was created"
             },
             "extendedLikesInfo": {
@@ -1179,7 +1288,7 @@ window.onload = function() {
               "format": "int32"
             },
             "items": {
-              "description": "The array of comments on the current page",
+              "description": "The array of blogs on the current page",
               "type": "array",
               "items": {
                 "$ref": "#/components/schemas/BlogViewModelClass"
@@ -1245,7 +1354,7 @@ window.onload = function() {
           "properties": {
             "id": {
               "type": "string",
-              "example": "2a33005f-3507-4b4e-8b4c-bcf6fb2714c3",
+              "example": "ce7f998d-d175-4fde-91fd-afc315f4fbec",
               "description": "The Id of the user"
             },
             "login": {
@@ -1309,6 +1418,30 @@ window.onload = function() {
             "totalCount",
             "items"
           ]
+        },
+        "ImageViewModelClass": {
+          "type": "object",
+          "properties": {
+            "wallpaper": {
+              "description": "Image for wallpaper",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ImagesInfoClass"
+                }
+              ]
+            },
+            "main": {
+              "description": "Image for main",
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ImagesInfoClass"
+              }
+            }
+          },
+          "required": [
+            "wallpaper",
+            "main"
+          ]
         }
       }
     }
@@ -1316,15 +1449,15 @@ window.onload = function() {
   "customOptions": {
     "urls": [
       {
-        "url": "https://$NEXT_PUBLIC_VERCEL_URL/swagger-json",
+        "url": "http://localhost:500/swagger-json",
         "name": "Bloggers API"
       },
       {
-        "url": "https://$NEXT_PUBLIC_VERCEL_URL/swagger1-json",
+        "url": "http://localhost:500/swagger1-json",
         "name": "Super-admin API"
       },
       {
-        "url": "https://$NEXT_PUBLIC_VERCEL_URL/swagger2-json",
+        "url": "http://localhost:500/swagger2-json",
         "name": "Public API"
       }
     ]

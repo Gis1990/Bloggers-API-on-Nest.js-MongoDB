@@ -183,6 +183,15 @@ export class UserAccountClass {
     })
     // if banned by bloggers
     banInfoForBlogs: ExtendedBanInfoClass;
+    @Prop({
+        default: null,
+    })
+    telegramId: string;
+
+    @Prop({
+        default: null,
+    })
+    confirmationCodeForTelegram: string;
 }
 
 export const UsersAccountSchema = SchemaFactory.createForClass(UserAccountClass);

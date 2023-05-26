@@ -53,7 +53,7 @@ export class BlogsQueryRepository {
 
     async getAllBlogsForSuperAdmin(queryDtoForBlogs: QueryDto): Promise<BlogClassPaginationDto> {
         const cursor = await this.blogsModelClass
-            .find(queryDtoForBlogs.query, { _id: 0 })
+            .find(queryDtoForBlogs.query, { _id: 0, images: 0 })
             .sort(queryDtoForBlogs.sortObj)
             .skip(queryDtoForBlogs.skips)
             .limit(queryDtoForBlogs.pageSize);

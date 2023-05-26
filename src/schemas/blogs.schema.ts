@@ -22,7 +22,7 @@ export const OwnerInfoSchema = SchemaFactory.createForClass(OwnerInfoClass);
 
 @Schema({ versionKey: false })
 export class ImagesForBlogsClass extends ImagesForPostsClass {
-    @ApiProperty({ type: ImagesInfoSchema, required: true })
+    @ApiProperty({ type: ImagesInfoClass, required: true })
     @Prop({ type: ImagesInfoSchema, _id: false })
     wallpaper: ImagesInfoClass;
 }
@@ -31,10 +31,12 @@ export const ImagesForBlogsSchema = SchemaFactory.createForClass(ImagesForBlogsC
 
 @Schema({ versionKey: false })
 export class BanInfoClassForBlog {
+    @ApiProperty({ example: true, required: true })
     @Prop({
         required: true,
     })
     isBanned: boolean;
+    @ApiProperty({ example: new Date(), required: true })
     @Prop()
     banDate: Date;
 }
@@ -86,6 +88,11 @@ export class BlogClass {
         type: ImagesForBlogsSchema,
     })
     images: ImagesForBlogsClass;
+    @Prop({
+        required: true,
+        _id: false,
+    })
+    subscribers: string[];
 }
 
 export const BlogsSchema = SchemaFactory.createForClass(BlogClass);

@@ -1,10 +1,10 @@
-import { CommandHandler, ICommand, ICommandHandler, QueryBus } from "@nestjs/cqrs";
+import { CommandHandler, ICommand, ICommandHandler } from "@nestjs/cqrs";
 import { S3StorageAdapter } from "../../modules/upload/files.storage.adapter.service";
 import sharp from "sharp";
 import { HttpException } from "@nestjs/common";
 import { BlogsRepository } from "../../repositories/blogs.repository";
 import { BlogsQueryRepository } from "../../query-repositories/blogs.query.repository";
-import { GetBlogByIdCommand } from "../../queries/blogs/get-blog-by-id-query";
+import { ImageViewModelClass } from "../../entities/blogs.entity";
 
 export class SaveMainImageForBlogCommand implements ICommand {
     constructor(
@@ -23,7 +23,7 @@ export class SaveMainImageForBlogUseCase implements ICommandHandler<SaveMainImag
         private blogsQueryRepository: BlogsQueryRepository,
     ) {}
 
-    async execute(command: SaveMainImageForBlogCommand) {
+    async execute(command: SaveMainImageForBlogCommand): Promise<ImageViewModelClass> {
         const blog = await this.blogsQueryRepository.getBlogById(command.blogId);
         if (blog.blogOwnerInfo.userId !== command.userId) throw new HttpException("Access denied", 403);
         const validFileSize = 100 * 1024;

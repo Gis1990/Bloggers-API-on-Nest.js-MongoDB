@@ -21,8 +21,12 @@ import { SecurityModule } from "./modules/security/security.module";
 import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
 import { UploadsModule } from "./modules/upload/uploads.module";
 import * as process from "process";
+import ngrok from "ngrok";
+import { TelegramAdapter } from "./modules/utils/telegram/telagram.adapter";
 
-const serverUrl = "http://localhost:500";
+async function connectToNgrok() {
+    return await ngrok.connect(500);
+}
 
 export async function runDb(mongoUri: string) {
     try {
@@ -58,6 +62,8 @@ async function bootstrap() {
     app.enableCors();
     const configService = app.get(ConfigService);
     // app.setGlobalPrefix("api");
+    const serverUrl = process.env.VERCEL_URL;
+    console.log("serverUrl", serverUrl);
     const bloggerConfig = new DocumentBuilder()
         .setTitle("Bloggers API")
         .setDescription("The Bloggers API description")
@@ -82,15 +88,15 @@ async function bootstrap() {
         swaggerOptions: {
             urls: [
                 {
-                    url: `${process.env.NEXT_PUBLIC_URL}/swagger-json`,
+                    url: `${serverUrl}/swagger-json`,
                     name: "Bloggers API",
                 },
                 {
-                    url: `${process.env.NEXT_PUBLIC_URL}/swagger1-json`,
+                    url: `${serverUrl}/swagger1-json`,
                     name: "Super-admin API",
                 },
                 {
-                    url: `${process.env.NEXT_PUBLIC_URL}/swagger2-json`,
+                    url: `${serverUrl}/swagger2-json`,
                     name: "Public API",
                 },
             ],
@@ -119,8 +125,10 @@ async function bootstrap() {
     const mongoUri = configService.get("mongo_URI");
     await runDb(mongoUri);
     await app.listen(500);
-    // get the swagger json file (if app is running in development mode)
+    let baseUrl = serverUrl;
+    // get the swagger json file and connect to ngrok (if app is running in development mode)
     if (process.env.NODE_ENV === "development") {
+        baseUrl = await connectToNgrok();
         // write swagger ui files
         get(`${serverUrl}/swagger/swagger-ui-bundle.js`, function (response) {
             response.pipe(createWriteStream("swagger-static/swagger-ui-bundle.js"));
@@ -138,6 +146,9 @@ async function bootstrap() {
             response.pipe(createWriteStream("swagger-static/swagger-ui.css"));
         });
     }
+    const telegramAdapter = await app.resolve(TelegramAdapter);
+    const tgToken = configService.get("telegram_bot_token");
+    await telegramAdapter.setWebhook(tgToken, baseUrl + "/integrations/telegram/webhook");
 }
 
 bootstrap();

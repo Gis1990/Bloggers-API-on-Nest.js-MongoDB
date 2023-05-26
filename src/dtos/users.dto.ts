@@ -44,6 +44,14 @@ export class ModelForGettingAllUsers {
 }
 
 export class InputModelForCreatingNewUser {
+    @ApiProperty({
+        type: String,
+        example: "user123",
+        minLength: 3,
+        maxLength: 10,
+        pattern: "^[a-zA-Z0-9_-]*$",
+        description: "Login for user",
+    })
     @IsString()
     @IsNotEmpty()
     @Length(3, 10)
@@ -52,11 +60,24 @@ export class InputModelForCreatingNewUser {
     })
     @Transform(({ value }: TransformFnParams) => value?.trim())
     public login: string;
+    @ApiProperty({
+        type: String,
+        example: "password123",
+        minLength: 6,
+        maxLength: 20,
+        description: "Password for user",
+    })
     @IsNotEmpty()
     @IsString()
     @Length(6, 20)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     public password: string;
+    @ApiProperty({
+        type: String,
+        example: "myemail@gmail.com",
+        pattern: "/^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/",
+        description: "Email for user",
+    })
     @IsString()
     @Matches(pattern)
     @IsEmailExist({
@@ -96,7 +117,7 @@ export class InputModelForBanUnbanUserByBloggerForBlog extends InputModelForBanU
 }
 
 export class UsersIdValidationModel {
-    @ApiProperty({ required: true, description: "User Id that should be banned" })
+    @ApiProperty({ required: true, description: "User Id " })
     @IsString()
     @IsNotEmpty()
     @IsUsersIdExist()

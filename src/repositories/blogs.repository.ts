@@ -77,4 +77,14 @@ export class BlogsRepository {
         );
         return result.matchedCount === 1;
     }
+
+    async subscribeUser(blogId: string, userId: string): Promise<boolean> {
+        const result = await this.blogsModelClass.updateOne({ id: blogId }, { $push: { subscribers: userId } });
+        return result.matchedCount === 1;
+    }
+
+    async unsubscribeUser(blogId: string, userId: string): Promise<boolean> {
+        const result = await this.blogsModelClass.updateOne({ id: blogId }, { $pull: { subscribers: userId } });
+        return result.matchedCount === 1;
+    }
 }

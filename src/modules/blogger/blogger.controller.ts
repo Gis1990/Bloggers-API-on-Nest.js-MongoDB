@@ -34,8 +34,9 @@ import { UserViewModelForBannedUsersByBloggerPaginationClass } from "../../entit
 import { GetAllBannedUsersForBlogCommand } from "../../queries/users/get-all-banned-users-for-blog-query";
 import { BanUnbanUserByBloggerForBlogCommand } from "../../commands/users/ban-unban-user-by-blogger-for-blog-use-case";
 import { CommentViewModelForBloggerPaginationClass } from "../../entities/comments.entity";
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+@ApiBearerAuth()
 @ApiResponse({ status: 401, description: "Unauthorized" })
 @SkipThrottle()
 @Controller("blogger")

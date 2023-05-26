@@ -5,6 +5,7 @@ import { HttpException } from "@nestjs/common";
 import { PostsRepository } from "../../repositories/posts.repository";
 import { PostsQueryRepository } from "../../query-repositories/posts.query.repository";
 import { BlogsQueryRepository } from "../../query-repositories/blogs.query.repository";
+import { ImageViewModelClass } from "../../entities/blogs.entity";
 
 export class SaveMainImageForPostCommand implements ICommand {
     constructor(
@@ -25,7 +26,7 @@ export class SaveMainImageForPostUseCase implements ICommandHandler<SaveMainImag
         private blogsQueryRepository: BlogsQueryRepository,
     ) {}
 
-    async execute(command: SaveMainImageForPostCommand) {
+    async execute(command: SaveMainImageForPostCommand): Promise<ImageViewModelClass> {
         const blog = await this.blogsQueryRepository.getBlogById(command.blogId);
         if (blog.blogOwnerInfo.userId !== command.userId) throw new HttpException("Access denied", 403);
         const validFileSize = 100 * 1024;

@@ -4,6 +4,7 @@ import sharp from "sharp";
 import { HttpException } from "@nestjs/common";
 import { BlogsRepository } from "../../repositories/blogs.repository";
 import { BlogsQueryRepository } from "../../query-repositories/blogs.query.repository";
+import { ImageViewModelClass } from "../../entities/blogs.entity";
 
 export class SaveWallpaperForBlogCommand implements ICommand {
     constructor(
@@ -22,7 +23,7 @@ export class SaveWallpaperForBlogUseCase implements ICommandHandler<SaveWallpape
         private blogsQueryRepository: BlogsQueryRepository,
     ) {}
 
-    async execute(command: SaveWallpaperForBlogCommand) {
+    async execute(command: SaveWallpaperForBlogCommand): Promise<ImageViewModelClass> {
         const blog = await this.blogsQueryRepository.getBlogById(command.blogId);
         if (blog.blogOwnerInfo.userId !== command.userId) throw new HttpException("Access denied", 403);
         const validFileSize = 100 * 1024;

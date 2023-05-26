@@ -65,6 +65,22 @@ export class UsersRepository {
         return result.modifiedCount === 1;
     }
 
+    async addConfirmationCodeForTelegram(userId: string, confirmationCodeForTelegram: string): Promise<boolean> {
+        const result = await this.usersAccountModelClass.updateOne(
+            { id: userId },
+            { $set: { confirmationCodeForTelegram: confirmationCodeForTelegram } },
+        );
+        return result.modifiedCount === 1;
+    }
+
+    async addTelegramId(userId: string, telegramId: string): Promise<boolean> {
+        const result = await this.usersAccountModelClass.updateOne(
+            { id: userId },
+            { $set: { telegramId: telegramId } },
+        );
+        return result.modifiedCount === 1;
+    }
+
     async addUserDevicesData(id: string, userDevicesData: UserDevicesDataClass): Promise<boolean> {
         const result = await this.usersAccountModelClass.updateOne(
             { id: id },

@@ -23,8 +23,19 @@ import { GetAllPostsForSpecificBlogQuery } from "../../queries/posts/get-all-pos
 import { UserAccountClass, UsersAccountSchema } from "../../schemas/users.schema";
 import { GetUserByIdQuery } from "../../queries/users/get-user-by-id-query";
 import { UsersQueryRepository } from "../../query-repositories/users.query.repository";
+import { SubscribeUserForBlogUseCase } from "../../commands/blogs/subscribe-user-for-blog-use-case";
+import { UnsubscribeUserForBlogUseCase } from "../../commands/blogs/unsubscribe-user-for-blog-use-case";
+import { TelegramAdapter } from "../utils/telegram/telagram.adapter";
+// import { SubscribeUserForBlogUseCase } from "../../commands/blogs/subscribe-user-for-blog-use-case";
 
-const useCases = [CreateBlogUseCase, UpdateBlogUseCase, DeleteBlogUseCase, CreatePostUseCase];
+const useCases = [
+    CreateBlogUseCase,
+    UpdateBlogUseCase,
+    DeleteBlogUseCase,
+    CreatePostUseCase,
+    SubscribeUserForBlogUseCase,
+    UnsubscribeUserForBlogUseCase,
+];
 const queries = [
     GetAllBlogsQuery,
     GetBlogByIdQuery,
@@ -60,6 +71,7 @@ const queries = [
         UsersQueryRepository,
         IsBlogsIdExistConstraint,
         IsBlogsIdExistInTheRequestBodyConstraint,
+        TelegramAdapter,
         ...useCases,
         ...queries,
     ],

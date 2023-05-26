@@ -33,6 +33,7 @@ import { CommentClass, CommentsSchema } from "../../schemas/comments.schema";
 import { GetAllBannedUsersForBlogQuery } from "../../queries/users/get-all-banned-users-for-blog-query";
 import { BanUnbanUserByBloggerForBlogUseCase } from "../../commands/users/ban-unban-user-by-blogger-for-blog-use-case";
 import { UsersRepository } from "../../repositories/users.repository";
+import { TelegramAdapter } from "../utils/telegram/telagram.adapter";
 
 const useCases = [
     CreateBlogUseCase,
@@ -87,6 +88,7 @@ const queries = [
         PostsRepository,
         IsBlogsIdExistConstraint,
         IsBlogsIdExistInTheRequestBodyConstraint,
+        TelegramAdapter,
         ...useCases,
         ...queries,
     ],

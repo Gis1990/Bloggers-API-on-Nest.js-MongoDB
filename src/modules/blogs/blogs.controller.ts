@@ -14,6 +14,7 @@ import { CurrentUserModel } from "../../dtos/auth.dto";
 import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
 import { SubscribeUserForBlogCommand } from "../../commands/blogs/subscribe-user-for-blog-use-case";
 import { UnsubscribeUserForBlogCommand } from "../../commands/blogs/unsubscribe-user-for-blog-use-case";
+import process from "process";
 
 @ApiTags("Blogs")
 @SkipThrottle()
@@ -46,6 +47,7 @@ export class BlogsController {
         @Query()
         dto: ModelForGettingAllBlogs,
     ): Promise<BlogViewModelClassPagination> {
+        console.log(process.env.VERCEL_URL);
         return await this.queryBus.execute(new GetAllBlogsCommand(dto));
     }
 

@@ -47,7 +47,6 @@ export class BlogsController {
         @Query()
         dto: ModelForGettingAllBlogs,
     ): Promise<BlogViewModelClassPagination> {
-        console.log(process.env.VERCEL_URL);
         return await this.queryBus.execute(new GetAllBlogsCommand(dto));
     }
 

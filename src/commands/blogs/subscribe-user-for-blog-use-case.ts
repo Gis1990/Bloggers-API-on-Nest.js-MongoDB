@@ -13,6 +13,7 @@ export class SubscribeUserForBlogUseCase implements ICommandHandler<SubscribeUse
     async execute(command: SubscribeUserForBlogCommand): Promise<boolean> {
         const blog = await this.queryBus.execute(new GetBlogByIdCommand(command.blogId));
         if (blog.subscribers.includes(command.userId)) return true;
-        return await this.blogsRepository.subscribeUser(command.blogId, command.userId);
+        const newNumberOfSubscribers = blog.subscribersCount + 1;
+        return await this.blogsRepository.subscribeUser(command.blogId, command.userId, newNumberOfSubscribers);
     }
 }

@@ -13,6 +13,7 @@ export class UnsubscribeUserForBlogUseCase implements ICommandHandler<Unsubscrib
     async execute(command: UnsubscribeUserForBlogCommand): Promise<boolean> {
         const blog = await this.queryBus.execute(new GetBlogByIdCommand(command.blogId));
         if (!blog.subscribers.includes(command.userId)) return true;
-        return await this.blogsRepository.unsubscribeUser(command.blogId, command.userId);
+        const newNumberOfSubscribers = blog.subscribersCount - 1;
+        return await this.blogsRepository.unsubscribeUser(command.blogId, command.userId, newNumberOfSubscribers);
     }
 }

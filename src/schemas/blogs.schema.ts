@@ -93,6 +93,16 @@ export class BlogClass {
         _id: false,
     })
     subscribers: string[];
+    @Prop({
+        required: true,
+        default: 0,
+    })
+    subscribersCount: number;
+    @Prop({
+        required: true,
+        default: "None",
+    })
+    currentUserSubscriptionStatus: string;
 }
 
 export const BlogsSchema = SchemaFactory.createForClass(BlogClass);

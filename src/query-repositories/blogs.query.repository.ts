@@ -81,17 +81,6 @@ export class BlogsQueryRepository {
         return this.blogsModelClass.findOne({ id: id });
     }
 
-    async getBlogByIdWithCorrectViewModel(id: string): Promise<BlogViewModelClass | null> {
-        return this.blogsModelClass.findOne(
-            { id: id },
-            {
-                _id: 0,
-                blogOwnerInfo: 0,
-                banInfo: 0,
-            },
-        );
-    }
-
     async getDataAboutImages(id: string): Promise<BlogViewModelClass | null> {
         return this.blogsModelClass.findOne(
             { id: id },

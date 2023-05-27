@@ -14,7 +14,6 @@ import { CurrentUserModel } from "../../dtos/auth.dto";
 import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
 import { SubscribeUserForBlogCommand } from "../../commands/blogs/subscribe-user-for-blog-use-case";
 import { UnsubscribeUserForBlogCommand } from "../../commands/blogs/unsubscribe-user-for-blog-use-case";
-import process from "process";
 
 @ApiTags("Blogs")
 @SkipThrottle()
@@ -42,17 +41,23 @@ export class BlogsController {
         return await this.commandBus.execute(new UnsubscribeUserForBlogCommand(user.id, params.id));
     }
 
+    @UseGuards(strategyForUnauthorizedUser)
     @Get()
     async getAllBlogs(
         @Query()
         dto: ModelForGettingAllBlogs,
+        @CurrentUserId() userId: string,
     ): Promise<BlogViewModelClassPagination> {
-        return await this.queryBus.execute(new GetAllBlogsCommand(dto));
+        return await this.queryBus.execute(new GetAllBlogsCommand(dto, userId));
     }
 
+    @UseGuards(strategyForUnauthorizedUser)
     @Get(":id")
-    async getBlogById(@Param() params: BlogsIdValidationModel): Promise<BlogViewModelClassPagination> {
-        return await this.queryBus.execute(new GetBlogByIdWithCorrectViewModelCommand(params.id));
+    async getBlogById(
+        @Param() params: BlogsIdValidationModel,
+        @CurrentUserId() userId: string,
+    ): Promise<BlogViewModelClassPagination> {
+        return await this.queryBus.execute(new GetBlogByIdWithCorrectViewModelCommand(params.id, userId));
     }
 
     @UseGuards(strategyForUnauthorizedUser)

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { BanInfoClassForBlog, ImagesForBlogsClass, OwnerInfoClass } from "../schemas/blogs.schema";
 import { ImagesInfoClass } from "../schemas/posts.schema";
 
-export class BlogViewModelClass {
+export class ViewModelForNewBlogClass {
     @ApiProperty({ example: uuidv4(), description: "The Id of the blog" })
     id: string;
 
@@ -203,5 +203,60 @@ export class ImageViewModelClass {
     constructor(wallpaper: ImagesInfoClass, main: ImagesInfoClass[]) {
         this.wallpaper = wallpaper;
         this.main = main;
+    }
+}
+
+export class BlogViewModelClass {
+    @ApiProperty({ example: uuidv4(), description: "The Id of the blog" })
+    id: string;
+
+    @ApiProperty({ type: String, description: "The name of the blog", maxLength: 15 })
+    name: string;
+
+    @ApiProperty({ type: String, description: "The description of the blog", maxLength: 500 })
+    description: string;
+
+    @ApiProperty({ example: "https://www.myblog.com", description: "The website URL of the blog" })
+    websiteUrl: string;
+
+    @ApiProperty({ example: new Date(), description: "The date and time the blog was created" })
+    createdAt: Date;
+
+    @ApiProperty({ example: true, description: "Whether the user is a member or not" })
+    isMembership: boolean;
+
+    @ApiProperty({ type: ImagesForBlogsClass, description: "Images for blog" })
+    images: ImagesForBlogsClass;
+
+    @ApiProperty({ example: 5, description: "Number of subscribers in telegram for blog" })
+    subscribersCount: number;
+
+    @ApiProperty({
+        example: "None",
+        description: "Current user subscription status",
+        enum: ["Subscribed", "Unsubscribed", "None"],
+    })
+    currentUserSubscriptionStatus: string;
+
+    constructor(
+        id: string,
+        name: string,
+        description: string,
+        websiteUrl: string,
+        createdAt: Date,
+        isMembership: boolean,
+        images: ImagesForBlogsClass,
+        subscribersCount: number,
+        currentUserSubscriptionStatus: string,
+    ) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.websiteUrl = websiteUrl;
+        this.createdAt = createdAt;
+        this.isMembership = isMembership;
+        this.images = images;
+        this.subscribersCount = subscribersCount;
+        this.currentUserSubscriptionStatus = currentUserSubscriptionStatus;
     }
 }

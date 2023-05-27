@@ -1,5 +1,5 @@
 import { InputModelForCreatingBlog } from "../../dtos/blogs.dto";
-import { BlogViewModelClass } from "../../entities/blogs.entity";
+import { ViewModelForNewBlogClass } from "../../entities/blogs.entity";
 import { BlogsRepository } from "../../repositories/blogs.repository";
 import { CommandHandler, ICommand, ICommandHandler } from "@nestjs/cqrs";
 import { CurrentUserModel } from "../../dtos/auth.dto";
@@ -14,7 +14,7 @@ export class CreateBlogCommand implements ICommand {
 export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
     constructor(private blogsRepository: BlogsRepository) {}
 
-    async execute(command: CreateBlogCommand): Promise<BlogViewModelClass> {
+    async execute(command: CreateBlogCommand): Promise<ViewModelForNewBlogClass> {
         const createdBlogDto = {
             ...command.dto,
             id: uuidv4(),
@@ -26,6 +26,6 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
             subscribers: [],
         };
         const createdBlog = await this.blogsRepository.createBlog(createdBlogDto);
-        return BlogsFactory.createBlogViewModelClass(createdBlog);
+        return BlogsFactory.createViewModelForNewBlogClass(createdBlog);
     }
 }

@@ -7,7 +7,11 @@ import {
     InputModelForUpdatingBlog,
     ModelForGettingAllBlogs,
 } from "../../dtos/blogs.dto";
-import { BlogViewModelClass, BlogViewModelClassPagination } from "../../entities/blogs.entity";
+import {
+    BlogViewModelClass,
+    BlogViewModelClassPagination,
+    ViewModelForNewBlogClass,
+} from "../../entities/blogs.entity";
 import { PostViewModelClass } from "../../entities/posts.entity";
 import { InputModelForCreatingAndUpdatingNewPostForSpecificBlog, PostsIdValidationModel } from "../../dtos/posts.dto";
 import { CurrentUser } from "../../decorators/auth/auth.custom.decorators";
@@ -100,7 +104,7 @@ export class BloggerController {
     async createBlog(
         @Body() dto: InputModelForCreatingBlog,
         @CurrentUser() user: CurrentUserModel,
-    ): Promise<BlogViewModelClass> {
+    ): Promise<ViewModelForNewBlogClass> {
         return await this.commandBus.execute(new CreateBlogCommand(dto, user));
     }
 

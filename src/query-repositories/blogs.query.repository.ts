@@ -73,6 +73,14 @@ export class BlogsQueryRepository {
         });
     }
 
+    async getSubscribedBlogs(subscribedUserId: string): Promise<BlogClass[]> {
+        const subscribedBlogs = await this.blogsModelClass.find({
+            subscribers: { $in: subscribedUserId },
+        });
+
+        return subscribedBlogs.map((blog) => blog.id);
+    }
+
     async getBlogById(id: string): Promise<BlogClass | null> {
         return this.blogsModelClass.findOne({ $and: [{ id: id }, { "banInfo.isBanned": false }] });
     }

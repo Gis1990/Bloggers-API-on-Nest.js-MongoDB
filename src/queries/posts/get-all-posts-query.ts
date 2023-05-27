@@ -6,6 +6,7 @@ import { HelperForPosts } from "../../query-repositories/helpers/helpers.for.pos
 import { PostsFactory } from "../../factories/posts.factory";
 import { GetAllBannedUsersBySuperAdminCommand } from "../users/get-all-banned-users-by-super-admin-query";
 import { GetAllBannedBlogsCommand } from "../blogs/get-all-banned-blogs-query";
+import { GetAllSubscribedBlogsCommand } from "../blogs/get-all-subscribed-blogs-query";
 
 export class GetAllPostsCommand {
     constructor(public dto: ModelForGettingAllPosts, public userId: string | undefined) {}
@@ -18,7 +19,8 @@ export class GetAllPostsQuery implements IQueryHandler<GetAllPostsCommand> {
     async execute(query: GetAllPostsCommand): Promise<PostViewModelClassPagination> {
         const bannedUsersIdsBySuperAdmin = await this.queryBus.execute(new GetAllBannedUsersBySuperAdminCommand());
         const bannedBlogsIds = await this.queryBus.execute(new GetAllBannedBlogsCommand(bannedUsersIdsBySuperAdmin));
-        const dto = await HelperForPosts.createQuery(query.dto);
+        const subscribedBlogsIds = await this.queryBus.execute(new GetAllSubscribedBlogsCommand(query.userId));
+        const dto = await HelperForPosts.createQuery(query.dto, subscribedBlogsIds);
         const posts = await this.postsQueryRepository.getAllPosts(dto, bannedBlogsIds);
         posts.items.forEach((elem) => {
             HelperForPosts.getLikesDataInfoForPost(query.userId, bannedUsersIdsBySuperAdmin, elem);

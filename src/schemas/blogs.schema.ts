@@ -90,9 +90,12 @@ export class BlogClass {
     images: ImagesForBlogsClass;
     @Prop({
         required: true,
-        _id: false,
     })
     subscribers: string[];
+    @Prop({
+        required: true,
+    })
+    unsubscribes: string[];
     @Prop({
         required: true,
         default: 0,

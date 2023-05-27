@@ -21,6 +21,9 @@ export class ModelForGettingAllPosts {
     @IsString()
     @IsOptional()
     public sortDirection: string;
+    @IsString()
+    @IsOptional()
+    public subscriptionStatus: string;
 }
 
 export class InputModelForCreatingAndUpdatingNewPostForSpecificBlog {

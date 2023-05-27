@@ -26,6 +26,7 @@ import { GetUserByIdQuery } from "../../queries/users/get-user-by-id-query";
 import { UsersQueryRepository } from "../../query-repositories/users.query.repository";
 import { GetAllBannedUsersBySuperAdminQuery } from "../../queries/users/get-all-banned-users-by-super-admin-query";
 import { GetAllBannedBlogsQuery } from "../../queries/blogs/get-all-banned-blogs-query";
+import { GetAllSubscribedBlogsQuery } from "../../queries/blogs/get-all-subscribed-blogs-query";
 
 const useCases = [UpdatePostUseCase, DeletePostUseCase, LikeOperationForPostUseCase, CreateCommentUseCase];
 const queries = [
@@ -37,6 +38,7 @@ const queries = [
     GetUserByIdQuery,
     GetAllBannedUsersBySuperAdminQuery,
     GetAllBannedBlogsQuery,
+    GetAllSubscribedBlogsQuery,
 ];
 
 @Module({

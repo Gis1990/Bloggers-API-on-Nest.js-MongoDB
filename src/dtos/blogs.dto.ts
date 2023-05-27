@@ -96,6 +96,7 @@ export class CreatedBlogDto {
     public isMembership: boolean;
     public images: ImagesForBlogsClass;
     public subscribers: string[];
+    public unsubscribes: string[];
 }
 
 export class ForBanUnbanBlogBySuperAdminDto {

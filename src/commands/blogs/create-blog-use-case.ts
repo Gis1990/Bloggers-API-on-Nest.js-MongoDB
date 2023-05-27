@@ -24,6 +24,7 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
             isMembership: false,
             images: { wallpaper: null, main: [] },
             subscribers: [],
+            unsubscribes: [],
         };
         const createdBlog = await this.blogsRepository.createBlog(createdBlogDto);
         return BlogsFactory.createViewModelForNewBlogClass(createdBlog);

@@ -3,12 +3,21 @@ import { QueryDto } from "../../dtos/blogs.dto";
 import { PostClass } from "../../schemas/posts.schema";
 
 export class HelperForPosts {
-    static async createQuery(dto: ModelForGettingAllPosts): Promise<QueryDto> {
-        const { pageNumber = 1, pageSize = 10, sortBy = "createdAt", sortDirection = "desc" } = dto;
+    static async createQuery(dto: ModelForGettingAllPosts, subscribedBlogsIds: string[]): Promise<QueryDto> {
+        const {
+            pageNumber = 1,
+            pageSize = 10,
+            sortBy = "createdAt",
+            sortDirection = "desc",
+            subscriptionStatus = "all",
+        } = dto;
         const skips = pageSize * (pageNumber - 1);
         const sortObj: any = {};
         sortObj[sortBy] = sortDirection === "desc" ? -1 : 1;
-        const query: any = {};
+        if (subscriptionStatus === "all") {
+            return { query: {}, skips, sortObj, pageSize, pageNumber };
+        }
+        const query = { blogId: { $in: subscribedBlogsIds } };
         return { query, skips, sortObj, pageSize, pageNumber };
     }
 

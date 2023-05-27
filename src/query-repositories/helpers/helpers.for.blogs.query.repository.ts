@@ -20,32 +20,21 @@ export class HelperForBlogs {
         return { query, skips, sortObj, pageSize, pageNumber };
     }
 
-    static async returnSubscriptionStatusForBlog(
-        userId: string,
-        blog: BlogClass,
-        telegramId: string | undefined,
-    ): Promise<string> {
+    static async returnSubscriptionStatusForBlog(userId: string, blog: BlogClass): Promise<string> {
         const isSubscribed = blog.subscribers.includes(userId);
+        const isUnsubscribed = blog.unsubscribes.includes(userId);
         if (isSubscribed) {
             return "Subscribed";
         }
-        if (telegramId) {
+        if (isUnsubscribed) {
             return "Unsubscribed";
         }
         return "None";
     }
 
-    static async getSubscriptionDataForBlogs(
-        userId: string | undefined,
-        blog: BlogClass,
-        telegramId: string | undefined,
-    ): Promise<BlogClass> {
+    static async getSubscriptionDataForBlogs(userId: string | undefined, blog: BlogClass): Promise<BlogClass> {
         if (userId) {
-            blog.currentUserSubscriptionStatus = await HelperForBlogs.returnSubscriptionStatusForBlog(
-                userId,
-                blog,
-                telegramId,
-            );
+            blog.currentUserSubscriptionStatus = await HelperForBlogs.returnSubscriptionStatusForBlog(userId, blog);
         } else {
             blog.currentUserSubscriptionStatus = "None";
         }

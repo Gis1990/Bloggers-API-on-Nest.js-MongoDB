@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { BadRequestException, INestApplication, ValidationPipe } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
-import { AppModule } from "../src/app.module";
-import { HttpExceptionFilter } from "../src/exception.filter";
-import { useContainer } from "class-validator";
+import {MongoMemoryServer} from "mongodb-memory-server";
+import {BadRequestException, INestApplication, ValidationPipe} from "@nestjs/common";
+import {Test, TestingModule} from "@nestjs/testing";
+import {AppModule} from "../src/app.module";
+import {HttpExceptionFilter} from "../src/exception.filter";
+import {useContainer} from "class-validator";
 import cookieParser from "cookie-parser";
-import { MongooseModule } from "@nestjs/mongoose";
+import {MongooseModule} from "@nestjs/mongoose";
 import {
     EmailRecoveryCodeClass,
     EmailRecoveryCodeSchema,
@@ -19,9 +19,9 @@ import {
     UserDevicesDataSchema,
     UsersAccountSchema,
 } from "../src/schemas/users.schema";
-import { BlogClass, BlogsSchema } from "../src/schemas/blogs.schema";
-import { CommentClass, CommentsSchema } from "../src/schemas/comments.schema";
-import { NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema } from "../src/schemas/posts.schema";
+import {BlogClass, BlogsSchema} from "../src/schemas/blogs.schema";
+import {CommentClass, CommentsSchema} from "../src/schemas/comments.schema";
+import {NewestLikesClass, NewestLikesSchema, PostClass, PostsSchema} from "../src/schemas/posts.schema";
 import request from "supertest";
 
 export let app: INestApplication;
@@ -54,7 +54,7 @@ export async function setupTestApp() {
     const moduleFixture: TestingModule = await Test.createTestingModule({
         imports: [
             AppModule,
-            MongooseModule.forRoot(mongoUri, { useNewUrlParser: true }),
+            MongooseModule.forRoot(mongoUri, {useNewUrlParser: true}),
             MongooseModule.forFeature([
                 {
                     name: BlogClass.name,
@@ -101,7 +101,7 @@ export async function setupTestApp() {
     app.useGlobalPipes(new ValidationPipe(testValidationPipeSettings));
     app.useGlobalFilters(new HttpExceptionFilter());
     app.use(cookieParser());
-    useContainer(app.select(AppModule), { fallbackOnErrors: true });
+    useContainer(app.select(AppModule), {fallbackOnErrors: true});
     await app.init();
 }
 
@@ -169,20 +169,20 @@ export async function CreatingUsersForTesting() {
 
     const response4 = await request(app.getHttpServer())
         .post("/auth/login")
-        .send({ loginOrEmail: correctUser1.login, password: correctUser1.password })
+        .send({loginOrEmail: correctUser1.login, password: correctUser1.password})
         .expect(200);
     const accessTokenForUser1 = response4.body.accessToken;
     const userLogin3 = response4.body.login;
 
     const response5 = await request(app.getHttpServer())
         .post("/auth/login")
-        .send({ loginOrEmail: correctUser2.login, password: correctUser2.password })
+        .send({loginOrEmail: correctUser2.login, password: correctUser2.password})
         .expect(200);
     const accessTokenForUser2 = response5.body.accessToken;
 
     const response6 = await request(app.getHttpServer())
         .post("/auth/login")
-        .send({ loginOrEmail: correctUser3.login, password: correctUser3.password })
+        .send({loginOrEmail: correctUser3.login, password: correctUser3.password})
         .expect(200);
     const accessTokenForUser3 = response6.body.accessToken;
     return {
@@ -346,6 +346,9 @@ export const createOutputPostForTesting = (
         blogId: blogId,
         blogName: blogName,
         createdAt: expect.any(String),
+        images: {
+            main: []
+        },
         extendedLikesInfo: {
             likesCount: likesCount,
             dislikesCount: dislikesCount,

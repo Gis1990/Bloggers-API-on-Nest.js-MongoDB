@@ -2,7 +2,7 @@ import { ModelForGettingAllBlogs, QueryDto } from "../../dtos/blogs.dto";
 import { BlogClass } from "../../schemas/blogs.schema";
 
 export class HelperForBlogs {
-    static createQuery(dto: ModelForGettingAllBlogs): QueryDto {
+    static async createQuery(dto: ModelForGettingAllBlogs): Promise<QueryDto> {
         const {
             searchNameTerm = null,
             pageNumber = 1,
@@ -29,15 +29,10 @@ export class HelperForBlogs {
         if (isUnsubscribed) {
             return "Unsubscribed";
         }
-        return "None";
     }
 
-    static async getSubscriptionDataForBlogs(userId: string | undefined, blog: BlogClass): Promise<BlogClass> {
-        if (userId) {
-            blog.currentUserSubscriptionStatus = await HelperForBlogs.returnSubscriptionStatusForBlog(userId, blog);
-        } else {
-            blog.currentUserSubscriptionStatus = "None";
-        }
+    static async getSubscriptionDataForBlogs(userId: string, blog: BlogClass): Promise<BlogClass> {
+        blog.currentUserSubscriptionStatus = await HelperForBlogs.returnSubscriptionStatusForBlog(userId, blog);
         return blog;
     }
 }

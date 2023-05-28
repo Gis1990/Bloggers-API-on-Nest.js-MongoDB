@@ -6,7 +6,7 @@ import { BlogsFactory } from "../../factories/blogs.factory";
 import { BlogViewModelClassPagination } from "../../entities/blogs.entity";
 
 export class GetAllBlogsCommand {
-    constructor(public dto: ModelForGettingAllBlogs, public userId: string) {}
+    constructor(public dto: ModelForGettingAllBlogs, public userId: string | undefined) {}
 }
 
 @QueryHandler(GetAllBlogsCommand)
@@ -14,11 +14,13 @@ export class GetAllBlogsQuery implements IQueryHandler<GetAllBlogsCommand> {
     constructor(private blogsQueryRepository: BlogsQueryRepository) {}
 
     async execute(query: GetAllBlogsCommand): Promise<BlogViewModelClassPagination> {
-        const dto = HelperForBlogs.createQuery(query.dto);
+        const dto = await HelperForBlogs.createQuery(query.dto);
         const blogs = await this.blogsQueryRepository.getAllBlogs(dto);
-        blogs.items.forEach((elem) => {
-            HelperForBlogs.getSubscriptionDataForBlogs(query.userId, elem);
-        });
+        if (query.userId) {
+            for (const elem of blogs.items) {
+                await HelperForBlogs.getSubscriptionDataForBlogs(query.userId, elem);
+            }
+        }
         return BlogsFactory.createBlogViewModelPaginationClass(blogs);
     }
 }

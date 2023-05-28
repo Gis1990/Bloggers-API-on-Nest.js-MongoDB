@@ -127,7 +127,7 @@ describe("blogger endpoint blogs  /blogger/blogs (e2e)", () => {
                 .set("authorization", "Bearer " + accessTokenForUser1)
                 .send(notCorrectBlog)
                 .expect(400);
-            expect(response.body).toEqual({ errorsMessages: [{ field: "websiteUrl", message: expect.any(String) }] });
+            expect(response.body).toEqual({errorsMessages: [{field: "websiteUrl", message: expect.any(String)}]});
         });
         it("should return status 400 and array with errors in name and websiteUrl (/post)", async () => {
             const notCorrectBlog = createBlogForTests(20, 7, false);
@@ -142,7 +142,7 @@ describe("blogger endpoint blogs  /blogger/blogs (e2e)", () => {
                         field: "name",
                         message: expect.any(String),
                     },
-                    { field: "websiteUrl", message: expect.any(String) },
+                    {field: "websiteUrl", message: expect.any(String)},
                 ],
             });
         });
@@ -153,7 +153,7 @@ describe("blogger endpoint blogs  /blogger/blogs (e2e)", () => {
                 .set("authorization", "Bearer " + accessTokenForUser1)
                 .send(notCorrectBlog)
                 .expect(400);
-            expect(response.body).toEqual({ errorsMessages: [{ field: "name", message: expect.any(String) }] });
+            expect(response.body).toEqual({errorsMessages: [{field: "name", message: expect.any(String)}]});
         });
         it("should return status 400 and array with error in name (/post)", async () => {
             const notCorrectBlog = createBlogForTests(0, 5, true);
@@ -162,7 +162,7 @@ describe("blogger endpoint blogs  /blogger/blogs (e2e)", () => {
                 .set("authorization", "Bearer " + accessTokenForUser1)
                 .send(notCorrectBlog)
                 .expect(400);
-            expect(response.body).toEqual({ errorsMessages: [{ field: "name", message: expect.any(String) }] });
+            expect(response.body).toEqual({errorsMessages: [{field: "name", message: expect.any(String)}]});
         });
         it("should return status 400 and array with errors in name and websiteUrl (/post)", async () => {
             const notCorrectBlog = createBlogForTests(0, 10, false);
@@ -177,7 +177,7 @@ describe("blogger endpoint blogs  /blogger/blogs (e2e)", () => {
                         field: "name",
                         message: expect.any(String),
                     },
-                    { field: "websiteUrl", message: expect.any(String) },
+                    {field: "websiteUrl", message: expect.any(String)},
                 ],
             });
         });
@@ -193,6 +193,11 @@ describe("blogger endpoint blogs  /blogger/blogs (e2e)", () => {
                 description: correctBlog1.description,
                 name: correctBlog1.name,
                 websiteUrl: correctBlog1.websiteUrl,
+                isMembership: false,
+                images: {
+                    main: [],
+                    wallpaper: null
+                },
                 createdAt: expect.any(String),
             });
             blogId2 = response.body.id;
@@ -231,6 +236,7 @@ describe("blogger endpoint blogs  /blogger/blogs (e2e)", () => {
                 .set("authorization", "Bearer " + accessTokenForUser1)
                 .send(correctNewPost1)
                 .expect(201);
+            console.log(result);
             expect(response1.body).toEqual(result);
             expect(response1.body.extendedLikesInfo.myStatus).toBe("None");
             const correctDataForUpdating = createPostForTesting(20, 50, 500, blogId1);

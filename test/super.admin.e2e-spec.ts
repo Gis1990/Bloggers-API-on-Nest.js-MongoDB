@@ -89,7 +89,7 @@ describe("super admin endpoint users /sa/users (e2e)", () => {
                     .send(incorrectUser)
                     .expect(400);
                 expect(response.body).toStrictEqual({
-                    errorsMessages: [{ field: "login", message: expect.any(String) }],
+                    errorsMessages: [{field: "login", message: expect.any(String)}],
                 });
             });
             it("should return status 400 and error message ", async () => {
@@ -101,7 +101,7 @@ describe("super admin endpoint users /sa/users (e2e)", () => {
                     .send(incorrectUser)
                     .expect(400);
                 expect(response3.body).toStrictEqual({
-                    errorsMessages: [{ field: "email", message: expect.any(String) }],
+                    errorsMessages: [{field: "email", message: expect.any(String)}],
                 });
             });
             it("should return status 400 and error message", async () => {
@@ -112,7 +112,7 @@ describe("super admin endpoint users /sa/users (e2e)", () => {
                     .send(incorrectUser)
                     .expect(400);
                 expect(response.body).toStrictEqual({
-                    errorsMessages: [{ field: "login", message: expect.any(String) }],
+                    errorsMessages: [{field: "login", message: expect.any(String)}],
                 });
             });
         });
@@ -190,9 +190,15 @@ describe("super admin endpoint blogs /sa/blogs (e2e)", () => {
                 description: correctBlog1.description,
                 websiteUrl: correctBlog1.websiteUrl,
                 isMembership: false,
+                images: {
+                    main: [],
+                    wallpaper: null
+                },
                 createdAt: expect.any(String),
             });
             blogId1 = response1.body.id;
+            response1.body.subscribersCount = 0
+            response1.body.currentUserSubscriptionStatus = "None"
             items.push(response1.body);
             const response2 = await request(app.getHttpServer())
                 .post("/blogger/blogs")
@@ -205,8 +211,14 @@ describe("super admin endpoint blogs /sa/blogs (e2e)", () => {
                 description: correctBlog2.description,
                 websiteUrl: correctBlog2.websiteUrl,
                 isMembership: false,
+                images: {
+                    main: [],
+                    wallpaper: null
+                },
                 createdAt: expect.any(String),
             });
+            response2.body.subscribersCount = 0
+            response2.body.currentUserSubscriptionStatus = "None"
             items.push(response2.body);
             const response3 = await request(app.getHttpServer()).get("/blogs").send(correctBlog2).expect(200);
             expect(response3.body).toStrictEqual({

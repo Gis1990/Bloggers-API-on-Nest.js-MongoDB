@@ -14,7 +14,7 @@ export class GetAllBlogsForAuthorizedUserQuery implements IQueryHandler<GetAllBl
     constructor(private blogsQueryRepository: BlogsQueryRepository) {}
 
     async execute(query: GetAllBlogsForAuthorizedUserCommand): Promise<BlogViewModelClassPagination> {
-        const dto = HelperForBlogs.createQuery(query.dto);
+        const dto = await HelperForBlogs.createQuery(query.dto);
         const result = await this.blogsQueryRepository.getAllBlogsForAuthorizedUser(dto, query.userId);
         return BlogsFactory.createBlogViewModelPaginationClass(result);
     }

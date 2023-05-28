@@ -14,7 +14,7 @@ export class GetAllBlogsForSuperAdminQuery implements IQueryHandler<GetAllBlogsF
     constructor(private blogsQueryRepository: BlogsQueryRepository) {}
 
     async execute(query: GetAllBlogsForSuperAdminCommand): Promise<BlogViewModelForAdminPaginationClass> {
-        const dto = HelperForBlogs.createQuery(query.dto);
+        const dto = await HelperForBlogs.createQuery(query.dto);
         const result = await this.blogsQueryRepository.getAllBlogsForSuperAdmin(dto);
         return BlogsFactory.createBlogViewModelForAdminPaginationClass(result);
     }

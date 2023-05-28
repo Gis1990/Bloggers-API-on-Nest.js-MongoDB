@@ -29,6 +29,7 @@ export class HelperForBlogs {
         if (isUnsubscribed) {
             return "Unsubscribed";
         }
+        return "None";
     }
 
     static async getSubscriptionDataForBlogs(userId: string, blog: BlogClass): Promise<BlogClass> {

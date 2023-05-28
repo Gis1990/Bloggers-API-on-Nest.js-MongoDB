@@ -62,7 +62,7 @@ async function bootstrap() {
     app.enableCors();
     const configService = app.get(ConfigService);
     // app.setGlobalPrefix("api");
-    const serverUrl = "https://blogs-api-nest-js.vercel.app/";
+    const serverUrl = "http://localhost:500/";
     const bloggerConfig = new DocumentBuilder()
         .setTitle("Bloggers API")
         .setDescription("The Bloggers API description")

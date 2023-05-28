@@ -37,7 +37,12 @@ export class BlogsFactory {
     static async createBlogViewModelPaginationClass(
         dto: BlogClassPaginationDto,
     ): Promise<BlogViewModelClassPagination> {
-        return new BlogViewModelClassPagination(dto.pagesCount, dto.page, dto.pageSize, dto.totalCount, dto.items);
+        const result = await Promise.all(
+            dto.items.map((elem) => {
+                return BlogsFactory.createBlogViewModelClass(elem);
+            }),
+        );
+        return new BlogViewModelClassPagination(dto.pagesCount, dto.page, dto.pageSize, dto.totalCount, result);
     }
 
     static async createBlogViewModelForAdminPaginationClass(

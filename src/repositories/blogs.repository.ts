@@ -80,13 +80,15 @@ export class BlogsRepository {
 
     async subscribeUser(blogId: string, userId: string, subscribersCount: number): Promise<boolean> {
         await this.blogsModelClass.updateOne({ id: blogId }, { $set: { subscribersCount: subscribersCount } });
+        await this.blogsModelClass.updateOne({ id: blogId }, { $pull: { unsubscribes: userId } });
         const result = await this.blogsModelClass.updateOne({ id: blogId }, { $push: { subscribers: userId } });
         return result.matchedCount === 1;
     }
 
     async unsubscribeUser(blogId: string, userId: string, subscribersCount: number): Promise<boolean> {
         await this.blogsModelClass.updateOne({ id: blogId }, { $set: { subscribersCount: subscribersCount } });
-        const result = await this.blogsModelClass.updateOne({ id: blogId }, { $pull: { subscribers: userId } });
+        await this.blogsModelClass.updateOne({ id: blogId }, { $pull: { subscribers: userId } });
+        const result = await this.blogsModelClass.updateOne({ id: blogId }, { $push: { unsubscribes: userId } });
         return result.matchedCount === 1;
     }
 }

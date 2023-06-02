@@ -23,6 +23,7 @@ import { UploadsModule } from "./modules/upload/uploads.module";
 import * as process from "process";
 import ngrok from "ngrok";
 import { TelegramAdapter } from "./modules/utils/telegram/telagram.adapter";
+import { IntegrationsModule } from "./modules/integrations/integrations.module";
 
 async function connectToNgrok() {
     return await ngrok.connect(500);
@@ -62,7 +63,7 @@ async function bootstrap() {
     app.enableCors();
     const configService = app.get(ConfigService);
     // app.setGlobalPrefix("api");
-    const serverUrl = "http://localhost:500/";
+    const serverUrl = "http://localhost:500";
     const bloggerConfig = new DocumentBuilder()
         .setTitle("Bloggers API")
         .setDescription("The Bloggers API description")
@@ -76,6 +77,13 @@ async function bootstrap() {
         .addBasicAuth()
         .build();
     const publicConfig = new DocumentBuilder()
+        .setTitle("Public API")
+        .setDescription("The Public API for bloggers description")
+        .setVersion("1.0")
+        .addBearerAuth()
+        .build();
+
+    const integrationsConfig = new DocumentBuilder()
         .setTitle("Public API")
         .setDescription("The Public API for bloggers description")
         .setVersion("1.0")
@@ -98,6 +106,10 @@ async function bootstrap() {
                     url: `${serverUrl}/swagger2-json`,
                     name: "Public API",
                 },
+                {
+                    url: `${serverUrl}/swagger3-json`,
+                    name: "Integrations API",
+                },
             ],
         },
     };
@@ -114,9 +126,14 @@ async function bootstrap() {
         operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
         include: [BlogsModule, PostsModule, AuthModule, CommentsModule, TestingModule, SecurityModule, QuizGameModule],
     });
+    const integrationsApiDocument = SwaggerModule.createDocument(app, integrationsConfig, {
+        operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+        include: [IntegrationsModule],
+    });
     SwaggerModule.setup("swagger", app, bloggersDocument, options1);
     SwaggerModule.setup("swagger1", app, saDocument);
     SwaggerModule.setup("swagger2", app, publicApiDocument);
+    SwaggerModule.setup("swagger3", app, integrationsApiDocument);
     app.useGlobalPipes(new ValidationPipe(validationPipeSettings));
     app.useGlobalFilters(new HttpExceptionFilter());
     app.use(cookieParser());

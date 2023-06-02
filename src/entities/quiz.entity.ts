@@ -118,21 +118,99 @@ export class QuestionViewModelClass {
 }
 
 export class AllGamesViewModelClass {
-    constructor(
-        public pagesCount: number,
-        public page: number,
-        public pageSize: number,
-        public totalCount: number,
-        public items: GamesClass[],
-    ) {}
+    @ApiProperty({
+        example: 5,
+        description: "The total number of pages",
+        type: "integer",
+        format: "int32",
+    })
+    public pagesCount: number;
+
+    @ApiProperty({
+        example: 1,
+        description: "The current page number",
+        type: "integer",
+        format: "int32",
+    })
+    public page: number;
+
+    @ApiProperty({
+        example: 10,
+        description: "The number of items per page",
+        type: "integer",
+        format: "int32",
+    })
+    public pageSize: number;
+
+    @ApiProperty({
+        example: 50,
+        description: "The total number of items across all pages",
+        type: "integer",
+        format: "int32",
+    })
+    public totalCount: number;
+
+    @ApiProperty({
+        type: () => GamesClass,
+        isArray: true,
+        description: "The array of blogs on the current page",
+    })
+    public items: GamesClass[];
+
+    constructor(pagesCount: number, page: number, pageSize: number, totalCount: number, items: GamesClass[]) {
+        this.pagesCount = pagesCount;
+        this.page = page;
+        this.pageSize = pageSize;
+        this.totalCount = totalCount;
+        this.items = items;
+    }
 }
 
 export class TopUsersModelPaginationClass {
-    constructor(
-        public pagesCount: number,
-        public page: number,
-        public pageSize: number,
-        public totalCount: number,
-        public items: TopUsersStatsClass[],
-    ) {}
+    @ApiProperty({
+        example: 5,
+        description: "The total number of pages",
+        type: "integer",
+        format: "int32",
+    })
+    public pagesCount: number;
+
+    @ApiProperty({
+        example: 1,
+        description: "The current page number",
+        type: "integer",
+        format: "int32",
+    })
+    public page: number;
+
+    @ApiProperty({
+        example: 10,
+        description: "The number of items per page",
+        type: "integer",
+        format: "int32",
+    })
+    public pageSize: number;
+
+    @ApiProperty({
+        example: 50,
+        description: "The total number of items across all pages",
+        type: "integer",
+        format: "int32",
+    })
+    public totalCount: number;
+
+    @ApiProperty({
+        type: () => TopUsersStatsClass,
+        isArray: true,
+        description: "The array of blogs on the current page",
+    })
+    public items: TopUsersStatsClass[];
+
+    constructor(pagesCount: number, page: number, pageSize: number, totalCount: number, items: TopUsersStatsClass[]) {
+        this.pagesCount = pagesCount;
+        this.page = page;
+        this.pageSize = pageSize;
+        this.totalCount = totalCount;
+        this.items = items;
+    }
 }

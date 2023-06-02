@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, HttpCode, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { BlogsIdValidationModel, ModelForGettingAllBlogs } from "../../dtos/blogs.dto";
-import { BlogViewModelClassPagination } from "../../entities/blogs.entity";
+import { BlogViewModelClass, BlogViewModelClassPagination } from "../../entities/blogs.entity";
 import { ModelForGettingAllPosts } from "../../dtos/posts.dto";
 import { CurrentUser, CurrentUserId } from "../../decorators/auth/auth.custom.decorators";
 import { strategyForUnauthorizedUser } from "../../guards/strategy-for-unauthorized-user-guard";
@@ -9,7 +9,7 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { GetAllBlogsCommand } from "../../queries/blogs/get-all-blogs-query";
 import { GetBlogByIdWithCorrectViewModelCommand } from "../../queries/blogs/get-blog-by-id-with-correct-view-model-query";
 import { GetAllPostsForSpecificBlogCommand } from "../../queries/posts/get-all-posts-for-specific-blog-query";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CurrentUserModel } from "../../dtos/auth.dto";
 import { JwtAccessTokenAuthGuard } from "../../guards/jwtAccessToken-auth.guard";
 import { SubscribeUserForBlogCommand } from "../../commands/blogs/subscribe-user-for-blog-use-case";
@@ -21,6 +21,11 @@ import { UnsubscribeUserForBlogCommand } from "../../commands/blogs/unsubscribe-
 export class BlogsController {
     constructor(private commandBus: CommandBus, private queryBus: QueryBus) {}
 
+    @ApiOperation({ summary: "Subscribe user to blog. Notifications about new posts will be send to Telegram Bot" })
+    @ApiResponse({ status: 204, description: "No content" })
+    @ApiResponse({ status: 401, description: "Unauthorized" })
+    @ApiResponse({ status: 404, description: "Not found" })
+    @ApiBearerAuth()
     @UseGuards(JwtAccessTokenAuthGuard)
     @Post("/:id/subscription")
     @HttpCode(204)
@@ -31,6 +36,11 @@ export class BlogsController {
         return await this.commandBus.execute(new SubscribeUserForBlogCommand(user.id, params.id));
     }
 
+    @ApiBearerAuth()
+    @ApiOperation({ summary: "Subscribe user to blog. Notifications about new posts will be send to Telegram Bot" })
+    @ApiResponse({ status: 204, description: "No content" })
+    @ApiResponse({ status: 401, description: "Unauthorized" })
+    @ApiResponse({ status: 404, description: "Not found" })
     @UseGuards(JwtAccessTokenAuthGuard)
     @Delete("/:id/subscription")
     @HttpCode(204)
@@ -41,6 +51,8 @@ export class BlogsController {
         return await this.commandBus.execute(new UnsubscribeUserForBlogCommand(user.id, params.id));
     }
 
+    @ApiOperation({ summary: "Returns blogs with paging" })
+    @ApiResponse({ status: 200, description: "Success", type: BlogViewModelClassPagination })
     @UseGuards(strategyForUnauthorizedUser)
     @Get()
     async getAllBlogs(
@@ -51,15 +63,20 @@ export class BlogsController {
         return await this.queryBus.execute(new GetAllBlogsCommand(dto, userId));
     }
 
+    @ApiOperation({ summary: "Returns blog by id" })
+    @ApiResponse({ status: 200, description: "Success", type: BlogViewModelClass })
+    @ApiResponse({ status: 404, description: "Not found" })
     @UseGuards(strategyForUnauthorizedUser)
     @Get(":id")
     async getBlogById(
         @Param() params: BlogsIdValidationModel,
         @CurrentUserId() userId: string,
-    ): Promise<BlogViewModelClassPagination> {
+    ): Promise<BlogViewModelClass> {
         return await this.queryBus.execute(new GetBlogByIdWithCorrectViewModelCommand(params.id, userId));
     }
 
+    @ApiOperation({ summary: "Returns all posts for specified blog" })
+    @ApiResponse({ status: 200, description: "Success", type: BlogViewModelClassPagination })
     @UseGuards(strategyForUnauthorizedUser)
     @Get("/:id/posts")
     async getAllPostsForSpecificBlog(

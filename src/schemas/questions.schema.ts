@@ -1,4 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { ApiProperty } from "@nestjs/swagger";
+import { v4 as uuidv4 } from "uuid";
 
 @Schema({ versionKey: false })
 export class QuestionClass {
@@ -31,11 +33,12 @@ export const QuestionSchema = SchemaFactory.createForClass(QuestionClass);
 
 @Schema({ versionKey: false })
 export class QuestionsForGameClass {
+    @ApiProperty({ example: uuidv4(), description: "The unique identifier for the question" })
     @Prop({
         required: true,
     })
     id: string;
-
+    @ApiProperty({ type: String })
     @Prop({
         required: true,
     })

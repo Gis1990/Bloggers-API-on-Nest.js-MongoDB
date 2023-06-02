@@ -16,28 +16,45 @@ const pattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const listOfCorrectBanStatus = ["all", "banned", "notBanned"];
 
 export class ModelForGettingAllUsers {
+    @ApiProperty({ default: "all", required: false, enum: ["all", "banned", "notBanned"] })
     @IsString()
     @IsNotEmpty()
     @IsIn(listOfCorrectBanStatus)
     @IsOptional()
     public banStatus: string;
+    @ApiProperty({
+        type: String,
+        description: "Search term for user Login: Login should contains this term in any position",
+        default: null,
+        required: false,
+    })
     @IsString()
     @IsOptional()
     public searchLoginTerm: string;
+    @ApiProperty({
+        type: String,
+        description: "Search term for user Email: Email should contains this term in any position",
+        default: null,
+        required: false,
+    })
     @IsString()
     @IsOptional()
     public searchEmailTerm: string;
+    @ApiProperty({ default: 1, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageNumber: number;
+    @ApiProperty({ default: 10, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageSize: number;
+    @ApiProperty({ default: "createdAt", required: false })
     @IsString()
     @IsOptional()
     public sortBy: string;
+    @ApiProperty({ default: "desc", required: false, enum: ["asc", "desc"] })
     @IsString()
     @IsOptional()
     public sortDirection: string;
@@ -175,4 +192,9 @@ export class UsersPaginationDto {
     public pageSize: number;
     public totalCount: number;
     public items: UserAccountClass[];
+}
+
+export class LinkForTelegramClass {
+    @ApiProperty({ example: String, description: "Link for bot ", nullable: true })
+    public link: string;
 }

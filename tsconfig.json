@@ -17,8 +17,7 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "esModuleInterop": true,
-    "allowJs": true
+    "esModuleInterop": true
   },
   "exclude": [
     "node_modules",

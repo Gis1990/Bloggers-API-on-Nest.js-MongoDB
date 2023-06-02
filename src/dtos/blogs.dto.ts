@@ -11,12 +11,12 @@ export class ModelForGettingAllBlogs {
     @IsString()
     @IsOptional()
     public searchNameTerm: string;
-    @ApiProperty({ default: 1, required: false })
+    @ApiProperty({ default: 1, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageNumber: number;
-    @ApiProperty({ default: 10, required: false })
+    @ApiProperty({ default: 10, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
@@ -32,12 +32,12 @@ export class ModelForGettingAllBlogs {
 }
 
 export class InputModelForCreatingBlog {
-    @ApiProperty({ type: String, maxLength: 15 })
+    @ApiProperty({ type: String, minLength: 1, maxLength: 15 })
     @IsString()
     @Length(1, 15)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     public name: string;
-    @ApiProperty({ type: String, maxLength: 500 })
+    @ApiProperty({ type: String, minLength: 1, maxLength: 500 })
     @IsString()
     @Length(1, 500)
     @IsNotEmpty()
@@ -55,7 +55,7 @@ export class InputModelForCreatingBlog {
 }
 
 export class BlogsIdValidationModel {
-    @ApiProperty({ required: true, description: "Id of blog for binding" })
+    @ApiProperty({ required: true, description: "Id of the blog" })
     @IsString()
     @IsNotEmpty()
     @IsBlogsIdExist()

@@ -12,8 +12,7 @@ export class CommentsFactory {
         return new CommentViewModelClass(
             comment.id,
             comment.content,
-            comment.commentatorInfo.userId,
-            comment.commentatorInfo.userLogin,
+            comment.commentatorInfo,
             comment.createdAt,
             comment.likesInfo,
         );

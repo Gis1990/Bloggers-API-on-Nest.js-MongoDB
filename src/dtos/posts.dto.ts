@@ -7,39 +7,48 @@ import { LikesInfoClass } from "../schemas/comments.schema";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class ModelForGettingAllPosts {
+    @ApiProperty({ type: String, description: "The search term for a name", default: null, required: false })
+    @IsString()
+    @IsOptional()
+    public searchNameTerm: string;
+    @ApiProperty({ default: 1, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageNumber: number;
+    @ApiProperty({ default: 10, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageSize: number;
+    @ApiProperty({ default: "createdAt", required: false })
     @IsString()
     @IsOptional()
     public sortBy: string;
+    @ApiProperty({ default: "desc", required: false, enum: ["asc", "desc"] })
     @IsString()
     @IsOptional()
     public sortDirection: string;
+    @ApiProperty({ default: "all", required: false, enum: ["all", "onlyFromSubscribedBlogs"] })
     @IsString()
     @IsOptional()
     public subscriptionStatus: string;
 }
 
 export class InputModelForCreatingAndUpdatingNewPostForSpecificBlog {
-    @ApiProperty({ type: String, description: "The title of the post", maxLength: 30 })
+    @ApiProperty({ type: String, description: "The title of the post", minLength: 1, maxLength: 30 })
     @IsString()
     @Length(1, 30)
     @IsNotEmpty()
     @Transform(({ value }: TransformFnParams) => value?.trim())
     public title: string;
-    @ApiProperty({ type: String, description: "The short description of the post", maxLength: 100 })
+    @ApiProperty({ type: String, description: "The short description of the post", minLength: 1, maxLength: 100 })
     @IsString()
     @Length(1, 100)
     @IsNotEmpty()
     @Transform(({ value }: TransformFnParams) => value?.trim())
     public shortDescription: string;
-    @ApiProperty({ type: String, description: "The content of the post", maxLength: 1000 })
+    @ApiProperty({ type: String, description: "The content of the post", minLength: 1, maxLength: 1000 })
     @IsString()
     @Length(1, 1000)
     @IsNotEmpty()

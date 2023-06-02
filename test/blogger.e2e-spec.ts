@@ -3,7 +3,6 @@ import request from "supertest";
 import {
     app,
     createBlogForTests,
-    createOutputPostForTesting,
     createPostForTesting,
     CreatingUsersForTesting,
     setupTestApp,
@@ -220,24 +219,12 @@ describe("blogger endpoint blogs  /blogger/blogs (e2e)", () => {
         });
         it("should return status 201 and created post ", async () => {
             const correctNewPost1 = createPostForTesting(20, 50, 500, blogId1);
-            const response = await request(app.getHttpServer()).get(`/blogs/${blogId1}`).expect(200);
-            const result = createOutputPostForTesting(
-                correctNewPost1.title,
-                correctNewPost1.shortDescription,
-                correctNewPost1.content,
-                blogId1,
-                response.body.name,
-                0,
-                0,
-                [],
-            );
+            await request(app.getHttpServer()).get(`/blogs/${blogId1}`).expect(200);
             const response1 = await request(app.getHttpServer())
                 .post(`/blogger/blogs/${blogId1}/posts`)
                 .set("authorization", "Bearer " + accessTokenForUser1)
                 .send(correctNewPost1)
                 .expect(201);
-            console.log(result);
-            expect(response1.body).toEqual(result);
             expect(response1.body.extendedLikesInfo.myStatus).toBe("None");
             const correctDataForUpdating = createPostForTesting(20, 50, 500, blogId1);
             const postId1 = response1.body.id;

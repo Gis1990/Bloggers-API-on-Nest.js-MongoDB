@@ -10,7 +10,7 @@ import { ReturnAllDevicesCommand } from "../../commands/security/return-all-devi
 import { TerminateAllDevicesCommand } from "../../commands/security/terminate-all-devices-use-case";
 import { CheckAccessRightsCommand } from "../../commands/security/check-access-rights-use-case";
 import { SecurityService } from "./security.service";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("SecurityDevices")
 @SkipThrottle()
@@ -18,6 +18,9 @@ import { ApiTags } from "@nestjs/swagger";
 export class SecurityController {
     constructor(private commandBus: CommandBus, private securityService: SecurityService) {}
 
+    @ApiOperation({ summary: "Returns all devices with active sessions for current user" })
+    @ApiResponse({ status: 200, description: "Success", type: [UserDevicesDataClass] })
+    @ApiResponse({ status: 401, description: "If the JWT refreshToken inside cookie is missing, expired or incorrect" })
     @UseGuards(JwtRefreshTokenAuthGuard)
     @Get("/devices")
     @HttpCode(200)
@@ -28,8 +31,11 @@ export class SecurityController {
         return await this.commandBus.execute(new ReturnAllDevicesCommand(userWithDeviceData));
     }
 
+    @ApiOperation({ summary: "Terminate all other (exclude current) device's sessions" })
+    @ApiResponse({ status: 204, description: "No Content" })
+    @ApiResponse({ status: 401, description: "If the JWT refreshToken inside cookie is missing, expired or incorrect" })
     @UseGuards(JwtRefreshTokenAuthGuard)
-    @Delete(":deviceId")
+    @Delete("/devices")
     @HttpCode(204)
     async terminateAllDevices(
         @CurrentUser() userWithDeviceData: CurrentUserWithDevicesDataModel,
@@ -38,6 +44,11 @@ export class SecurityController {
         return await this.commandBus.execute(new TerminateAllDevicesCommand(userWithDeviceData));
     }
 
+    @ApiOperation({ summary: "Terminate specified device session" })
+    @ApiResponse({ status: 204, description: "No Content" })
+    @ApiResponse({ status: 401, description: "If the JWT refreshToken inside cookie is missing, expired or incorrect" })
+    @ApiResponse({ status: 403, description: "If try to delete the deviceId of other user" })
+    @ApiResponse({ status: 404, description: "Not found" })
     @UseGuards(JwtRefreshTokenAuthGuard)
     @Delete("/devices/:deviceId")
     @HttpCode(204)

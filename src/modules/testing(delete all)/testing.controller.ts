@@ -8,7 +8,7 @@ import { CommentClass } from "../../schemas/comments.schema";
 import { UserAccountClass } from "../../schemas/users.schema";
 import { QuestionClass } from "../../schemas/questions.schema";
 import { GamesClass, TopUsersStatsClass } from "../../schemas/games.schema";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("Testing")
 @SkipThrottle()
@@ -24,6 +24,8 @@ export class TestingController {
         @InjectModel(TopUsersStatsClass.name) private topUsersStatsClass: Model<TopUsersStatsClass>,
     ) {}
 
+    @ApiOperation({ summary: "Clear database: delete all data from all tables/collections" })
+    @ApiResponse({ status: 204, description: "All data is deleted" })
     @Delete("/all-data")
     @HttpCode(204)
     async deleteBlog(): Promise<boolean> {

@@ -37,10 +37,10 @@ import { TelegramAdapter } from "./modules/utils/telegram/telagram.adapter";
             inject: [ConfigService],
         }),
         ConfigModule.forRoot({ isGlobal: true, load: [config] }),
-        // ThrottlerModule.forRoot({
-        //     ttl: 10,
-        //     limit: 5,
-        // }),
+        ThrottlerModule.forRoot({
+            ttl: 10,
+            limit: 5,
+        }),
         BlogsModule,
         PostsModule,
         AuthModule,
@@ -57,10 +57,10 @@ import { TelegramAdapter } from "./modules/utils/telegram/telagram.adapter";
     providers: [
         AppService,
         TelegramAdapter,
-        // {
-        //     provide: APP_GUARD,
-        //     useClass: ThrottlerGuard,
-        // },
+        {
+            provide: APP_GUARD,
+            useClass: ThrottlerGuard,
+        },
     ],
 })
 export class AppModule {}

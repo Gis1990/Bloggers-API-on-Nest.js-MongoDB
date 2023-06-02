@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import request from "supertest";
-import { app, createUserForTesting, setupTestApp, teardownTestApp } from "./test.functions";
+import {app, createUserForTesting, setupTestApp, teardownTestApp} from "./test.functions";
 
 describe("auth endpoint (e2e)", () => {
     beforeAll(async () => {
@@ -35,60 +35,60 @@ describe("auth endpoint (e2e)", () => {
         // Test logging in as the new user and expecting a status code of 200 and a JWT access token and refresh token in the cookie
         const response2 = await request(app.getHttpServer())
             .post("/auth/login")
-            .send({ loginOrEmail: correctUser.login, password: correctUser.password })
+            .send({loginOrEmail: correctUser.login, password: correctUser.password})
             .expect(200);
-        expect(response2.body).toEqual({ accessToken: expect.any(String) });
+        expect(response2.body).toEqual({accessToken: expect.any(String)});
         expect(response2.headers["set-cookie"]).toEqual(
             expect.arrayContaining([expect.stringContaining("refreshToken")]),
         );
         // Test sending too many login requests within a short time period and expecting a status code of 429
-        // await new Promise((res) => setTimeout(res, 10000));
-        // await request(app.getHttpServer())
-        //     .post("/sa/auth/login")
-        //     .send({ loginOrEmail: correctUser.login, password: correctUser.password })
-        //     .expect(200)
-        //     .then(function (res) {
-        //         return request(app.getHttpServer())
-        //             .post("/sa/auth/login")
-        //             .send({ loginOrEmail: correctUser.login, password: correctUser.password })
-        //             .expect(200);
-        //     })
-        //     .then(function (res) {
-        //         return request(app.getHttpServer())
-        //             .post("/sa/auth/login")
-        //             .send({ loginOrEmail: correctUser.login, password: correctUser.password })
-        //             .expect(200);
-        //     })
-        //     .then(function (res) {
-        //         return request(app.getHttpServer())
-        //             .post("/sa/auth/login")
-        //             .send({ loginOrEmail: correctUser.login, password: correctUser.password })
-        //             .expect(200);
-        //     })
-        //     .then(function (res) {
-        //         return request(app.getHttpServer())
-        //             .post("/sa/auth/login")
-        //             .send({ loginOrEmail: correctUser.login, password: correctUser.password })
-        //             .expect(200);
-        //     })
-        //     .then(function (res) {
-        //         return request(app.getHttpServer())
-        //             .post("/sa/auth/login")
-        //             .send({ loginOrEmail: correctUser.login, password: correctUser.password })
-        //             .expect(429);
-        //     });
-        // // Test logging in with an incorrect login and expecting a status code of 401
-        // await new Promise((res) => setTimeout(res, 10000));
+        await new Promise((res) => setTimeout(res, 10000));
+        await request(app.getHttpServer())
+            .post("/auth/login")
+            .send({loginOrEmail: correctUser.login, password: correctUser.password})
+            .expect(200)
+            .then(function (res) {
+                return request(app.getHttpServer())
+                    .post("/auth/login")
+                    .send({loginOrEmail: correctUser.login, password: correctUser.password})
+                    .expect(200);
+            })
+            .then(function (res) {
+                return request(app.getHttpServer())
+                    .post("/auth/login")
+                    .send({loginOrEmail: correctUser.login, password: correctUser.password})
+                    .expect(200);
+            })
+            .then(function (res) {
+                return request(app.getHttpServer())
+                    .post("/auth/login")
+                    .send({loginOrEmail: correctUser.login, password: correctUser.password})
+                    .expect(200);
+            })
+            .then(function (res) {
+                return request(app.getHttpServer())
+                    .post("/auth/login")
+                    .send({loginOrEmail: correctUser.login, password: correctUser.password})
+                    .expect(200);
+            })
+            .then(function (res) {
+                return request(app.getHttpServer())
+                    .post("/auth/login")
+                    .send({loginOrEmail: correctUser.login, password: correctUser.password})
+                    .expect(429);
+            });
+        // Test logging in with an incorrect login and expecting a status code of 401
+        await new Promise((res) => setTimeout(res, 10000));
         const incorrectLogin = "authUser";
         await request(app.getHttpServer())
             .post("/auth/login")
-            .send({ loginOrEmail: incorrectLogin, password: correctUser.password })
+            .send({loginOrEmail: incorrectLogin, password: correctUser.password})
             .expect(401);
         // Test logging in with an incorrect password and expecting a status code of 401
         const incorrectPassword = "authUser1Passwor";
         await request(app.getHttpServer())
             .post("/auth/login")
-            .send({ loginOrEmail: correctUser.login, password: incorrectPassword })
+            .send({loginOrEmail: correctUser.login, password: incorrectPassword})
             .expect(401);
     });
 });

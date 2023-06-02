@@ -14,7 +14,6 @@ import { Transform, TransformFnParams, Type } from "class-transformer";
 import { QuestionClass, QuestionsForGameClass } from "../schemas/questions.schema";
 import { PlayerProgressClass } from "../schemas/games.schema";
 import { IsQuestionIdExist } from "../decorators/quiz/quiz.custom.decorators";
-import { ModelForGettingAllBlogs } from "./blogs.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { v4 as uuidv4 } from "uuid";
 
@@ -101,6 +100,7 @@ export class QuestionIdValidationModel {
 }
 
 export class GameIdValidationModel {
+    @ApiProperty({ required: true, description: "Id of the game", example: uuidv4() })
     @IsUUID()
     @IsNotEmpty()
     public id: string;
@@ -139,32 +139,66 @@ export class InputModelForAnswers {
     public answer: string;
 }
 
-export class ModelForGettingAllGamesForUser extends ModelForGettingAllBlogs {
-    @IsString()
-    @IsOptional()
-    public searchNameTerm: string;
+export class ModelForGettingAllGamesForUser {
+    @ApiProperty({ default: 1, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageNumber: number;
+    @ApiProperty({ default: 10, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageSize: number;
+    @ApiProperty({ default: "pairCreatedDate", required: false })
     @IsString()
     @IsOptional()
     public sortBy: string;
+    @ApiProperty({ default: "desc", required: false, enum: ["asc", "desc"] })
     @IsString()
     @IsOptional()
     public sortDirection: string;
 }
 
 export class GameStatsViewModelDto {
+    @ApiProperty({
+        example: 50,
+        description: "Sum scores of all games",
+        type: "integer",
+        format: "int32",
+    })
     public sumScore: number;
+    @ApiProperty({
+        example: 50.51,
+        description: "Average score of all games rounded to 2 decimal places",
+        type: Number,
+        format: "double",
+    })
     public avgScores: number;
+    @ApiProperty({
+        example: 10,
+        description: "All played games count",
+        type: "integer",
+        format: "int32",
+    })
     public gamesCount: number;
+    @ApiProperty({
+        example: 3,
+        type: "integer",
+        format: "int32",
+    })
     public winsCount: number;
+    @ApiProperty({
+        example: 4,
+        type: "integer",
+        format: "int32",
+    })
     public lossesCount: number;
+    @ApiProperty({
+        example: 3,
+        type: "integer",
+        format: "int32",
+    })
     public drawsCount: number;
 }
 
@@ -178,14 +212,21 @@ export class AnswerViewModelDto {
 }
 
 export class ModelForGettingTopUsers {
+    @ApiProperty({ default: 1, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageNumber: number;
+    @ApiProperty({ default: 10, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageSize: number;
+    @ApiProperty({
+        type: [String],
+        required: false,
+        description: "Default value : ?sort=avgScores desc&sort=sumScore desc",
+    })
     @IsOptional()
     public sort: string[] | string;
 }

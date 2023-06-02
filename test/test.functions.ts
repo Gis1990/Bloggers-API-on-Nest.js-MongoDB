@@ -258,9 +258,11 @@ export const createOutputCommentForTesting = (
     return {
         id: expect.any(String),
         content: randomString(contentLen),
-        userId: userId,
-        userLogin: userLogin,
         createdAt: expect.any(String),
+        commentatorInfo: {
+            userId: userId,
+            userLogin: userLogin,
+        },
         likesInfo: {
             likesCount: 0,
             dislikesCount: 0,

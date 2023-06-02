@@ -9,12 +9,12 @@ import { ApiProperty } from "@nestjs/swagger";
 const listOfCorrectLikeStatus = ["Like", "Dislike", "None"];
 
 export class ModelForGettingAllComments {
-    @ApiProperty({ default: 1, required: false })
+    @ApiProperty({ default: 1, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
     public pageNumber: number;
-    @ApiProperty({ default: 10, required: false })
+    @ApiProperty({ default: 10, required: false, format: "int32" })
     @IsNumber()
     @IsOptional()
     @Type(() => Number)
@@ -30,6 +30,7 @@ export class ModelForGettingAllComments {
 }
 
 export class InputModelForUpdatingComment {
+    @ApiProperty({ type: String, required: true, description: "Content of the comment", minLength: 20, maxLength: 300 })
     @IsString()
     @Length(20, 300)
     @IsNotEmpty()
@@ -38,6 +39,7 @@ export class InputModelForUpdatingComment {
 }
 
 export class CommentsIdValidationModel {
+    @ApiProperty({ required: true, description: "Id of the comment" })
     @IsString()
     @IsNotEmpty()
     @IsCommentsIdExist()
@@ -45,6 +47,12 @@ export class CommentsIdValidationModel {
 }
 
 export class InputModelForLikeStatus {
+    @ApiProperty({
+        example: "None",
+        required: true,
+        description: "Send None if you want to unlike or undislike",
+        enum: ["Like", "Dislike", "None"],
+    })
     @IsString()
     @IsNotEmpty()
     @IsIn(listOfCorrectLikeStatus)
@@ -52,6 +60,7 @@ export class InputModelForLikeStatus {
 }
 
 export class InputModelForCreatingNewComment {
+    @ApiProperty({ type: String, required: true, description: "Content of the comment", minLength: 20, maxLength: 300 })
     @IsString()
     @Length(20, 300)
     @IsNotEmpty()

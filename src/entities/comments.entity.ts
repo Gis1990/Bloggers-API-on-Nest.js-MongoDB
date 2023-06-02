@@ -4,16 +4,36 @@ import { ApiProperty } from "@nestjs/swagger";
 import { v4 as uuidv4 } from "uuid";
 
 export class CommentViewModelPaginationClass {
-    @ApiProperty({ example: 5, description: "The total number of pages" })
+    @ApiProperty({
+        example: 5,
+        description: "The total number of pages",
+        type: "integer",
+        format: "int32",
+    })
     public pagesCount: number;
 
-    @ApiProperty({ example: 1, description: "The current page number" })
+    @ApiProperty({
+        example: 1,
+        description: "The current page number",
+        type: "integer",
+        format: "int32",
+    })
     public page: number;
 
-    @ApiProperty({ example: 10, description: "The number of items per page" })
+    @ApiProperty({
+        example: 10,
+        description: "The number of items per page",
+        type: "integer",
+        format: "int32",
+    })
     public pageSize: number;
 
-    @ApiProperty({ example: 50, description: "The total number of items across all pages" })
+    @ApiProperty({
+        example: 50,
+        description: "The total number of items across all pages",
+        type: "integer",
+        format: "int32",
+    })
     public totalCount: number;
 
     @ApiProperty({
@@ -39,16 +59,36 @@ export class CommentViewModelPaginationClass {
 }
 
 export class CommentViewModelForBloggerPaginationClass {
-    @ApiProperty({ example: 5, description: "The total number of pages" })
+    @ApiProperty({
+        example: 5,
+        description: "The total number of pages",
+        type: "integer",
+        format: "int32",
+    })
     public pagesCount: number;
 
-    @ApiProperty({ example: 1, description: "The current page number" })
+    @ApiProperty({
+        example: 1,
+        description: "The current page number",
+        type: "integer",
+        format: "int32",
+    })
     public page: number;
 
-    @ApiProperty({ example: 10, description: "The number of items per page" })
+    @ApiProperty({
+        example: 10,
+        description: "The number of items per page",
+        type: "integer",
+        format: "int32",
+    })
     public pageSize: number;
 
-    @ApiProperty({ example: 50, description: "The total number of items across all pages" })
+    @ApiProperty({
+        example: 50,
+        description: "The total number of items across all pages",
+        type: "integer",
+        format: "int32",
+    })
     public totalCount: number;
 
     @ApiProperty({
@@ -80,11 +120,8 @@ export class CommentViewModelClass {
     @ApiProperty({ example: "Great post!", description: "The content of the comment" })
     public content: string;
 
-    @ApiProperty({ example: uuidv4(), description: "The unique identifier for the user who created the comment" })
-    public userId: string;
-
-    @ApiProperty({ example: "login", description: "The username of the user who created the comment" })
-    public userLogin: string;
+    @ApiProperty({ type: () => OwnerInfoClass, description: "Information about the commentator" })
+    public commentatorInfo: OwnerInfoClass;
 
     @ApiProperty({ example: new Date(), description: "The date and time that the comment was created" })
     public createdAt: Date;
@@ -95,15 +132,13 @@ export class CommentViewModelClass {
     constructor(
         id: string,
         content: string,
-        userId: string,
-        userLogin: string,
+        commentatorInfo: OwnerInfoClass,
         createdAt: Date,
         likesInfo: LikesInfoClass,
     ) {
         this.id = id;
         this.content = content;
-        this.userId = userId;
-        this.userLogin = userLogin;
+        this.commentatorInfo = commentatorInfo;
         this.createdAt = createdAt;
         this.likesInfo = likesInfo;
     }

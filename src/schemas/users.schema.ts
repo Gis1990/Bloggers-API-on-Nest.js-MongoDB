@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty } from "@nestjs/swagger";
+import { v4 as uuidv4 } from "uuid";
 
 @Schema({ versionKey: false, _id: false })
 export class LoginAttemptsClass {
@@ -68,18 +69,22 @@ export const UserAccountEmailSchema = SchemaFactory.createForClass(UserAccountEm
 
 @Schema({ versionKey: false, _id: false })
 export class UserDevicesDataClass {
+    @ApiProperty({ type: String, required: true })
     @Prop({
         required: true,
     })
     ip: string;
+    @ApiProperty({ example: new Date(), required: true })
     @Prop({
         required: true,
     })
     lastActiveDate: Date;
+    @ApiProperty({ example: uuidv4(), description: "The unique identifier for the device" })
     @Prop({
         required: true,
     })
     deviceId: string;
+    @ApiProperty({ type: String, required: true, description: "Name for the device" })
     @Prop({
         required: true,
     })

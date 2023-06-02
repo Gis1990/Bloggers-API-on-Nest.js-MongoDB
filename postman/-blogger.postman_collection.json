@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "0169a11b-6988-4f6a-92ac-60b20e76acef",
+		"name": "/blogger",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21367112"
+	},
+	"item": [
+		{
+			"name": "ban user by blogger",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2NzM4OTMxODM3OTUiLCJpYXQiOjE2NzM4OTMxOTEsImV4cCI6MTY3Mzg5Mzc5MX0.6K7WIwnmGIbkSVvv-EZpul5o6oC1G53KfCDdTSqFGHg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"isBanned\": true,\r\n  \"banReason\": \"stringstringstringst\",\r\n  \"blogId\": \"1673893201121\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/blogger/users/1673893221748/ban",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogger",
+						"users",
+						"1673893221748",
+						"ban"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all banned users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/blogger/users/blog/1673845379157",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogger",
+						"users",
+						"blog",
+						"1673845379157"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create blog",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2NzM4NDQyMzU3NTAiLCJpYXQiOjE2NzM4NDQyMzksImV4cCI6MTY3Mzg0NDgzOX0.vO4XMyTeuGec2pZwtiRq9dQTSGq61YHwQ-c2vaIsc2g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \" ss\",\r\n  \"description\": \"string1\",\r\n  \"websiteUrl\": \"https://www.youtube.com/\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/blogger/blogs",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogger",
+						"blogs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMxLCJpYXQiOjE2NzUzMjU1NTAsImV4cCI6MTY3NTMyNjE1MH0.uoh4u9raMSkQL5haxd3xtB6cY2dGzjQyvnS_HT0ZKZI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"string\",\r\n  \"shortDescription\": \"string\",\r\n  \"content\": \"string\",\r\n  \"bloggerId\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/blogger/blogs/63/posts/9",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogger",
+						"blogs",
+						"63",
+						"posts",
+						"9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mjc0LCJpYXQiOjE2NzUzNDY5NDksImV4cCI6MTY3NTM0NzU0OX0.81gD5uspAUqB1jw33lAZy0GEMXer2LEuWiGtxSUCU2Y",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/blogger/blogs/88/posts/22",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogger",
+						"blogs",
+						"88",
+						"posts",
+						"22"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create new post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjY3LCJpYXQiOjE2NzUzMzQ3ODYsImV4cCI6MTY3NTMzNTM4Nn0.JskJHXTMk4JBfYY3cAOsFSVk7vmlIOGZxXzBJ38bwVU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"content\": \"fdfd\",\r\n    \"shortDescription\": \"fgf\",\r\n    \"title\": \"gf\"\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/blogger/blogs/83/posts",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogger",
+						"blogs",
+						"83",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Comments for blogs",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/blogger/blogs/comments",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogger",
+						"blogs",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

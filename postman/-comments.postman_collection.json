@@ -1,0 +1,131 @@
+{
+	"info": {
+		"_postman_id": "7b1a9ff7-a181-44f8-aaa5-f1a7e9541220",
+		"name": "/comments",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21367112"
+	},
+	"item": [
+		{
+			"name": "comment by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/comments/1656445897201",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"comments",
+						"1656445897201"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete comment",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{JWT}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/comments/1659981890003",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"comments",
+						"1659981890003"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update comment",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxNjU2NDQ1NjkzNDg3IiwiaWF0IjoxNjU2NDQ2MzM3LCJleHAiOjE2NTY0NDk5Mzd9.2B6PTko0EUsHKNTg41nn9lOYu-2dzstuUJdwIvIK_3Q",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"content\": \"stdddddddddddddddddddddddddd\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/comments/1656445917277",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"comments",
+						"1656445917277"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "like status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxNjU2NDQ1NjkzNDg3IiwiaWF0IjoxNjU2NDQ2MzM3LCJleHAiOjE2NTY0NDk5Mzd9.2B6PTko0EUsHKNTg41nn9lOYu-2dzstuUJdwIvIK_3Q",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"likeStatus\": \"None\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/comments/1656445917277/like-status",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"comments",
+						"1656445917277",
+						"like-status"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

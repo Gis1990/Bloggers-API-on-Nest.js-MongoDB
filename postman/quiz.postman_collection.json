@@ -1,0 +1,324 @@
+{
+	"info": {
+		"_postman_id": "14c1c64e-403f-43bb-b6fb-53f9e6ee5274",
+		"name": "quiz",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21367112"
+	},
+	"item": [
+		{
+			"name": "Add new qustion",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"body\": \"1111111111115\",\r\n  \"correctAnswers\": [\r\n    \"1\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/sa/quiz/questions",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"sa",
+						"quiz",
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "publish",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"published\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/sa/quiz/questions/1678308053518/publish",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"sa",
+						"quiz",
+						"questions",
+						"1678308053518",
+						"publish"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "answer",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2NzgzMDgxMzU0ODQiLCJpYXQiOjE2NzgzMDgzOTUsImV4cCI6MTY3ODMwODk5NX0.5G1hEmuOErm8HtTtD14FsV9wTTIOTh_xXNy32rBDekQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"answer\": \"2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/pair-game-quiz/pairs/my-current/answers",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"pair-game-quiz",
+						"pairs",
+						"my-current",
+						"answers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all qustions",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/sa/quiz/questions",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"sa",
+						"quiz",
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update question",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"body\": \"new11111111111111\",\r\n  \"correctAnswers\": [\r\n    \"new\"\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/sa/quiz/questions/1676924377823",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"sa",
+						"quiz",
+						"questions",
+						"1676924377823"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get game by Id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2NzgyOTM1Nzk4ODMiLCJpYXQiOjE2NzgyOTQ0MTQsImV4cCI6MTY3ODI5NTAxNH0.s4ALJcZnsb7CjTEpfB7DPpKzwDJDuKvG2jTWjw6eER0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/pair-game-quiz/pairs/55487d9f-6dab-41c2-a7c3-def1016559fe",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"pair-game-quiz",
+						"pairs",
+						"55487d9f-6dab-41c2-a7c3-def1016559fe"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get current game",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2NzgzMDgxMzU0ODQiLCJpYXQiOjE2NzgzMDgzOTUsImV4cCI6MTY3ODMwODk5NX0.5G1hEmuOErm8HtTtD14FsV9wTTIOTh_xXNy32rBDekQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/pair-game-quiz/pairs/my-current",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"pair-game-quiz",
+						"pairs",
+						"my-current"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get top users",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/pair-game-quiz/users/top",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"pair-game-quiz",
+						"users",
+						"top"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create game",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2NzgzMDgxNTk3ODIiLCJpYXQiOjE2NzgzMDgxNjIsImV4cCI6MTY3ODMwODc2Mn0.TSGIIy6MpSAGBzRdv1DcX-AWQrd2ZYqOLOAeVg3r69g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/pair-game-quiz/pairs/connection",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"pair-game-quiz",
+						"pairs",
+						"connection"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,39 @@
+{
+	"info": {
+		"_postman_id": "78d450aa-9515-4ebd-8f17-91c4350b3229",
+		"name": "telegram",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21367112"
+	},
+	"item": [
+		{
+			"name": "get link",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA4ZWNlNzdlLWExMDgtNDkxZS1hYjdjLTA2N2Q0ZjYwYzVmZiIsImlhdCI6MTY4NTEyNzcwOSwiZXhwIjoxNjg1MTI4MzA5fQ.AXYTqB1iSWDWlGO1CX7LjxOcYxt9dOXMFLo907K0ZvA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/integrations/telegram/auth-bot-link",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"integrations",
+						"telegram",
+						"auth-bot-link"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

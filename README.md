@@ -1,10 +1,16 @@
-Hello,this is my pet-project/study project.It's made according to [this](https://api-swagger.it-incubator.ru/swagger/index.html?urls.primaryName=h16%20API) swagger documentation. Used framework: Nest.js. Used database: MongoDB
-
+Hello,this is my pet-project.[Swagger documentation](https://blogs-api-nest-js.vercel.app/swagger) with endpoints for
+this project. Framework: Nest.js. Database: MongoDB.Additional libraries: Passport.js,Mongoose, Jest, Bcrypt.There is
+postman collection for endpoints in the root of the project.Project is deployed on vercel.There are two additional repos
+with the same project but with different
+frameworks: [Express](https://github.com/Gis1990/Bloggers-API-on-Experess.Js-MongoDB) and
+database: [PostgreSQL TypeOrm](https://github.com/Gis1990/Bloggers-API-on-Nest.js-TypeORM),
+[PostgreSQL RawSql](https://github.com/Gis1990/Bloggers-API-on-Nest.js-Raw-SQL)
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
 
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
@@ -62,7 +68,8 @@ $ npm run test:cov
 
 ## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If
+you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
 ## Stay in touch
 

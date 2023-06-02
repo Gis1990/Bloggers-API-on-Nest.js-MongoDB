@@ -1,0 +1,160 @@
+{
+	"info": {
+		"_postman_id": "ac52daf1-054e-4a07-9f8a-29d4b83cc364",
+		"name": "/posts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21367112"
+	},
+	"item": [
+		{
+			"name": "get all posts",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/posts",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get post by Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/posts/1671302802549",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"posts",
+						"1671302802549"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create new comment",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTc1MCwiaWF0IjoxNjc1NTgwMTE3LCJleHAiOjE2NzU1ODA3MTd9.HA-UW5Cs5RAG6q8NEG28TT36eDbxz1ZQIWtZsi0yf9k",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"content\": \"stringstringstringst\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/posts/258/comments",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"posts",
+						"258",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "like status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2NzE4MTI0ODQ5ODkiLCJpYXQiOjE2NzE4MTMwMTYsImV4cCI6MTY3MTgxNjYxNn0._0peinTB7Bi2-HM4zPXBdQXni9qPL9jp576oan481Hw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"likeStatus\": \"Like\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/posts/1671812503267/like-status",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"posts",
+						"1671812503267",
+						"like-status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all comments for specific post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcsImlhdCI6MTY3NjczMzI1MywiZXhwIjoxNjc2NzMzODUzfQ.WkKyXAMaS0-wDi61JuTpGWsmxZ8jg879y_AYjqFidQg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/blogger/blogs/comments",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogger",
+						"blogs",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

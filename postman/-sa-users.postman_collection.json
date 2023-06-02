@@ -1,0 +1,207 @@
+{
+	"info": {
+		"_postman_id": "7d6c5e83-b700-431e-8ef1-c2e247284cd9",
+		"name": "/sa/users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21367112"
+	},
+	"item": [
+		{
+			"name": "Add new user to the system",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"login\": \"aaa2\",\r\n  \"email\": \"anton.pavlovskiay222@gmail.com\",\r\n  \"password\": \"1245678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/sa/users",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"sa",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete user",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/sa/users/1817",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"sa",
+						"users",
+						"1817"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user ban by sa",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"isBanned\": true,\r\n  \"banReason\": \"stringstringstringst\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/sa/users/1673813320636/ban",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"sa",
+						"users",
+						"1673813320636",
+						"ban"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "blog ban by sa",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"isBanned\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/sa/blogs/1673816442740/ban",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"sa",
+						"blogs",
+						"1673816442740",
+						"ban"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all users",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/sa/users",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"sa",
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

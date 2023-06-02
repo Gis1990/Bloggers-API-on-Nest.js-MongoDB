@@ -1,0 +1,291 @@
+{
+	"info": {
+		"_postman_id": "4f69033a-3b66-45a3-b1fd-52a9237abc71",
+		"name": "/blogs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21367112"
+	},
+	"item": [
+		{
+			"name": "get all blogs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/blogs",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get blog by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/blogs/1670515855880",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogs",
+						"1670515855880"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subscribe user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZlOTYxZGIyLTlkNDItNDczOS1hYTU5LWMzY2M4Y2RiM2NkOCIsImlhdCI6MTY4NTIxMDQ0NiwiZXhwIjoxNjg1MjExMDQ2fQ.VPMJfPYuXKUiBEpZx-LE4sp0dkwcZRHUgBP7pHxIwNI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/blogs/5f0b3b96-999e-4740-a9a3-0c5095233ec8/subscription",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogs",
+						"5f0b3b96-999e-4740-a9a3-0c5095233ec8",
+						"subscription"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete blog by id",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/blogs/1",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogs",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update blogger by id",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\": \"2\",\"description\": \"new\", \"websiteUrl\": \"https://www.youtube1.com\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/blogs/1670515855880",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogs",
+						"1670515855880"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All posts for specific blog",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/blogs/1670516480205/posts",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogs",
+						"1670516480205",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create new post with extended data",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "qwerty",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"content\": \"fdfd\",\r\n    \"shortDescription\": \"fgf\",\r\n    \"title\": \"gf\"\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/blogs/1671621625630/posts",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogs",
+						"1671621625630",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "qwerty",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

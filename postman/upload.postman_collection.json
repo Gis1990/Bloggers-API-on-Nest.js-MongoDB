@@ -1,0 +1,30 @@
+{
+	"info": {
+		"_postman_id": "d8ffe287-6832-4e76-9414-7b535a67072a",
+		"name": "upload",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21367112"
+	},
+	"item": [
+		{
+			"name": "upload",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/blogger/pairs/my-current/answers",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"blogger",
+						"pairs",
+						"my-current",
+						"answers"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

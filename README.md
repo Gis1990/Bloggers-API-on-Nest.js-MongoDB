@@ -1,8 +1,9 @@
-Hello,this is my pet-project.[Swagger documentation](https://blogs-api-nest-js.vercel.app/swagger) with endpoints for
+Hello,this is my API for bloggers web-site.[Swagger documentation](https://blogs-api-nest-js.vercel.app/swagger) with
+endpoints for
 this project. Framework: Nest.js. Database: MongoDB.Additional libraries: Passport.js,Mongoose, Jest, Bcrypt.There is
 postman collection for endpoints in the root of the project.Project is deployed on vercel.There are two additional repos
 with the same project but with different
-frameworks: [Express](https://github.com/Gis1990/Bloggers-API-on-Experess.Js-MongoDB) and
+framework [Express](https://github.com/Gis1990/Bloggers-API-on-Experess.Js-MongoDB) and
 database: [PostgreSQL TypeOrm](https://github.com/Gis1990/Bloggers-API-on-Nest.js-TypeORM),
 [PostgreSQL RawSql](https://github.com/Gis1990/Bloggers-API-on-Nest.js-Raw-SQL)
 <p align="center">

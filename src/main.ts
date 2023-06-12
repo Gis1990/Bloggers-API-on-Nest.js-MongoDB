@@ -8,8 +8,6 @@ import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { HttpExceptionFilter } from "./exception.filter";
 import cookieParser from "cookie-parser";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { createWriteStream } from "fs";
-import { get } from "http";
 import { SuperAdminModule } from "./modules/super-admin/super.admin.module";
 import { TestingModule } from "./modules/testing(delete all)/testing.module";
 import { BloggerModule } from "./modules/blogger/blogger.module";

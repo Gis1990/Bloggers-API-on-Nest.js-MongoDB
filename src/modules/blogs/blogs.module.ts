@@ -26,7 +26,6 @@ import { UsersQueryRepository } from "../../query-repositories/users.query.repos
 import { SubscribeUserForBlogUseCase } from "../../commands/blogs/subscribe-user-for-blog-use-case";
 import { UnsubscribeUserForBlogUseCase } from "../../commands/blogs/unsubscribe-user-for-blog-use-case";
 import { TelegramAdapter } from "../utils/telegram/telagram.adapter";
-// import { SubscribeUserForBlogUseCase } from "../../commands/blogs/subscribe-user-for-blog-use-case";
 
 const useCases = [
     CreateBlogUseCase,

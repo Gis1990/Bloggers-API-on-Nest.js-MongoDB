@@ -146,21 +146,21 @@ async function bootstrap() {
     if (process.env.NODE_ENV === "development") {
         baseUrl = await connectToNgrok();
         // write swagger ui files
-        get(`${serverUrl}/swagger/swagger-ui-bundle.js`, function (response) {
-            response.pipe(createWriteStream("swagger-static/swagger-ui-bundle.js"));
-        });
-
-        get(`${serverUrl}/swagger/swagger-ui-init.js`, function (response) {
-            response.pipe(createWriteStream("swagger-static/swagger-ui-init.js"));
-        });
-
-        get(`${serverUrl}/swagger/swagger-ui-standalone-preset.js`, function (response) {
-            response.pipe(createWriteStream("swagger-static/swagger-ui-standalone-preset.js"));
-        });
-
-        get(`${serverUrl}/swagger/swagger-ui.css`, function (response) {
-            response.pipe(createWriteStream("swagger-static/swagger-ui.css"));
-        });
+        // get(`${baseUrl}/swagger/swagger-ui-bundle.js`, function (response) {
+        //     response.pipe(createWriteStream("swagger-static/swagger-ui-bundle.js"));
+        // });
+        //
+        // get(`${baseUrl}/swagger/swagger-ui-init.js`, function (response) {
+        //     response.pipe(createWriteStream("swagger-static/swagger-ui-init.js"));
+        // });
+        //
+        // get(`${baseUrl}/swagger/swagger-ui-standalone-preset.js`, function (response) {
+        //     response.pipe(createWriteStream("swagger-static/swagger-ui-standalone-preset.js"));
+        // });
+        //
+        // get(`${baseUrl}/swagger/swagger-ui.css`, function (response) {
+        //     response.pipe(createWriteStream("swagger-static/swagger-ui.css"));
+        // });
     }
     const telegramAdapter = await app.resolve(TelegramAdapter);
     const tgToken = configService.get("telegram_bot_token");

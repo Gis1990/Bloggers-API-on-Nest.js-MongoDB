@@ -1,4 +1,4 @@
-FROM node:18 AS development
+FROM node:18-alpine AS development
 
 WORKDIR /usr/src/app
 
@@ -12,7 +12,7 @@ COPY . .
 
 RUN npm run build
 
-FROM node:18 as production
+FROM node:18-alpine as production
 
 ENV PORT=3000
 
@@ -28,6 +28,7 @@ RUN npm install --only=production
 COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
+
 EXPOSE ${PORT}
 
 CMD ["node", "dist/main"]

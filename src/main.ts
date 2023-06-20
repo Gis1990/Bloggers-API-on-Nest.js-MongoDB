@@ -18,7 +18,6 @@ import { CommentsModule } from "./modules/comments/comments.module";
 import { SecurityModule } from "./modules/security/security.module";
 import { QuizGameModule } from "./modules/quiz-game/quiz.game.module";
 import { UploadsModule } from "./modules/upload/uploads.module";
-import * as process from "process";
 import ngrok from "ngrok";
 import { TelegramAdapter } from "./modules/utils/telegram/telagram.adapter";
 import { IntegrationsModule } from "./modules/integrations/integrations.module";
